@@ -1,11 +1,14 @@
 from enum import Enum
 
 class CheckResult():
-    comment = ''
-    severity = Severity.OK
 
+    def __init__(self, severity = Severity.OK, comment = ''):
+        self.severity = severity
+        self.comment = comment
 
 class Severity(Enum):
     OK = 0
     SUSPICIOUS = 1
     CRITICAL = 2
+
+

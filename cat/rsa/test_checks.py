@@ -1,5 +1,6 @@
 from .checks import check_public
 from Cryptodome.PublicKey import RSA
+from .. import CheckResult, Severity
 
 def test_check_public():
     """
@@ -7,7 +8,9 @@ def test_check_public():
 
     :pk The RSA public key
     """
-    assert check_public(RSA.generate(1024))
+    result = check_public(RSA.generate(1024))
+    assert result.comment == ''
+    assert result.severity == Severity.OK
 
 # def test_check_modulus():
 #     """
