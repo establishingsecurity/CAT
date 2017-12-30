@@ -1,4 +1,4 @@
-from .checks import check_public
+from .checks import *
 from Cryptodome.PublicKey import RSA
 from .. import CheckResult, Severity
 
@@ -11,27 +11,26 @@ def test_check_public():
     result = check_public(RSA.generate(1024))
     assert all([lambda r: r.severity == Severity.OK for r in result])
 
-# def test_check_modulus():
-#     """
-#     Checks a RSA modulus
+def test_check_composite():
+    """
+    Checks if the check_composite function works correctly
+    """
+    # even
+    result = check_composite(2)
+    assert result.severity == Severity.CRITICAL
+   
+    # odd 
+    result = check_composite(3)    
+    assert result.severity == Severity.OK
 
-#     :n The RSA modulus
-#     """
-#     return all([check_composite(n), check_size(n)])
+def test_check_modulus_size():
+    """
+    Checks a RSA modulus
 
-# def test_check_composite():
-#     """
-#     Checks if the modulus has good RSA sizes
-
-#     :n The RSA modulus
-#     """
-#     # TODO: Research exact size
-#     return log2(n) >= 1024
-
-# def test_check_composite():
-#     """
-#     Checks if a number is probably composite in a RSA sense
-
-#     :n The composite number
-#     """
-#     return n % 2 == 1
+    :n The RSA modulus
+    """
+    result = check_modulus_size(pow(2, 1023))
+    assert result.severity == Severity.OK
+    
+    result = check_modulus_size(pow(2, 1022))
+    assert result.severity == Severity.SUSPICIOUS
