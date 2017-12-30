@@ -1,0 +1,2 @@
+gmpy2==2.0.8
+pycryptodomex==3.4.7
