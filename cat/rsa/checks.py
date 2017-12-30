@@ -1,5 +1,6 @@
 from Cryptodome.PublicKey import RSA
 from gmpy2 import log2, is_prime
+from .. import CheckResult, Severity
 
 # TODO: Type this
 def check_public(pk):
@@ -17,7 +18,7 @@ def check_public_exponent(e: int):
     :e The RSA public exponent
     """
     # TODO: Public exponent of 3 enables certain attacks
-    return all([check_prime(e)])
+    return [check_prime(e)]
 
 def check_prime(p: int):
     """
@@ -25,7 +26,11 @@ def check_prime(p: int):
 
     :p the potential prime
     """
-    return is_prime(p)
+    result = CheckResult()
+    if not is_prime(p):
+        result.severity = Severity.CRITICAL
+        result.comment = 'Not a prime'
+    return result
 
 def check_modulus(n: int):
     """
