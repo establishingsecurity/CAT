@@ -25,7 +25,7 @@ def check_size(n: int):
     :n The RSA modulus
     """
     # TODO: Research exact size
-    return log2(n) >= 1024
+    return log2(n) >= 1023
 
 def check_composite(n: int):
     """
