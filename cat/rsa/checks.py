@@ -9,16 +9,7 @@ def check_public(pk):
 
     :pk The RSA public key
     """
-    return all([check_modulus(pk.n), check_public_exponent(pk.e)])
-
-def check_public_exponent(e: int):
-    """
-    Checks a RSA public exponent
-
-    :e The RSA public exponent
-    """
-    # TODO: Public exponent of 3 enables certain attacks
-    return [check_prime(e)]
+    return [check_composite(pk.n), check_modulus_size(pk.n), check_prime(pk.e)]
 
 def check_prime(p: int):
     """
@@ -26,28 +17,23 @@ def check_prime(p: int):
 
     :p the potential prime
     """
-    result = CheckResult()
     if not is_prime(p):
-        result.severity = Severity.CRITICAL
-        result.comment = 'Not a prime'
-    return result
+        return CheckResult(Severity.SUSPICIOUS, 'Not a prime')
+    
+    return CheckResult()
 
-def check_modulus(n: int):
-    """
-    Checks a RSA modulus
-
-    :n The RSA modulus
-    """
-    return all([check_composite(n), check_size(n)])
-
-def check_size(n: int):
+def check_modulus_size(n: int):
     """
     Checks if the modulus has good RSA sizes
 
     :n The RSA modulus
     """
     # TODO: Research exact size
-    return log2(n) >= 1023
+
+    if log2(n) < 1023:
+        return CheckResult(Severity.SUSPICIOUS, 'Modulus too small')
+    
+    return CheckResult()
 
 def check_composite(n: int):
     """
@@ -55,4 +41,7 @@ def check_composite(n: int):
 
     :n The composite number
     """
-    return n % 2 == 1
+    if n % 2 == 0:
+        return CheckResult(Severity.CRITICAL, 'Modulus is even')
+    
+    return CheckResult()

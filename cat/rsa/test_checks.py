@@ -9,8 +9,7 @@ def test_check_public():
     :pk The RSA public key
     """
     result = check_public(RSA.generate(1024))
-    assert result.comment == ''
-    assert result.severity == Severity.OK
+    assert all([lambda r: r.severity == Severity.OK for r in result])
 
 # def test_check_modulus():
 #     """
