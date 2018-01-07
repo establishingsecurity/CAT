@@ -1,0 +1,22 @@
+FROM debian:stretch-slim
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+	libgmp-dev \
+	libmpfr-dev \
+	libmpc-dev \
+	python3 \
+	python3-pip \
+	&& rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ADD requirements.txt /app/requirements.txt
+RUN pip3 install -r requirements.txt
+
+# Adding test dependencies
+RUN pip3 install pytest
+
+ADD cat /app/cat
+WORKDIR /app/cat
+
+CMD pytest --doctest-modules
