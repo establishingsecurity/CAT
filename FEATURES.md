@@ -17,9 +17,14 @@
 
 ## Diffie-Hellman
 * Small Subgroup Attacks
+* Discrete Log Algorithms
 
 ## (Ring-)LWE
 * Fluhrer's Attack
 
 ## Hashing
 * Length Extension for MD-Constructions
+
+# Helpers and Convenience
+* Converter from many formats to bytes and back
+* ProofOfWork Hashing
