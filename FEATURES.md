@@ -1,3 +1,8 @@
+# General Features
+
+* Save and Restore Functionality in long running attacks that saves the state
+  every minute or so by default.
+
 # Basic Checks
 
 * RSA
