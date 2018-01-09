@@ -1,5 +1,6 @@
 from Cryptodome.PublicKey import RSA
-from gmpy2 import mpz, invert, powmod
+from gmpy2 import mpz, mpfr, invert, powmod
+import decimal
 
 from .. import Oracle
 
@@ -17,21 +18,20 @@ class LSBOracle(Oracle):
     def __init__(self, pk, message: int):
         self.pk = pk
         self.t = mpz(message)
-        self.mult = invert(2, self.pk.n)
+        self.mult = powmod(2, self.pk.e, self.pk.n)
 
     def run(self) -> int:
-        m = 0
-
-        for i in range(1, self.pk.n.bit_length() +1):
-            # Encrypt multiplicator
-            mult = powmod(self.mult * i, self.pk.e, self.pk.n)
-            # Forge query message
-            c = self.t * mult
-
-            # Get lsb of forged message
-            m += (self.query(c) << (i-1))
-
-        return m
+        t = mpz((self.t*self.mult) % self.pk.n)
+        lower = mpfr(0)
+        upper = mpfr(self.pk.n)
+        for i in range(self.pk.n.bit_length()):
+            possible_plaintext = (lower + upper)/2
+            if not self.query(t):
+                upper = possible_plaintext            # plaintext is in the lower half
+            else:
+                lower = possible_plaintext            # plaintext is in the upper half
+            t=(t*self.mult) % self.pk.n
+        return int(upper)
 
 
 
