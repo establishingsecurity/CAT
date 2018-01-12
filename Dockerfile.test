@@ -14,7 +14,7 @@ ADD requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt
 
 # Adding test dependencies
-RUN pip3 install pytest
+RUN pip3 install pytest ipython
 
 ADD cat /app/cat
 WORKDIR /app/cat
