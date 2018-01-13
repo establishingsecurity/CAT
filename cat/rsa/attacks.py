@@ -7,10 +7,13 @@ from .. import Oracle
 def common_divisor(pk, product: int):
     """
     This attack takes an rsa public key and some integer that is known to have a
-    common divisor with the modulus and returns a rsa private key
+    common divisor with the modulus and returns a matching rsa private key
 
     >>> key = RSA.generate(2048)
-    >>> key.d == common_divisor(key.publickey(), key.p * 17).d
+    >>> sk = common_divisor(key.publickey(), key.p * 17)
+    >>> plain = 256
+    >>> cipher = powmod(plain, key.e, key.n)
+    >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
     p = GCD(pk.n, product)
