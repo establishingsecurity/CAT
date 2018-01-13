@@ -2,9 +2,9 @@ from binascii import hexlify
 
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Cipher import PKCS1_v1_5
-from gmpy2 import powmod
+from gmpy2 import powmod, next_prime
 
-from .attacks import common_divisor, LSBOracle
+from .attacks import *
 
 import pytest
 from hypothesis import given, reject, assume, settings
@@ -14,8 +14,22 @@ from hypothesis.strategies import integers, text, sampled_from
 def key():
     return RSA.generate(1024)
 
+@given(integers(min_value=2**510, max_value=2**514), integers(min_value=1))
+@settings(deadline=100)
+@pytest.mark.slow
+def test_fermat_factoring(x, plain):
+    p = int(next_prime(x))
+    q = int(next_prime(p))
+    e = 2**16 + 1
+    pk = RSA.construct((p*q, e))
+    key = reconstruct_private(pk, p)
 
-@given(integers(), integers())
+    sk = fermat_factoring(pk)
+
+    cipher = powmod(plain, key.e, key.n)
+    assert int(powmod(cipher, sk.d, sk.n)) == plain
+
+@given(integers(), integers(min_value=1))
 @settings(deadline=None)
 @pytest.mark.slow
 def test_common_divisor(key, x, plain):
@@ -26,7 +40,7 @@ def test_common_divisor(key, x, plain):
     assert int(powmod(cipher, sk.d, sk.n)) == plain
 
 
-@given(integers())
+@given(integers(min_value=1))
 @settings(deadline=None)
 @pytest.mark.slow
 def test_lsb_oracle(key, plain):
