@@ -4,8 +4,8 @@ from setuptools import find_packages, setup
 
 version = '0.0.1'
 
-with open('README.md', 'r', encoding='utf-8') as f:
-    readme = f.read()
+# TODO: add long description to here
+readme = "Long description"
 
 REQUIRES = ["gmpy2==2.0.8", "pycryptodomex==3.4.7"]
 
