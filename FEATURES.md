@@ -19,6 +19,7 @@
 * Wiener's Attack
 * Bleichenbacher Oracle Attack
 	* Easy Variants (LSB-Oracle, ...)
+* Common Modulus
 
 ## Diffie-Hellman
 * Small Subgroup Attacks
