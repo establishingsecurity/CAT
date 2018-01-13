@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 ADD requirements.txt /app/requirements.txt
 ADD setup.py /app/setup.py
-ADD README.md /app/README.md
+ADD tox.ini /app/tox.ini
 RUN pip3 install -r requirements.txt
 
 # Adding test dependencies
-RUN pip3 install pytest ipython
+RUN pip3 install pytest ipython tox
 
 ADD cat /app/cat
 WORKDIR /app/cat
