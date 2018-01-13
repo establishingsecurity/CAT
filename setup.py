@@ -40,7 +40,7 @@ setup(
     ],
 
     install_requires=REQUIRES,
-    tests_require=['coverage', 'pytest'],
+    tests_require=['coverage', 'pytest', 'pytest-xdist'],
 
     packages=find_packages(),
 )
