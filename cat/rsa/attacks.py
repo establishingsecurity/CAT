@@ -1,8 +1,27 @@
 from Cryptodome.PublicKey import RSA
+from Cryptodome.Util.number import GCD
 from gmpy2 import mpz, mpfr, invert, powmod
-import decimal
 
 from .. import Oracle
+
+def common_divisor(pk, product: int):
+    """
+    This attack takes an rsa public key and some integer that is known to have a
+    common divisor with the modulus and returns a rsa private key
+
+    >>> key = RSA.generate(2048)
+    >>> key.d == common_divisor(key.publickey(), key.p * 17).d
+    True
+    """
+    p = GCD(pk.n, product)
+    q = pk.n // p
+    assert p*q == pk.n
+    phi = (p-1)*(q-1)
+    d = int(invert(pk.e, (p-1)*(q-1)))
+    assert pk.e * d % phi == 1
+    return RSA.construct((pk.n, pk.e, d, p, q), consistency_check=True)
+
+
 
 class LSBOracle(Oracle):
     """
