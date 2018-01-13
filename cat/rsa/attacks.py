@@ -1,6 +1,5 @@
 from Cryptodome.PublicKey import RSA
-from Cryptodome.Util.number import GCD
-from gmpy2 import mpz, mpfr, invert, powmod
+from gmpy2 import mpz, mpfr, invert, powmod, gcd
 
 from .. import Oracle
 
@@ -16,7 +15,7 @@ def common_divisor(pk, product: int):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    p = GCD(pk.n, product)
+    p = int(gcd(mpz(pk.n), mpz(product)))
     q = pk.n // p
     assert p*q == pk.n
     phi = (p-1)*(q-1)
