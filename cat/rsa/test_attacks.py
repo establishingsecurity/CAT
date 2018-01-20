@@ -17,7 +17,7 @@ def key():
 
 @pytest.fixture()
 def close_primes():
-    p = get_prime(512)
+    p = getPrime(512)
     q = int(next_prime(p))
     return (p, q)
 
@@ -26,8 +26,9 @@ def plain_int():
     return 512
 
 def test_fermat_factoring(close_primes, plain_int):
-    p = primes[0]
-    q = primes[1]
+    p = close_primes[0]
+    q = close_primes[1]
+    plain = plain_int
     e = 2**16 + 1
     pk = RSA.construct((p*q, e))
     key = reconstruct_private(pk, p)
