@@ -25,7 +25,7 @@ def close_primes():
 def plain_int():
     return 512
 
-def test_fermat_factoring(primes, plain_int):
+def test_fermat_factoring(close_primes, plain_int):
     p = primes[0]
     q = primes[1]
     e = 2**16 + 1
