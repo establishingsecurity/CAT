@@ -2,6 +2,7 @@ from binascii import hexlify
 
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Cipher import PKCS1_v1_5
+from Cryptodome.Util.number import getPrime
 from gmpy2 import powmod, next_prime
 
 from .attacks import *
@@ -14,12 +15,19 @@ from hypothesis.strategies import integers, text, sampled_from
 def key():
     return RSA.generate(1024)
 
-@given(integers(min_value=2**510, max_value=2**514), integers(min_value=1))
-@settings(deadline=100)
-@pytest.mark.slow
-def test_fermat_factoring(x, plain):
-    p = int(next_prime(x))
+@pytest.fixture()
+def close_primes():
+    p = get_prime(512)
     q = int(next_prime(p))
+    return (p, q)
+
+@pytest.fixture()
+def plain_int():
+    return 512
+
+def test_fermat_factoring(primes, plain_int):
+    p = primes[0]
+    q = primes[1]
     e = 2**16 + 1
     pk = RSA.construct((p*q, e))
     key = reconstruct_private(pk, p)
