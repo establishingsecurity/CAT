@@ -25,6 +25,7 @@
 ## Diffie-Hellman
 - Small Subgroup Attacks
 - Discrete Log Algorithms
+* Meneses and Wu Algorithms for DH over matrices
 
 ## (Ring-)LWE
 - Fluhrer's Attack
