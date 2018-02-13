@@ -29,10 +29,8 @@ def load(load_state: bytes, input_length: int):
     # Creating the new hash object
     hash_object = SHA256.new()
 
-    # Retrieving the state as byte array
-    state_pointer = hash_object._state.get()
-    state_type = c_ulonglong * 6
-    state = state_type.from_buffer(state_type.from_address(state_pointer.value))
+    # Retrieving the state as array of c_ulonglongs
+    state = get_state(hash_object, 6)
 
     # Changing the state
     for (i, b) in enumerate(ls):
@@ -43,6 +41,29 @@ def load(load_state: bytes, input_length: int):
     state[5] = c_ulonglong(data_length)
 
     return hash_object
+
+#TODO is it possible to get the state as array of objects that are half as long as c_ulonglong?
+# (This would avoid switching data in the load function as well)
+def get_state(hash_object: SHA256, length: int):
+    r"""
+    This function takes a SHA256 object and the number of lines to retrieve from the buffer,
+    returning the internal state as array of type c_ulonglong.
+    The state of the SHA256 object consists of the following c_ulonglong entries (2 x 4 bytes each):
+    - S02 S01
+    - S04 S03
+    - S06 S05
+    - S08 S07
+    - ??
+    - P01 L
+    - P03 P02
+    - ...
+    - P15 P14
+    -     P16
+	S ... internal state, L ... length of padded data in bit, P ... plaintext data for next round
+    """
+    state_pointer = hash_object._state.get()
+    state_type = c_ulonglong * length
+    return state_type.from_buffer(state_type.from_address(state_pointer.value))
 
 
 # TODO maybe we should work with bits here, currently this function only supports full bytes as msg
