@@ -16,8 +16,13 @@ def load(load_state: bytes, input_length: int):
     True
     """
 
+    # swap groups of four bytes
+    load_state_grouped = list(zip(*[iter(load_state)] * 4))
+    load_state_swapped = ([c for t in zip(load_state_grouped[1::2], load_state_grouped[::2]) for c in t])
+    load_state_aligned = [i for s in load_state_swapped for i in s]
+
     # Prepare the load_state
-    ls = [c_ulonglong(int.from_bytes(load_state[i:i+8], 'big')) for i in range(0, 64, 8)]
+    ls = [c_ulonglong(int.from_bytes(load_state_aligned[i:i+8], 'big')) for i in range(0, 64, 8)]
 
     # Creating the new hash object
     hash_object = SHA256.new(b'\x00' * input_length)
