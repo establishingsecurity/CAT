@@ -2,6 +2,12 @@ from Cryptodome.Hash import SHA256
 from Cryptodome.Util.number import bytes_to_long
 from ctypes import c_ulonglong
 
+# SHA256 block size in bytes
+block_size = 64
+
+# SHA256 digest size in bytes
+digest_size = 32
+
 def load(load_state: bytes, input_length: int):
     r"""
     This function takes the digest of a Merkle–Damgård construction, the input
@@ -24,7 +30,7 @@ def load(load_state: bytes, input_length: int):
     load_state_aligned = [i for s in load_state_swapped for i in s]
 
     # Preparing the load_state
-    ls = [c_ulonglong(int.from_bytes(load_state_aligned[i:i+8], 'big')) for i in range(0, 32, 8)]
+    ls = [c_ulonglong(int.from_bytes(load_state_aligned[i:i+8], 'big')) for i in range(0, digest_size, 8)]
 
     # Creating the new hash object
     hash_object = SHA256.new()
@@ -37,7 +43,7 @@ def load(load_state: bytes, input_length: int):
         state[i] = b
 
     # Changing the length of padded data
-    data_length = (int((input_length + 8) / 64)) * 512 + 512
+    data_length = (int((input_length + 8) / block_size)) * 8 * block_size + 8 * block_size
     state[5] = c_ulonglong(data_length)
 
     return hash_object
@@ -79,19 +85,19 @@ def pad(payload: bytes):
 
     >>> payload = b'A'*55
     >>> padded_payload = pad(payload)
-    >>> len(padded_payload) % 64 == 0
+    >>> len(padded_payload) % block_size == 0
     True
     >>> padded_payload == b'A'*55 + b'\x80' + b'\x00'*6 + b'\x01\xb8'
     True
     """
 
     l = len(payload)
-    k = 64 - 8 - l - 1
+    k = block_size - 8 - l - 1
     while k < 0:
-        k += 64
+        k += block_size
     padding = b'\x80' + b'\x00'*k
 
-    l_bit = l * 8
+    l_bit = 8 * l
     length = l_bit.to_bytes(8, 'big')
 
     return payload + padding + length
