@@ -11,7 +11,8 @@ def check_public(pk):
     """
     return [check_composite(pk.n), check_modulus_size(pk.n), check_prime(pk.e)]
 
-def check_prime(p: int):
+def check_prime(p):
+    # type: int
     """
     Checks if given number is a prime
 
@@ -22,7 +23,8 @@ def check_prime(p: int):
     
     return CheckResult()
 
-def check_modulus_size(n: int):
+def check_modulus_size(n):
+    # type: int
     """
     Checks if the modulus has good RSA sizes
 
@@ -35,7 +37,8 @@ def check_modulus_size(n: int):
     
     return CheckResult()
 
-def check_composite(n: int):
+def check_composite(n):
+    # type: int
     """
     Checks if a number is probably composite in a RSA sense
 

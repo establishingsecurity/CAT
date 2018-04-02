@@ -1,19 +1,24 @@
-from io import open
-
 from setuptools import find_packages, setup
+from codecs import open
+from os import path
 
 version = '0.0.1'
 
-# TODO: add long description to here
-readme = "Long description"
+# here = path.abspath(path.dirname(__file__))
 
-REQUIRES = ["gmpy2==2.0.8", "pycryptodomex==3.4.7"]
+# # Get the long description from the README file
+# with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+#     readme = f.read()
+readme=''
+
+REQUIRES = ["gmpy2", "pycryptodomex"]
 
 setup(
     name='cat',
     version=version,
     description='',
     long_description=readme,
+    long_description_content_type='text/markdown',
     author='random-access',
     author_email='random-access@invalid',
     maintainer='random-access',
@@ -26,21 +31,23 @@ setup(
     ],
 
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
-    install_requires=REQUIRES,
-    tests_require=['coverage', 'pytest', 'pytest-xdist'],
-
     packages=find_packages(),
+
+    install_requires=REQUIRES,
+
+    extras_require={
+        'dev': ['ipython'],
+        'test': ['pytest', 'hypothesis',  'tox']
+    }
 )

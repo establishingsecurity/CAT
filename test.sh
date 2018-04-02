@@ -19,4 +19,4 @@ done
 
 docker build -t cat-test -f Dockerfile.test .
 docker run --rm --env RUN_ARGS="$RUN_ARGS" cat-test
-docker rmi cat-test
+#docker rmi cat-test

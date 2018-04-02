@@ -42,7 +42,7 @@ def fermat_factoring(pk):
     return reconstruct_private(pk, int(a - isqrt(bsqr)))
 
 
-def common_divisor(pk, product: int):
+def common_divisor(pk, product):
     """
     This attack takes an rsa public key and some integer that is known to have a
     common divisor with the modulus and returns a matching rsa private key
@@ -69,12 +69,12 @@ class LSBOracle(Oracle):
     """
 
     # TODO: Type this
-    def __init__(self, pk, message: int):
+    def __init__(self, pk, message):
         self.pk = pk
         self.t = mpz(message)
         self.mult = powmod(2, self.pk.e, self.pk.n)
 
-    def run(self) -> int:
+    def run(self):
         t = mpz((self.t*self.mult) % self.pk.n)
         lower = mpfr(0)
         upper = mpfr(self.pk.n)

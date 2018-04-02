@@ -19,7 +19,8 @@ buffer_type = c_uint64
 # SHA512 hash object
 sha_type = SHA512
 
-def load(load_state: bytes, input_length: int):
+def load(load_state, input_length):
+    # type: bytes, int
     r"""
     This function takes the digest of a Merkle–Damgård construction, the input
     length previously given to the hashfunction and returns the a copy of the
@@ -58,14 +59,16 @@ def load(load_state: bytes, input_length: int):
     return hash_object
 
 
-def data_to_buffer(load_state: bytes, no_of_entries: int, entry_size: int):
+def data_to_buffer(load_state, no_of_entries, entry_size):
+    # type: bytes, int, int
     r"""
     This function takes load_state, a byte array, and converts it to an array with number_of_entries entries of type buffer_type.
     """
     return [buffer_type(int.from_bytes(load_state[i:i+entry_size], 'big')) for i in range(0, digest_size, no_of_entries)]
 
 
-def get_data_length(input_length: int):
+def get_data_length(input_length):
+    # type: int
     r"""
     This function returns the length of padded data in bytes for a given data length and block size in bytes.
     >>> get_data_length(111) == 128
@@ -77,7 +80,8 @@ def get_data_length(input_length: int):
     return block_size * ((int((input_length + l) / block_size)) + 1)
 
 
-def get_state(hash_object: sha_type, length: int):
+def get_state(hash_object, length):
+    # type: sha_type, int
     r"""
     This function takes a SHA512 object and the number of lines to retrieve from the buffer,
     returning the internal state as array of type c_uint64.
@@ -97,7 +101,8 @@ def get_state(hash_object: sha_type, length: int):
 
 
 # TODO maybe we should work with bits here, currently this function only supports full bytes as msg
-def pad(payload: bytes):
+def pad(payload):
+    # type: bytes
     r"""
     This function takes a payload as byte array and the block size
     and returns the byte array plus the padding added before hashing it with SHA512.

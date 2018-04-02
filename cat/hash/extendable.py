@@ -8,7 +8,8 @@ block_size = 64
 # SHA256 digest size in bytes
 digest_size = 32
 
-def load(load_state: bytes, input_length: int):
+def load(load_state, input_length):
+    # type: bytes, int
     r"""
     This function takes the digest of a Merkle–Damgård construction, the input
     length previously given to the hashfunction and returns the a copy of the
@@ -50,7 +51,8 @@ def load(load_state: bytes, input_length: int):
 
 #TODO is it possible to get the state as array of objects that are half as long as c_ulonglong?
 # (This would avoid switching data in the load function as well)
-def get_state(hash_object: SHA256, length: int):
+def get_state(hash_object, length):
+    # type: SHA256, int
     r"""
     This function takes a SHA256 object and the number of lines to retrieve from the buffer,
     returning the internal state as array of type c_ulonglong.
@@ -73,7 +75,8 @@ def get_state(hash_object: SHA256, length: int):
 
 
 # TODO maybe we should work with bits here, currently this function only supports full bytes as msg
-def pad(payload: bytes):
+def pad(payload):
+    # type: bytes
     r"""
     This function takes a payload as byte array and returns the byte array
     plus the padding added before hashing it with SHA256.
