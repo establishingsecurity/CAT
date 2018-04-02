@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"gmpy2" = "*"
+pycryptodomex = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-xdist = "*"
+hypothesis = "*"
+tox = "*"
+wheel = "*"
+
+[requires]
+python_version = "3.6"
