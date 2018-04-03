@@ -11,7 +11,7 @@ digest_size = 32
 def load(load_state, input_length):
     # type: bytes, int
     r"""
-    This function takes the digest of a Merkle–Damgard construction, the input
+    This function takes the digest of a Merkle-Damgard construction, the input
     length previously given to the hashfunction and returns the a copy of the
     original hash function
 
