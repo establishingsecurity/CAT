@@ -56,7 +56,7 @@ def test_lsb_oracle(key, plain):
     assume(0 < plain < key.n)
 
     class TestLSBOracle(LSBOracle):
-        def query(self, m: int):
+        def query(self, m):
             return powmod(m, key.d, self.pk.n) % 2
 
     target = powmod(plain, key.e, key.n)
