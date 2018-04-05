@@ -25,6 +25,7 @@
 	- [x] LSB-Oracle
 	- ...
 - Common Modulus
+    * Batch GCD
 
 ## Diffie-Hellman
 - Small Subgroup Attacks
