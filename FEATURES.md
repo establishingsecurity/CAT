@@ -1,6 +1,7 @@
 # General Features
 - Save and Restore Functionality in long running attacks that saves the state
   every minute or so by default.
+* A fancy logo
 
 # Basic Checks
 - RSA
@@ -37,6 +38,9 @@
 
 ## Hashing
 - Length Extension for MD-Constructions
+
+## SSL/TLS
+* Implement different attacks against the TLS/SSL stack of the last few years
 
 # Helpers and Convenience
 - Converter from many formats to bytes and back
