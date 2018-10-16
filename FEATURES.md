@@ -45,6 +45,11 @@
 - Array of TLS attacks of the last years
 - Certificate (chain) validation attacks and nuances
 
+## RNG
+
+- Get LCG seed
+  - see https://www.math.cmu.edu/~af1p/Texfiles/RECONTRUNC.pdf
+
 # Helpers and Convenience
 - Converter from many formats to bytes and back
 - ProofOfWork Hashing
