@@ -35,7 +35,7 @@
 - Meneses and Wu Algorithms for DH over matrices [hard]
 
 ## (Ring-)LWE
-- Fluhrer's Attack [???]
+- Fluhrer's Attack (https://eprint.iacr.org/2016/085.pdf) [???]
 
 ## Hashing
 - Length Extension for MD-Constructions [easy]
