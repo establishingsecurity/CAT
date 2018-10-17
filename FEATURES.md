@@ -3,7 +3,7 @@
   every minute or so by default.
 - A fancy logo
 
-# Basic Checks
+# Basic Checks [easy]
 - RSA
 - ElGamal
 - Diffie-Hellman
@@ -11,39 +11,40 @@
 - (Ring-)LWE
 
 # Analysis
-- Add a method to calculate the linear approximation table for some given sbox
-- Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations.
+- Add a method to calculate the linear approximation table for some given sbox [advanced]
+- Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations. [hard]
 
 # Attacks
 
 ## RSA
 - Factoring
-	- [x] Fermat Factoring
-- Different Coppersmith Attacks
-- Wiener's Attack
+    - [x] Fermat Factoring [easy]
+    - ...
+- Different Coppersmith Attacks [work in progress]
+- Wiener's Attack [advanced]
 - Oracle Attacks
-	- Bleichenbacher
-	- [x] LSB-Oracle
+    - Bleichenbacher [advanced]
+    - [x] LSB-Oracle [easy]
 	- ...
 - Common Modulus
-    - Batch GCD
+    - Batch GCD [easy]
 
 ## Diffie-Hellman
-- Small Subgroup Attacks
-- Discrete Log Algorithms
-- Meneses and Wu Algorithms for DH over matrices
+- Small Subgroup Attacks [hard]
+- Discrete Log Algorithms [hard]
+- Meneses and Wu Algorithms for DH over matrices [hard]
 
 ## (Ring-)LWE
-- Fluhrer's Attack
+- Fluhrer's Attack [???]
 
 ## Hashing
-- Length Extension for MD-Constructions
+- Length Extension for MD-Constructions [easy]
 
 ## TLS
-- Ability to run as a TLS server and client (to test the counterpart)
-- Checks of accepted and proposed parameters (SafePrimes?, KeyLength?,...)
+- Ability to run as a TLS server and client (to test the counterpart) [easy]
+- Checks of accepted and proposed parameters (SafePrimes?, KeyLength?,...) [easy]
 - Array of TLS attacks of the last years
-- Certificate (chain) validation attacks and nuances
+- Certificate (chain) validation attacks and nuances [advanced]
 
 ## RNG
 
@@ -51,5 +52,5 @@
   - see https://www.math.cmu.edu/~af1p/Texfiles/RECONTRUNC.pdf
 
 # Helpers and Convenience
-- Converter from many formats to bytes and back
-- ProofOfWork Hashing
+- Converter from many formats to bytes and back [easy]
+- ProofOfWork Hashing [easy]
