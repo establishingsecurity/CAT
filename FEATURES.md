@@ -48,7 +48,7 @@
 
 ## RNG
 
-- Get LCG seed
+- Get LCG seed [advanced]
   - see https://www.math.cmu.edu/~af1p/Texfiles/RECONTRUNC.pdf
 
 # Helpers and Convenience
