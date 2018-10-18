@@ -17,6 +17,6 @@ while [[ $# -gt 0 ]]
 	esac
 done
 
-docker build -t cat-test -f Dockerfile.test .
+docker build -t cat-test -f Dockerfile .
 docker run --rm --env RUN_ARGS="$RUN_ARGS" cat-test
 #docker rmi cat-test
