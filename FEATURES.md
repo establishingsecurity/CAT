@@ -50,6 +50,8 @@
 
 - Get LCG seed [advanced]
   - see https://www.math.cmu.edu/~af1p/Texfiles/RECONTRUNC.pdf
+- get secret LCG parameters
+  - see https://link.springer.com/chapter/10.1007%2F11506157_5
 
 # Helpers and Convenience
 - Converter from many formats to bytes and back [easy]
