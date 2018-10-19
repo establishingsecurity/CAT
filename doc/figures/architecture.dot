@@ -1,7 +1,7 @@
 digraph G {
 	node [style=filled];
 
-    graph [nodesep="1", ranksep="1.5", compound=true];
+    graph [nodesep="0.5", ranksep="1.5", compound=true];
 	subgraph cluster_rsa {
 		rsa [label="RSA"];
 		rsaanalysis [label="Analysis"];
