@@ -14,7 +14,7 @@
 
 - Add a method to calculate the linear approximation table for some given sbox [advanced]
 - Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations. [???]
-- Trivium attack
+- Half-Trivium attack
 
 # Attacks
 
