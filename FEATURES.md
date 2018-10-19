@@ -1,6 +1,8 @@
 # General Features
 - Save and Restore Functionality in long running attacks that saves the state
   every minute or so by default.
+- Python2 and Python3 support
+- Great Documentation you can learn from
 - A fancy logo
 
 # Basic Checks [easy]
