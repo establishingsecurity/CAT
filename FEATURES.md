@@ -10,9 +10,11 @@
 - ECDH
 - (Ring-)LWE
 
-# Analysis
+# Symmetric
+
 - Add a method to calculate the linear approximation table for some given sbox [advanced]
 - Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations. [???]
+- Trivium attack
 
 # Attacks
 
@@ -52,6 +54,7 @@
   - see https://www.math.cmu.edu/~af1p/Texfiles/RECONTRUNC.pdf
 - get secret LCG parameters
   - see https://link.springer.com/chapter/10.1007%2F11506157_5
+- Mersenne Untwister
 
 # Helpers and Convenience
 - Converter from many formats to bytes and back [easy]
