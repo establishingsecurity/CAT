@@ -1,0 +1,62 @@
+digraph G {
+	node [style=filled];
+
+    graph [nodesep="1", ranksep="1.5", compound=true];
+	subgraph cluster_rsa {
+		rsa [label="RSA"];
+		rsaanalysis [label="Analysis"];
+		rsaattacks [label="Attacks"];
+		rsa -> rsaanalysis;
+		rsa -> rsaattacks;
+		label = "RSA";
+	}
+
+	subgraph cluster_eg {
+		eg [label="ElGamal"];
+		eganalysis [label="Analysis"];
+		eg -> eganalysis;
+		label = "ElGamal";
+	}
+	subgraph cluster_dh {
+		dh [label="DH"];
+		dhanalysis [label="Analysis"];
+		dh -> dhanalysis;
+		label = "Diffie Hellman";
+	}
+	subgraph cluster_ecdh {
+		ecdh [label="ECDH"];
+		ecdhanalysis [label="Analysis"];
+		ecdh -> ecdhanalysis;
+		label = "Elliptic Curve Diffie Hellman";
+	}
+	subgraph cluster_lcg {
+		lcg [label="LCG"];
+		lcgattacks [label="Attacks"];
+		lcg -> lcgattacks;
+		label = "Linear Congruential Generators";
+	}
+
+	subgraph cluster_util {
+		config [label = "Config"];
+		util [label = "Utils"];
+		label = "Utilities";
+	}
+
+	subgraph cluster_cli {
+		cli [label = "CLI"];
+		label = "CLI";
+
+		cli -> rsa[lhead=cluster_rsa];
+		cli -> eg[lhead=cluster_eg];
+		cli -> dh[lhead=cluster_dh];
+		cli -> ecdh[lhead=cluster_ecdh];
+		cli -> lcg[lhead=cluster_lcg];
+	}
+
+	rsaattacks -> util[lhead=cluster_util ltail=cluster_rsa];
+	/* rsaanalysis -> util[lhead=cluster_util ltail=cluster_rsa]; */
+	eganalysis -> util[lhead=cluster_util ltail=cluster_eg];
+	dhanalysis -> util[lhead=cluster_util ltail=cluster_dh];
+	ecdhanalysis -> util[lhead=cluster_util ltail=cluster_ecdh];
+	lcgattacks -> util[lhead=cluster_util ltail=cluster_lcg];
+}

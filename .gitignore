@@ -1,3 +1,11 @@
+# Figure outputs
+doc/figures/*.pdf
+doc/figures/*.png
+doc/figures/*.svg
+
+# ctags
+tags
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 .pytest_cache/
