@@ -1,7 +1,8 @@
 digraph G {
-	node [style=filled];
+    node [style=filled];
 
     graph [nodesep="0.5", ranksep="1.5", compound=true];
+    subgraph cluster_lib {
 	subgraph cluster_rsa {
 		rsa [label="RSA"];
 		rsaanalysis [label="Analysis"];
@@ -36,27 +37,49 @@ digraph G {
 		label = "Linear Congruential Generators";
 	}
 
-	subgraph cluster_util {
-		config [label = "Config"];
-		util [label = "Utils"];
-		label = "Utilities";
+	subgraph cluster_sym {
+		sym [label="Sym"];
+		symanalysis [label="Analysis"];
+		symattacks [label="Attacks"];
+		sym -> symanalysis;
+		sym -> symattacks;
+		label = "Symmetric";
 	}
+	libentry [style = invis];
+	libentry -> rsa [ style = invis ];
+	libentry -> eg [ style = invis ];
+	libentry -> dh [ style = invis ];
+	libentry -> ecdh [ style = invis ];
+	libentry -> lcg [ style = invis ];
+	libentry -> sym [ style = invis ];
 
-	subgraph cluster_cli {
-		cli [label = "CLI"];
-		label = "CLI";
+	config [label = "Config"];
+	util [label = "Utils"];
+	rsaattacks -> util [ltail=cluster_rsa];
+	/* rsaanalysis -> util [ltail=cluster_rsa]; */
+	eganalysis -> util [ltail=cluster_eg];
+	dhanalysis -> util [ltail=cluster_dh];
+	ecdhanalysis -> util [ltail=cluster_ecdh];
+	lcgattacks -> util [ltail=cluster_lcg];
+	symattacks -> util [ltail=cluster_sym];
+	/* symanalysis -> util [ltail=cluster_sym]; */
+	label = "Library";
+    }
 
-		cli -> rsa[lhead=cluster_rsa];
-		cli -> eg[lhead=cluster_eg];
-		cli -> dh[lhead=cluster_dh];
-		cli -> ecdh[lhead=cluster_ecdh];
-		cli -> lcg[lhead=cluster_lcg];
-	}
 
-	rsaattacks -> util[lhead=cluster_util ltail=cluster_rsa];
-	/* rsaanalysis -> util[lhead=cluster_util ltail=cluster_rsa]; */
-	eganalysis -> util[lhead=cluster_util ltail=cluster_eg];
-	dhanalysis -> util[lhead=cluster_util ltail=cluster_dh];
-	ecdhanalysis -> util[lhead=cluster_util ltail=cluster_ecdh];
-	lcgattacks -> util[lhead=cluster_util ltail=cluster_lcg];
+
+    subgraph cluster_cli {
+	    cli [label = "CLI"];
+	    label = "CLI";
+
+	    cli -> libentry[lhead=cluster_lib];
+    }
+
+    subgraph cluster_exp {
+	    exp [label = "Exploit"];
+	    label = "Exploit";
+
+	    exp -> libentry[lhead=cluster_lib];
+    }
+
 }
