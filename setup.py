@@ -48,6 +48,7 @@ setup(
 
     extras_require={
         'dev': ['ipython'],
-        'test': ['pytest', 'hypothesis',  'tox']
+        'test': ['pytest', 'hypothesis',  'tox'],
+        'doc': ['sphinx']
     }
 )
