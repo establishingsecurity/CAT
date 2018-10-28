@@ -10,6 +10,7 @@ Welcome to cat's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: hash.extendable
 
 Indices and tables
 ==================
