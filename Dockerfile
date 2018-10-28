@@ -1,32 +1,53 @@
-FROM debian:stretch-slim
+# Base image
+FROM debian:stretch-slim as base
 ENV RUN_ARGS=""
 
 RUN apt-get update && apt-get install -y \
-    build-essential \
+	build-essential \
 	libgmp-dev \
 	libmpfr-dev \
 	libmpc-dev \
 	python3 \
-	python3-dev \
 	python3-pip \
 	python \
-	python-dev \
-	pypy \
-	pypy-dev \
-	&& rm -rf /var/lib/apt/lists/*
-
-# Add test dependencies
-RUN pip3 install tox
+	python-pip \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ADD README.md /app/README.md
 ADD setup.py /app/setup.py
+
+RUN pip3 install -e "."
+
+ADD cat /app/cat
+WORKDIR /app/cat
+
+# Test image
+FROM base as test
+
+RUN apt-get update && apt-get install -y \
+	pypy \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+RUN pip3 install -e ".[test]"
+
 ADD conftest.py /app/conftest.py
 ADD tox.ini /app/tox.ini
 
-WORKDIR /app/cat
 RUN tox --notest
 
-ADD cat /app/cat
+CMD tox --result-json /app/test-results.json
 
-CMD tox ${RUN_ARGS}
+# Doc image
+FROM base as doc
+
+RUN apt-get update && apt-get install -y \
+	pypy \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install -e ".[doc]"
+
+ADD doc /app/doc
+WORKDIR /app/doc
+CMD make
