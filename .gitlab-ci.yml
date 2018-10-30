@@ -10,12 +10,17 @@ build:
   stage: build
   script:
     - docker build --target base -t "$CI_REGISTRY_IMAGE-base:$CI_COMMIT_REF_SLUG" .
-    # - docker push "$CI_REGISTRY_IMAGE-base:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE-base:$CI_COMMIT_REF_SLUG"
+  only:
+    - master
+    - tags
+    - dev
 
 test:
   stage: test
   script:
-    - docker build --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
+    - docker build --pull --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG"
     - docker run --name cat-test "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG"
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
@@ -25,3 +30,7 @@ test:
     when: always
     reports:
       junit: test-results-*.xml
+  only:
+    - master
+    - tags
+    - dev
