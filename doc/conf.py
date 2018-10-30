@@ -14,7 +14,9 @@
 #
 import os
 import sys
+import subprocess
 from unittest.mock import MagicMock
+
 sys.path.insert(0, os.path.abspath('../cat/'))
 
 
@@ -191,3 +193,5 @@ class Mock(MagicMock):
 
 MOCK_MODULES = ['gmpy2']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+subprocess.call(['sphinx-apidoc', '-o', '_modules/', '../cat/'])
