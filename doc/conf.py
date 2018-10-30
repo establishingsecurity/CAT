@@ -191,7 +191,10 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
+# Can't install these modules (e.g. because of C library dependency)
 MOCK_MODULES = ['gmpy2']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+# Automatically document all modules
 subprocess.call(['sphinx-apidoc', '-o', '_modules/', '../cat/'])
+subprocess.call(['python', 'setup.py', 'dev', '--no-deps'])
