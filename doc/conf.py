@@ -15,10 +15,10 @@
 import os
 import sys
 import subprocess
+import distutils.core
 from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.abspath('../cat/'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -30,7 +30,6 @@ author = 'the open source community'
 version = '0.0.1'
 # The full version, including alpha/beta/rc tags
 release = '0.0.1-alpha'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -76,7 +75,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -111,7 +109,6 @@ html_static_path = ['static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'catdoc'
 
-
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
@@ -140,7 +137,6 @@ latex_documents = [
      'the open source community', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
@@ -149,7 +145,6 @@ man_pages = [
     (master_doc, 'cat', 'cat Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -161,7 +156,6 @@ texinfo_documents = [
      author, 'cat', 'One line description of project.',
      'Miscellaneous'),
 ]
-
 
 # -- Options for Epub output -------------------------------------------------
 
@@ -180,16 +174,17 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
-
 # -- Extension configuration -------------------------------------------------
 source_parsers = {
-   '.md': 'recommonmark.parser.CommonMarkParser',
+    '.md': 'recommonmark.parser.CommonMarkParser',
 }
+
 
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
+
 
 # Can't install these modules (e.g. because of C library dependency)
 MOCK_MODULES = ['gmpy2']
@@ -200,7 +195,7 @@ subprocess.call(['sphinx-apidoc', '-o', 'modules/', '../cat/'])
 # Install the package
 subprocess.call(['pip', 'install', '-e', '..', '--no-deps'])
 # Install package dependencies
-import distutils.core
+
 setup_py = distutils.core.run_setup('../setup.py')
 requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
 print('Installing required modules: {}'.format(requires))
