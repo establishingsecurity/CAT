@@ -9,7 +9,7 @@ version = '0.0.1'
 # # Get the long description from the README file
 # with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 #     readme = f.read()
-readme=''
+readme = ''
 
 REQUIRES = ["gmpy2", "pycryptodomex"]
 
@@ -27,7 +27,7 @@ setup(
     license='BSD',
 
     keywords=[
-        '',
+        'crypto', 'ctf', 'pentesting', 'cryptanalyis'
     ],
 
     classifiers=[
