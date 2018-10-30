@@ -17,6 +17,7 @@ test:
   script:
     - docker build --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
     - docker run --name cat-test "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG"
+  after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
     - docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml
