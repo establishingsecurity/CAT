@@ -1,6 +1,5 @@
 # Base image
 FROM debian:stretch-slim as base
-ENV RUN_ARGS=""
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
@@ -24,6 +23,7 @@ WORKDIR /app/cat
 
 # Test image
 FROM base as test
+ENV RUN_ARGS=""
 
 RUN apt-get update && apt-get install -y \
 	pypy \
@@ -37,7 +37,7 @@ ADD tox.ini /app/tox.ini
 
 RUN tox --notest
 
-CMD tox --result-json /app/test-results.json
+CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 
 # Doc image
 FROM base as doc

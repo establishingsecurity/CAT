@@ -13,6 +13,11 @@ test:
 	docker rm cat-test || true
 	docker run --name cat-test cat-test || true
 
+test-slow:
+	docker build --target test -t cat-test .
+	docker rm cat-test || true
+	docker run --name cat-test --env RUN_ARGS="--slow" cat-test || true
+
 $(TEST_RESULTS): test
 	docker cp cat-test:/app/test-results.json test-results.json
 	docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
