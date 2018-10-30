@@ -24,4 +24,4 @@ test:
   artifacts:
     when: always
     reports:
-      junit: test-results-py3.xml
+      junit: test-results-*.xml
