@@ -112,3 +112,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# PyCharm
+.idea/
+
+# Docs
+doc/modules
+doc/_build

@@ -49,6 +49,6 @@ setup(
     extras_require={
         'dev': ['ipython'],
         'test': ['pytest', 'hypothesis',  'tox'],
-        'doc': ['Sphinx']
+        'doc': ['sphinx', 'recommonmark']
     }
 )
