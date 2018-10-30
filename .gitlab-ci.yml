@@ -28,7 +28,7 @@ build:
     - docker pull $TEST_ID || true
     - docker build --cache-from $TEST_ID --target test -t $TEST_ID .
     - docker push $TEST_ID
-    - docker run --name cat-test --env "$RUN_ARGS" $TEST_ID
+    - docker run --name cat-test "$RUN_ARGS" $TEST_ID
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
@@ -44,12 +44,14 @@ build:
 test_master:
   <<: *test_template
   variables:
-    RUN_ARGS: "RUN_ARGS='--slow'"
+    RUN_ARGS: "--env RUN_ARGS='--slow'"
   only:
     - master
 
 test:
   <<: *test_template
+  variables:
+    RUN_ARGS: ""
   only:
     - dev
     - tags
