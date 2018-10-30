@@ -22,5 +22,6 @@ test:
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
     - docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml
   artifacts:
+    when: always
     reports:
       junit: test-results-py3.xml
