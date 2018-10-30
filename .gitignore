@@ -3,6 +3,10 @@ doc/figures/*.pdf
 doc/figures/*.png
 doc/figures/*.svg
 
+# Test results
+test-results.json
+test-results-*.xml
+
 # ctags
 tags
 
