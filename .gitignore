@@ -113,4 +113,5 @@ ENV/
 .idea/
 
 # Docs
-doc/_*
+doc/modules
+doc/_build

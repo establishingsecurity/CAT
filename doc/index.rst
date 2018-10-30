@@ -10,7 +10,7 @@ Welcome to cat's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   _modules/modules
+   modules/modules
 
 Indices and tables
 ==================
