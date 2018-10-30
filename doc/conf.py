@@ -197,4 +197,5 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Automatically document all modules
 subprocess.call(['sphinx-apidoc', '-o', '_modules/', '../cat/'])
-subprocess.call(['python', 'setup.py', 'dev', '--no-deps'])
+# Install the package
+subprocess.call(['python', 'setup.py', 'develop', '--no-deps'])
