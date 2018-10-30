@@ -2,6 +2,4 @@ build:
     image: latest
 
     python:
-        version: 3.7
-        extra_requirements:
-            - doc
+        version: 3.5
