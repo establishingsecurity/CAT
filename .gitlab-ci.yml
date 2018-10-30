@@ -20,6 +20,6 @@ test:
     - docker cp $CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG:/app/test-results.json test-results.json
     - docker cp $CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG:/app/test-results-py2.xml test-results-py2.xml
     - docker cp $CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG:/app/test-results-py3.xml test-results-py3.xml
-artifacts:
+  artifacts:
     reports:
       junit: test-results-py3.xml
