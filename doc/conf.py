@@ -199,3 +199,9 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 subprocess.call(['sphinx-apidoc', '-o', 'modules/', '../cat/'])
 # Install the package
 subprocess.call(['pip', 'install', '-e', '..', '--no-deps'])
+# Install package dependencies
+import distutils.core
+setup_py = distutils.core.run_setup('../setup.py')
+requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
+print('Installing required modules: {}'.format(requires))
+subprocess.call(['pip', 'install'] + requires)
