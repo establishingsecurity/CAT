@@ -5,6 +5,7 @@ doc/figures/*.svg
 
 # Test results
 test-results.json
+test-results-*.xml
 
 # ctags
 tags

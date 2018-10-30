@@ -15,6 +15,8 @@ test:
 
 $(TEST_RESULTS): test
 	docker cp cat-test:/app/test-results.json test-results.json
+	docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
+	docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml
 
 clean:
 	rm $(TEST_RESULTS)
