@@ -15,7 +15,7 @@ build:
 test:
   stage: test
   script:
-    # - docker build --pull --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
+    - docker build --pull --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
     - docker run "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
     - docker cp $CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG:/app/test-results.json test-results.json
     - docker cp $CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG:/app/test-results-py2.xml test-results-py2.xml
