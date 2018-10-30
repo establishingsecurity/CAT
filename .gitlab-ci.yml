@@ -3,14 +3,20 @@ image: docker:latest
 services:
   - docker:dind
 
+variables:
+  DOCKER_DRIVER: overlay2
+  BASE_ID: "$CI_REGISTRY_IMAGE/base:$CI_COMMIT_REF_SLUG"
+  TEST_ID: "$CI_REGISTRY_IMAGE/test:$CI_COMMIT_REF_SLUG"
+
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 build:
   stage: build
   script:
-    - docker build --target base -t "$CI_REGISTRY_IMAGE-base:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE-base:$CI_COMMIT_REF_SLUG"
+    - docker pull $BASE_ID || true
+    - docker build --target base -t $BASE_ID .
+    - docker push $BASE_ID
   only:
     - master
     - tags
@@ -19,9 +25,10 @@ build:
 test:
   stage: test
   script:
-    - docker build --pull --target test -t "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG"
-    - docker run --name cat-test "$CI_REGISTRY_IMAGE-test:$CI_COMMIT_REF_SLUG"
+    - docker pull $TEST_ID || true
+    - docker build --target test -t $TEST_ID .
+    - docker push $TEST_ID
+    - docker run --name cat-test $TEST_ID
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
