@@ -32,7 +32,7 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    # This is not correct, what we want is ceil(sqrt(pk.n))
+    # FIXME: This is not correct, what we want is ceil(sqrt(pk.n))
     a = isqrt(pk.n)
     bsqr = a*a - pk.n
     while not is_square(bsqr):
