@@ -1,5 +1,5 @@
 from Cryptodome.PublicKey import RSA
-from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square
+from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square, floor
 
 from .. import Oracle
 
@@ -57,8 +57,7 @@ def common_divisor(pk, product):
     p = int(gcd(mpz(pk.n), mpz(product)))
     return reconstruct_private(pk, p)
 
-
-class LSBOracle(Oracle):
+def lsb_oracle(public_key, ciphertext, oracle):
     """
     This class implements an attack against RSA oracles that return the least
     significant bit of the decrypted ciphertext.
@@ -67,28 +66,17 @@ class LSBOracle(Oracle):
     To instantiate it, implement the query method taking an integer and
     returning the least significant bit returned by the oracle
     """
-
     # TODO: Type this
-    def __init__(self, pk, message):
-        self.pk = pk
-        self.t = mpz(message)
-        self.mult = powmod(2, self.pk.e, self.pk.n)
+    mult = powmod(2, public_key.e, public_key.n)
 
-    def run(self):
-        t = mpz((self.t*self.mult) % self.pk.n)
-        lower = mpfr(0)
-        upper = mpfr(self.pk.n)
-        for i in range(self.pk.n.bit_length()):
-            possible_plaintext = (lower + upper)/2
-            if not self.query(t):
-                upper = possible_plaintext            # plaintext is in the lower half
-            else:
-                lower = possible_plaintext            # plaintext is in the upper half
-            t=(t*self.mult) % self.pk.n
-        return int(upper)
-
-
-
-
-
-
+    t = (ciphertext * mult) % public_key.n
+    lower = mpfr(0)
+    upper = mpfr(public_key.n)
+    for i in range(public_key.n.bit_length()):
+        possible_plaintext = (lower + upper)/2
+        if not oracle(t):
+            upper = possible_plaintext            # plaintext is in the lower half
+        else:
+            lower = possible_plaintext            # plaintext is in the upper half
+        t = (t * mult) % public_key.n
+    return mpz(floor(upper))

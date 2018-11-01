@@ -55,12 +55,8 @@ def test_common_divisor(key, x, plain):
 def test_lsb_oracle(key, plain):
     assume(0 < plain < key.n)
 
-    class TestLSBOracle(LSBOracle):
-        def query(self, m):
-            return powmod(m, key.d, self.pk.n) % 2
+    def oracle(c):
+        return powmod(c, key.d, key.n) % 2
 
     target = powmod(plain, key.e, key.n)
-    o = TestLSBOracle(key.publickey(), target)
-    assert o.run() == plain
-
-
+    assert plain == lsb_oracle(key.publickey(), target, oracle)
