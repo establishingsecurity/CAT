@@ -1,8 +1,6 @@
 from Cryptodome.PublicKey import RSA
 from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square, floor
 
-from .. import Oracle
-
 def reconstruct_private(pk, p):
     """
     Reconstructs the private key from a public key and a factor of the modulus
@@ -60,12 +58,11 @@ def common_divisor(pk, product):
 def lsb_oracle(public_key, ciphertext, oracle):
     # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
     """
-    This function implements an attack against RSA oracles that return the least
-    significant bit or parity of the decrypted ciphertext.
-    It is able to decrypt a single message, that message has to be valid.
-
-    To instantiate it, implement the query method taking an integer and
-    returning the least significant bit returned by the oracle
+    The Least Significant Bit Oracle attack is a simpler variation on
+    Bleichenbacher.
+    
+    It assumes a decryption oracle :math:`LSB(\dot)` that accepts ciphertexts and returns the
+    least significant or parity bit of the decrypted plaintext.
     """
     mult = powmod(2, public_key.e, public_key.n)
 
