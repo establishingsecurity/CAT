@@ -11,6 +11,7 @@ Welcome to cat's documentation!
    :caption: Contents:
 
    modules/modules
+   helloworld
 
 Indices and tables
 ==================
