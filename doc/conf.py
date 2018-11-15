@@ -16,7 +16,11 @@ import os
 import sys
 import subprocess
 import distutils.core
+import recommonmark
+
 from unittest.mock import MagicMock
+from recommonmark.parser import CommonMarkParser
+from recommonmark.transform import AutoStructify
 
 sys.path.insert(0, os.path.abspath('../cat/'))
 
@@ -176,7 +180,7 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 source_parsers = {
-    '.md': 'recommonmark.parser.CommonMarkParser',
+    '.md': CommonMarkParser,
 }
 
 
@@ -200,3 +204,13 @@ setup_py = distutils.core.run_setup('../setup.py')
 requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
 print('Installing required modules: {}'.format(requires))
 subprocess.call(['pip', 'install'] + requires)
+
+# At the bottom of conf.py
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: '/' + url,
+            'auto_toc_tree_section': 'Contents',
+            'enable_math': True,
+            'enable_inline_math': True,
+            }, True)
+    app.add_transform(AutoStructify)
