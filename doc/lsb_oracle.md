@@ -1,7 +1,7 @@
 The Least Significant Bit Oracle attack is a simpler variation of
 Bleichenbacher.
 
-It assumes a decryption oracle `$ LSB(\dot) $` that accepts ciphertexts and returns the
+It assumes a decryption oracle `$ LSB(\cdot) $` that accepts ciphertexts and returns the
 least significant or parity bit of the decrypted plaintext.
 
 This oracle leaks at least one bit of the plaintext, but can be used to reveal the whole plaintext using the multplicative homomorphic property of RSA.
