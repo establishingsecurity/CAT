@@ -58,15 +58,15 @@ def common_divisor(pk, product):
     return reconstruct_private(pk, p)
 
 def lsb_oracle(public_key, ciphertext, oracle):
+    # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
     """
-    This class implements an attack against RSA oracles that return the least
-    significant bit of the decrypted ciphertext.
-    It is able to decrypt a single message. This message has to be valid.
+    This function implements an attack against RSA oracles that return the least
+    significant bit or parity of the decrypted ciphertext.
+    It is able to decrypt a single message, that message has to be valid.
 
     To instantiate it, implement the query method taking an integer and
     returning the least significant bit returned by the oracle
     """
-    # TODO: Type this
     mult = powmod(2, public_key.e, public_key.n)
 
     t = (ciphertext * mult) % public_key.n
