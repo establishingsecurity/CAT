@@ -1,6 +1,7 @@
-.PHONY: base test
+.PHONY: base test doc
 
 TEST_RESULTS = test-results.json
+DOC_RESULTS = doc/outputs
 
 all: base $(TEST_RESULTS)
 
@@ -23,7 +24,17 @@ $(TEST_RESULTS): test
 	docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
 	docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml
 
+$(DOC_RESULTS): doc
+	docker cp cat-doc:/app/doc/_build $(DOC_RESULTS)
+
+doc:
+	docker build --target doc -t cat-doc .
+	docker rm cat-doc || true
+	docker run --name cat-doc cat-doc || true
+
 clean:
 	rm $(TEST_RESULTS)
+	rm $(DOC_RESULTS)
 	docker rmi -f cat-base || true
 	docker rmi -f cat-test || true
+	docker rmi -f cat-doc || true
