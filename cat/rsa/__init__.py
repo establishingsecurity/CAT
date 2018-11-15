@@ -1,6 +1,7 @@
 from typing import Callable, NewType
 
 from gmpy2 import mpz
+from Crypto.PublicKey import RSA
 
 from .attacks import lsb_oracle
 
@@ -9,15 +10,7 @@ RSACiphertext = NewType('RSACiphertext', int)
 RSAPlaintext = NewType('RSAPlaintext', int)
 
 
-class RSAPublicKey():
-    def __init__(self, n: int, e: int):
-        self.n = mpz(n)
-        self.e = mpz(e)
-
-class RSAPrivateKey():
-    def __init__(self, n: int, d: int):
-        self.n = mpz(n)
-        self.d = mpz(d)
+RSAKey = NewType('RSAKey', RSA)
 
 
 class RSA():
