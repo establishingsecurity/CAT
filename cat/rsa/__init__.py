@@ -1,7 +1,7 @@
 from typing import Callable, NewType
 
 from gmpy2 import mpz
-from Crypto.PublicKey import RSA
+from Cryptodome.PublicKey import RSA
 
 from .attacks import lsb_oracle
 
@@ -18,6 +18,11 @@ class RSA():
         # type: Callable[[RSACiphertext], bool]
         self.lsb_oracle = oracle
 
+    """
+    This function implements an attack against RSA oracles that return the least
+    significant bit or parity of the decrypted ciphertext.
+    It is able to decrypt a single message, that message has to be valid.
+    """
     def run_lsb_oracle(self, ciphertext):
         # type: RSACiphertext
         return int(self.lsb_oracle(self.pk, ciphertext, self.oracle))
