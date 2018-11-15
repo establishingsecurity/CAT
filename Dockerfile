@@ -19,7 +19,6 @@ ADD setup.py /app/setup.py
 RUN pip3 install -e "."
 
 ADD cat /app/cat
-WORKDIR /app/cat
 
 # Test image
 FROM base as test
@@ -29,7 +28,6 @@ RUN apt-get update && apt-get install -y \
 	pypy \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
 RUN pip3 install -e ".[test]"
 
 ADD conftest.py /app/conftest.py
@@ -42,12 +40,18 @@ CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 # Doc image
 FROM base as doc
 
-RUN apt-get update && apt-get install -y \
-	pypy \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install -e ".[doc]"
+RUN pip3 install -e ".[dev,test,doc]"
 
 ADD doc /app/doc
+
 WORKDIR /app/doc
-CMD make
+CMD make html
+
+# Dist image
+FROM base as dist
+
+RUN pip install setuptools wheel
+RUN pip3 install setuptools wheel
+RUN rm cat/conf.py
+
+CMD python3 setup.py sdist bdist_wheel && python setup.py sdist bdist_wheel
