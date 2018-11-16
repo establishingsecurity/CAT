@@ -19,23 +19,23 @@ Intuition
 
 We use the homomorphic property, i.e :math:`2^e m^e \equiv (2 m)^e \mod N`, and the fact that we can construct :math:`2^e \mod N` because we assume we have the public key :math:`(e, N)`.
 
-Multiplying this value to our target ciphertext yields :math:`(2 m)^e \mod N`, which we can query the LSB oracle with.
+Multiplying this value to our target ciphertext yields :math:`c_2 = (2 m)^e \mod N`, which we can query the LSB oracle with.
 
 The value :math:`2 m` is an even, if the answer to our query is :math:`1`, we conclude that :math:`(2 m) \ge N`.
 If it reveals 0, then :math:`2 m \leq N` must hold.
 The resulting inequality reveals a bound on the plaintext.
 
-We can iterate the attack with :math:`(4 m)^e \mod N`.
+We can iterate the attack with :math:`c_4 = (4 m)^e \mod N`.
 Depending on the two bits revealed so far we get:
 
-=====   =====   ==============================
-Bit 1   Bit 2   Bound
-=====   =====   ==============================
-0       0       :math:`4 m \leq N`
-0       1       :math:`4 m > N`
-1       0       :math:`2 (2 m - N) \leq 2 N`
-1       1       :math:`2 (2 m - N) > 2 N`
-=====   =====   ==============================
+================    ================    ==============================
+:math:`LSB(c_2)`    :math:`LSB(c_4)`    Bound
+================    ================    ==============================
+0                   0                   :math:`4 m \leq N`
+0                   1                   :math:`4 m > N`
+1                   0                   :math:`2 (2 m - N) \leq 2 N`
+1                   1                   :math:`2 (2 m - N) > 2 N`
+================    ================    ==============================
 
 We can reformulate this as a tree:
 
