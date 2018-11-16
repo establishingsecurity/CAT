@@ -1,3 +1,5 @@
+import pytest
+
 from Cryptodome.Hash import SHA512
 import struct
 
@@ -12,6 +14,7 @@ def byte_array(draw):
     data = draw(lists(binary()))
     return b''.join(data)
 
+@pytest.mark.xfail(reason="")
 @given(byte_array(), byte_array())
 def test_length_extension_attack_sha512(secret, extend):
     h1 = SHA512.new(secret)
