@@ -18,12 +18,12 @@ class RSA():
         # type: Callable[[RSACiphertext], bool]
         self.lsb_oracle = oracle
 
-    """
-    This function implements an attack against RSA oracles that return the least
-    significant bit or parity of the decrypted ciphertext.
-    It is able to decrypt a single message, that message has to be valid.
-    """
     def run_lsb_oracle(self, ciphertext):
         # type: RSACiphertext
+        """
+        This function implements an attack against RSA oracles that return the least
+        significant bit or parity of the decrypted ciphertext.
+        It is able to decrypt a single message that has to be valid.
+        """
         return int(self.lsb_oracle(self.pk, ciphertext, self.oracle))
 
