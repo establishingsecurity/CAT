@@ -5,7 +5,7 @@ from gmpy2 import mpz
 from Cryptodome.PublicKey import RSA
 
 from .attacks import lsb_oracle
-from .utils import reconstruct_private
+from .util import reconstruct_private
 
 
 RSACiphertext = NewType('RSACiphertext', int)
