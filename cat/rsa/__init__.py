@@ -61,5 +61,5 @@ class RSA():
         Runs against the first key in the list
         """
         # TODO: Detect the right public key
-        return int(self.lsb_oracle(self.keys[0], ciphertext, self.oracle))
+        return int(self.lsb_oracle(self._keys[0], ciphertext, self.oracle))
 
