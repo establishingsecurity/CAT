@@ -46,11 +46,16 @@ release = '0.0.1-alpha'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
 ]
+
+# Links to other documentations
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None),
+                       'pycryptodome': ('https://pycryptodome.readthedocs.io/en/latest/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['templates']
