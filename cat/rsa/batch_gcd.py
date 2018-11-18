@@ -153,6 +153,9 @@ def compute_remainders(n, xs):
         - Cross-reference product tree/remainder tree
     """
 
+    if not xs:
+        return []
+
     return build_remainder_tree(n, build_product_tree(xs))[0]
 
 
