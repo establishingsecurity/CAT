@@ -55,7 +55,8 @@ def build_product_tree(xs):
         - Provide an example
         - Describe the inputs
         - Think about returned value for the empty list input. It is currently
-        [[0]] because the default value for product of empty list is 0.
+        [[0]] because the default value for product of empty list is 0. This
+        value will also affect build_remainder_tree below.
     """
 
     return _build_product_tree_0(xs)
@@ -103,6 +104,21 @@ def _build_product_tree_1(xs):
 
 
 def build_remainder_tree(n, product_tree):
+    """
+    Builds a remainder tree that has the same shape as the product tree.
+
+    For every element :code:`p` of the product tree, the remainder tree contains
+    the value of :code:`n % p` at the same position.
+
+    The remainder tree relies on the following property:
+
+    .. math::
+            n \mod x = (n \mod xy) \mod x
+
+    Args:
+        n (Int): the divident
+        product_tree (List[List[Int]]): the tree of divisors
+    """
 
     return _build_remainder_tree_0(n, product_tree)
 
