@@ -4,6 +4,8 @@ import copy
 import random
 
 
+from gmpy2 import mpz
+
 from cat.rsa.batch_gcd import compute_product
 from cat.rsa.batch_gcd import _compute_product_0, _compute_product_1
 from cat.rsa.batch_gcd import build_product_tree
@@ -67,7 +69,7 @@ def test_compute_product_small_list(compute_product, n):
 
     random.seed(n)
 
-    xs = [random.randint(-42, +42) for i in range(n)]
+    xs = [random.randint(-42, 42) for i in range(n)]
     ys = copy.copy(xs)
 
     result = 1
@@ -75,6 +77,22 @@ def test_compute_product_small_list(compute_product, n):
         result *= y
 
     assert compute_product(xs) == result, "Simple non-zero list product failed"
+
+
+@pytest.mark.parametrize("compute_product", compute_product_list)
+@pytest.mark.parametrize("n", list(range(2, 10)))
+def test_compute_product_small_list_mpz(compute_product, n):
+
+    random.seed(n)
+
+    xs = [mpz(random.randint(-42, 42)) for i in range(n)]
+    ys = copy.copy(xs)
+
+    result = mpz(1)
+    for y in ys:
+        result *= y
+
+    assert compute_product(xs) == result, "Simple none-zero product with mpz"
 
 
 @pytest.mark.parametrize("build_product_tree", build_product_tree_list)
