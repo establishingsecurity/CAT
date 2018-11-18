@@ -10,6 +10,7 @@ from cat.rsa.batch_gcd import build_product_tree
 from cat.rsa.batch_gcd import _build_product_tree_0, _build_product_tree_1
 from cat.rsa.batch_gcd import build_remainder_tree
 from cat.rsa.batch_gcd import _build_remainder_tree_0
+from cat.rsa.batch_gcd import compute_remainders
 
 compute_product_list = [compute_product, _compute_product_0, _compute_product_1]
 build_product_tree_list = [
@@ -159,3 +160,33 @@ def test_build_remainder_tree_two_levels(build_remainder_tree):
 def test_build_remainder_tree_three_levels(build_remainder_tree):
 
     assert build_remainder_tree(3, [[1, 2, 3], [2, 3], [6]]) == [[0, 1, 0], [1, 0], [3]]
+
+
+def test_compute_remainders_empty():
+
+    assert compute_remainders(0, []) == []
+
+
+def test_compute_remainders_zero():
+
+    # If you ask for the remainder after dividing by zero, it is your fault
+    with pytest.raises(ZeroDivisionError) as e:
+        compute_remainders(42, [0])
+
+
+@pytest.mark.parametrize("n", [-42, -1, 1, 42])
+def test_compute_remainders_single(n):
+
+    assert compute_remainders(0, [n]) == [0]
+
+
+@pytest.mark.parametrize("n", [-42, -1, 0, 1, 42])
+@pytest.mark.parametrize("m", [-42, -1, 1, 42])
+def test_compute_remainders_as_in_python(n, m):
+
+    assert compute_remainders(n, [m]) == [n % m]
+
+
+def test_compute_remainders_three():
+
+    assert compute_remainders(3, [2, 3, 4]) == [1, 0, 3]
