@@ -1,8 +1,9 @@
-import socket
 import sys
+import socket
+from collections import namedtuple
 from binascii import hexlify, unhexlify
 
-from cat.rsa import RSA
+from cat.rsa import RSADriver
 
 # Security parameter in bytes in hex
 MESSAGE_SIZE = (1024//8) * 2
@@ -28,8 +29,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.sendall(int_to_hex(c))
         return hex_to_int(sock.recv(MESSAGE_SIZE).strip())
 
-    r = RSA()
-    r.keys = [{'e': e, 'n': n}]
+    r = RSADriver()
+    KeyTuple = namedtuple('KeyTuple', 'n e')
+    r.keys = [KeyTuple(e=e, n=n)]
     r.add_lsb_oracle(oracle)
     print(r.run_lsb_oracle(t))
 
