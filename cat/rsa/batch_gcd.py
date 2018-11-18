@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import functools
+import math
 import operator
 
 
@@ -157,6 +158,52 @@ def compute_remainders(n, xs):
         return []
 
     return build_remainder_tree(n, build_product_tree(xs))[0]
+
+
+def attack_batch_gcd(ns):
+    """
+    Checks for each RSA modulus if it shares primes with another RSA modulus.
+
+    Args:
+        ns List[Int]: a list where each element is an RSA modulus
+
+    Returns:
+        List[Int]: a list where each position is either one (i.e. the modulus
+            from that position in the input list does not share any primes with
+            any other modulus from the input list) or greater than one. If the
+            value is not one, than it is likely the prime itself or the product
+            of two (?) primes.
+    """
+
+    return _attack_batch_gcd_0(ns)
+
+
+def _attack_batch_gcd_0(ns):
+
+    rs = compute_remainders(compute_product(ns), [n ** 2 for n in ns])
+
+    return [math.gcd(r // n, n) for r, n in zip(rs, ns)]
+
+
+def _attack_batch_gcd_1(ns):
+    """
+    This is a speed-up from https://facthacks.cr.yp.to/batchgcd.html
+
+    They claim that "the nodes of the product tree used inside the remainder
+    tree in the second step are simply the squares of the nodes in the product
+    tree used in the first step"
+    """
+
+    tree = build_product_tree(ns)
+
+    rs = tree.pop()
+
+    while tree:
+        ns = tree.pop()
+
+        rs = [rs[i // 2] % ns[i] ** 2 for i in range(len(ns))]
+
+    return [math.gcd(r // n, n) for r, n in zip(rs, ns)]
 
 
 if __name__ == '__main__':
