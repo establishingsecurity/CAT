@@ -245,3 +245,39 @@ if __name__ == '__main__':
             number=1000
         )
     )
+
+    # NOTE: ~63 seconds
+    print(
+        timeit.timeit(
+            "_attack_batch_gcd_0([65537] * 5000 + [997] * 5000 + [65537 * 997])",
+            setup="from __main__ import _attack_batch_gcd_0",
+            number=1000
+        )
+    )
+
+    # NOTE: ~62 seconds
+    print(
+        timeit.timeit(
+            "_attack_batch_gcd_0(list(range(1, 10000)))",
+            setup="from __main__ import _attack_batch_gcd_0",
+            number=1000
+        )
+    )
+
+    # NOTE: ~58 seconds
+    print(
+        timeit.timeit(
+            "_attack_batch_gcd_1([65537] * 5000 + [997] * 5000 + [65537 * 997])",
+            setup="from __main__ import _attack_batch_gcd_1",
+            number=1000
+        )
+    )
+
+    # NOTE: ~59 seconds
+    print(
+        timeit.timeit(
+            "_attack_batch_gcd_1(list(range(1, 10000)))",
+            setup="from __main__ import _attack_batch_gcd_1",
+            number=1000
+        )
+    )
