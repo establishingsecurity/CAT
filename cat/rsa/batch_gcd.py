@@ -13,6 +13,9 @@ def compute_product(xs):
 def _compute_product_0(xs):
     """Uses built-in Python tools to compute the product of the list."""
 
+    if not xs:
+        return 0
+
     return functools.reduce(operator.mul, xs)
 
 
@@ -51,6 +54,8 @@ def build_product_tree(xs):
     TODO:
         - Provide an example
         - Describe the inputs
+        - Think about returned value for the empty list input. It is currently
+        [[0]] because the default value for product of empty list is 0.
     """
 
     return _build_product_tree_0(xs)
