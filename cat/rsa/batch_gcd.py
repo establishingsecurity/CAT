@@ -19,6 +19,9 @@ def _compute_product_0(xs):
 def _compute_product_1(xs):
     """
     Uses the idea behind the product tree to compute the product of the list.
+
+    TODO:
+        - Link to build_product_tree and its implementation for details
     """
 
     if not xs:
@@ -45,8 +48,9 @@ def build_product_tree(xs):
     list holds the leaves and the last list is a one-element list that holds the
     root of the tree.
 
-    Example:
-        TODO
+    TODO:
+        - Provide an example
+        - Describe the inputs
     """
 
     return _build_product_tree_0(xs)
@@ -63,10 +67,12 @@ def _build_product_tree_0(xs):
     while len(tree[step]) != 1:
         level = tree[step]
 
-        tree.append(
-            [level[i - 1] * level[i] for i in range(1, len(level), 2)]
-        )
+        # range(1, ...) guarantees that both level[i - 1] and level[i] exist
+        # range(0, ...) does *not* guarantee that level[i + 1] exists
+        tree.append([level[i - 1] * level[i] for i in range(1, len(level), 2)])
 
+        # if the last element of this level did not participate in building the
+        # next level, just carry it over into the next level unchanged
         if len(level) % 2:
             tree[-1].append(level[-1])
 
@@ -89,6 +95,44 @@ def _build_product_tree_1(xs):
         ])
 
     return tree
+
+
+def build_remainder_tree(n, product_tree):
+
+    return _build_remainder_tree_0(n, product_tree)
+
+
+def _build_remainder_tree_0(n, product_tree):
+
+    # Compute the root of the remainder tree separately:
+    tree = [[n % product_tree[-1][0]]]
+
+    for step, product_level in enumerate(reversed(product_tree[:-1]), 0):
+
+        # Take the previous level of the remainder tree
+        level = tree[step]
+
+        tree.append(
+            [level[i // 2] % product_level[i] for i in range(len(product_level))]
+        )
+
+    # Since the product tree has its root as the last element of the list, make
+    # remainder tree have its root as the last element too by reversing it:
+    return list(reversed(tree))
+
+
+def compute_remainders(n, xs):
+    """
+    Computes remainders n % xs[i] for each i in range(0, len(xs)).
+
+    Uses a product tree and a remainder tree to speed up computations.
+
+    TODO:
+        - Describe inputs
+        - Cross-reference product tree/remainder tree
+    """
+
+    return build_remainder_tree(n, build_product_tree(xs))[0]
 
 
 if __name__ == '__main__':
