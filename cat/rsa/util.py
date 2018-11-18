@@ -14,3 +14,16 @@ def reconstruct_private(pk, p):
     return RSA.construct((pk.n, pk.e, d, p, q), consistency_check=True)
 
 
+def reconstruct_privates(pks, factors):
+    """
+    Reconstructs private keys from public keys if a factor of the modulus is in
+    the factors list
+    """
+    def filtering(k):
+        factor = list(filter(lambda p: (k.n % p == 0), factors))
+        if len(factor) > 0:
+            return reconstruct_private(k, factor[0])
+        else:
+            return k
+
+    return list(map(lambda k: filtering(k), pks))

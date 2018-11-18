@@ -61,7 +61,7 @@ def lsb_oracle(public_key, ciphertext, oracle):
     upper = mpfr(public_key.n)
     for i in range(public_key.n.bit_length()):
         possible_plaintext = (lower + upper)/2
-        if not oracle(t):
+        if not oracle(int(t)):
             upper = possible_plaintext            # plaintext is in the lower half
         else:
             lower = possible_plaintext            # plaintext is in the upper half
