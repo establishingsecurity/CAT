@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import functools
-import math
 import operator
+
+import gmpy2
 
 
 def compute_product(xs):
@@ -182,7 +183,7 @@ def _attack_batch_gcd_0(ns):
 
     rs = compute_remainders(compute_product(ns), [n ** 2 for n in ns])
 
-    return [math.gcd(r // n, n) for r, n in zip(rs, ns)]
+    return [gmpy2.gcd(r // n, n) for r, n in zip(rs, ns)]
 
 
 def _attack_batch_gcd_1(ns):
@@ -203,7 +204,7 @@ def _attack_batch_gcd_1(ns):
 
         rs = [rs[i // 2] % ns[i] ** 2 for i in range(len(ns))]
 
-    return [math.gcd(r // n, n) for r, n in zip(rs, ns)]
+    return [gmpy2.gcd(r // n, n) for r, n in zip(rs, ns)]
 
 
 if __name__ == '__main__':
