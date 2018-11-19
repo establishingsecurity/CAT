@@ -6,10 +6,12 @@ from gmpy2 import mpz, powmod
 from Cryptodome.PublicKey import RSA
 
 # Security parameter in bytes in hex
-MESSAGE_SIZE = (1024//8) * 2
+SECURITY_PARAMETER = 1024
+MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
+INT_SIZE = (SECURITY_PARAMETER//8)
 
 def int_to_hex(n):
-    return hexlify(n.to_bytes(128, 'big'))
+    return hexlify(int(n).to_bytes(INT_SIZE, 'big'))
 
 def hex_to_int(s):
     return int.from_bytes(unhexlify(s), 'big')
@@ -26,17 +28,18 @@ class LSBHandler(socketserver.BaseRequestHandler):
         return powmod(ciphertext, self.d, self.n) % 2
 
     def handle(self):
-        self.key = RSA.generate(1024)
+        self.key = RSA.generate(SECURITY_PARAMETER)
         self.n = self.key.n
         self.e = self.key.e
         self.d = self.key.d
         self.plaintext = hex_to_int(b'deadbeef')
+        self.ciphertext = self.encrypt(self.plaintext)
 
         # First send out the public key
         self.request.sendall(int_to_hex(self.n))
         self.request.sendall(int_to_hex(self.e))
         # And the ciphertext
-        self.request.sendall(int_to_hex(self.plaintext))
+        self.request.sendall(int_to_hex(self.ciphertext))
 
         # This is for optimization
         self.n = mpz(self.n)
@@ -44,9 +47,13 @@ class LSBHandler(socketserver.BaseRequestHandler):
         self.d = mpz(self.d)
         while True:
             # The server accepts ciphertexts in hex
-            cipher = mpz(hex_to_int(self.request.recv(MESSAGE_SIZE).strip()))
-            # And sends back the parity
-            self.request.sendall(int_to_hex(int(self.oracle(cipher))))
+            try:
+                cipher = mpz(hex_to_int(self.request.recv(MESSAGE_SIZE).strip()))
+                # And sends back the parity
+                self.request.sendall(int_to_hex(int(self.oracle(cipher))))
+            except BrokenPipeError:
+                break
+        print(self.plaintext)
 
 
 if __name__ == "__main__":

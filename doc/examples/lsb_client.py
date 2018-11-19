@@ -6,10 +6,12 @@ from binascii import hexlify, unhexlify
 from cat.rsa import RSADriver
 
 # Security parameter in bytes in hex
-MESSAGE_SIZE = (1024//8) * 2
+SECURITY_PARAMETER = 1024
+MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
+INT_SIZE = (SECURITY_PARAMETER//8)
 
 def int_to_hex(n):
-    return hexlify(n.to_bytes(128, 'big'))
+    return hexlify(n.to_bytes(INT_SIZE, 'big'))
 
 def hex_to_int(s):
     return int.from_bytes(unhexlify(s), 'big')
