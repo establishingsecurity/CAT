@@ -1,7 +1,6 @@
 Rivest-Shamir-Adleman (RSA)
 ===========================
 
-
 .. epigraph::
 
     One of the first public-key cryptosystems widely used for secure transmission.
