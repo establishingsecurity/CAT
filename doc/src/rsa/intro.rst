@@ -27,7 +27,7 @@ Theory of RSA key generation
 
 #. Compute the Euler's totient function: :math:`\phi(n) = (p - 1)(q - 1)`
 
-    - it shows how many integers are relatively prime to :math:`n`
+    - it shows how many integers from the segment :math:`[1, n]` are relatively prime to :math:`n`
     - any integer :math:`e` relatively prime to :math:`n` is guaranteed to have an inverse integer :math:`d` modulo :math:`n`:
 
     .. math:: \exists d: ed = 1 \mod n
