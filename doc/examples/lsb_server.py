@@ -5,8 +5,11 @@ from gmpy2 import mpz, powmod
 
 from Cryptodome.PublicKey import RSA
 
-# Security parameter in bytes in hex
+# Security parameter in bits
 SECURITY_PARAMETER = 1024
+# Security parameter in bytes in hex
+MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
+INT_SIZE = (SECURITY_PARAMETER//8)
 MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
 INT_SIZE = (SECURITY_PARAMETER//8)
 
