@@ -44,3 +44,14 @@ We can reformulate this as a tree:
 
 The attack works by binary searching this tree and getting stricter bounds on
 the plaintext in every step.
+
+=======
+Example
+=======
+
+The following example uses the cat library to exploit a LSB Oracle over TCP.
+
+.. literalinclude:: examples/lsb_client.py
+   :language: python
+   :emphasize-lines: 30-38
+   :linenos:
