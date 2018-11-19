@@ -105,7 +105,7 @@ def _build_product_tree_1(xs):
 
 
 def build_remainder_tree(n, product_tree):
-    """
+    r"""
     Builds a remainder tree that has the same shape as the product tree.
 
     For every element :code:`p` of the product tree, the remainder tree contains
@@ -114,7 +114,7 @@ def build_remainder_tree(n, product_tree):
     The remainder tree relies on the following property:
 
     .. math::
-            n \mod x = (n \mod xy) \mod x
+        n \mod x = (n \mod xy) \mod x
 
     Args:
         n (Int): the divident
