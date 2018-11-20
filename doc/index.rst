@@ -38,7 +38,7 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`.
    lsb_oracle
    src/rsa/attack_batch_gcd.rst
 
-   modules/modules.rst
+   modules/cat
 
 Indices and tables
 ==================
