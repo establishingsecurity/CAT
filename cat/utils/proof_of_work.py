@@ -19,6 +19,20 @@ def _guess(compute, condition, guesses, correct_guesses, **kwargs):
             pass
 
 
+def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
+    def wrap_input_source():
+        for i in input_source:
+            yield prefix + i
+    return compute(hash_function, condition, wrap_input_source(), **kwargs)
+
+
+def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
+    def wrap_input_source():
+        for i in input_source:
+            yield i + suffix
+    return compute(hash_function, condition, wrap_input_source(), **kwargs)
+
+
 def compute(hash_function, condition, input_source, **kwargs):
     """
     Compute a Proof of Work based on the given condition function and input source.
