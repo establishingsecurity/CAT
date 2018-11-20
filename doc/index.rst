@@ -33,8 +33,12 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`.
 .. toctree::
    :maxdepth: 4
    :caption: Contents:
-   modules/cat
+
+   src/rsa/intro.rst
    lsb_oracle
+   src/rsa/attack_batch_gcd.rst
+
+   modules/cat
 
 Indices and tables
 ==================

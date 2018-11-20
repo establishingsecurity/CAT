@@ -195,7 +195,7 @@ MOCK_MODULES = ['gmpy2']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Automatically document all modules
-subprocess.call(['sphinx-apidoc', '-o', 'modules/', '../cat/'])
+subprocess.call(['sphinx-apidoc', '-o', '../cat/'])
 # Install the package
 subprocess.call(['pip', 'install', '-e', '..', '--no-deps'])
 # Install package dependencies
