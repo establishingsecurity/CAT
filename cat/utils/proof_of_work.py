@@ -1,5 +1,6 @@
 """Methods for computing Proof of Works."""
 import os
+import re
 import Cryptodome
 
 from Cryptodome import Hash
@@ -100,6 +101,17 @@ def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
         for i in input_source:
             yield i + suffix
     return compute(hash_function, condition, wrap_input_source(), **kwargs)
+
+
+def compute_with_pattern(hash_function, pattern, input_source, **kwargs):
+    block_size = getattr(hash_function, 'block_size', None)
+    if block_size and len(pattern.replace('{h}', '').replace('{h_}', '')) >= block_size:
+        raise Exception('Your pattern must be smaller than the block size of ' +
+                        '{} (or you already know what your hash looks like)'.format(
+                        hash_function))
+    p = re.compile(pattern.format(h=r'\w+', h_=r'\w*'))
+    match = lambda x: p.match(x.hex())
+    return compute(hash_function, match, input_source, **kwargs)
 
 
 def compute(hash_function, condition, input_source, **kwargs):
