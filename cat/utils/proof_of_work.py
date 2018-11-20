@@ -20,6 +20,40 @@ def _guess(compute, condition, guesses, correct_guesses, **kwargs):
 
 
 def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
+    """
+    Compute a `suffix` for the given `prefix` and `input_source`, such that the resulting hash
+    digest satisfies the given `condition`.
+
+    >>> # Define a value source
+    >>> def input_source(start):
+    ...     for bf in generate_brute_force(start):
+    ...         yield bytes(bf)
+    >>> # Instantiate a generator
+    >>> generator = input_source([0])
+    >>> # Compute a hash digest whose hex representation ends with '123'
+    >>> condition = lambda g: g.hex().endswith('123')
+    >>> prefix = b'Hello, world!'
+    >>> pow_ = compute_suffix(Cryptodome.Hash.SHA1, prefix, condition, generator)
+    >>> print(pow_.hex())
+    48656c6c6f2c20776f726c642109f2
+    >>> print(pow_[:13])
+    b'Hello, world!'
+    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
+    af480840fd76a7371ac29988b4b62eba1516f123
+
+    :param prefix:        The prefix of the input to `hash_function`.
+    :type prefix:         :class:`bytes`
+    :param hash_function: The hash function to use (e.g. :class:`Crypto.Hash.SHA256.SHA256Hash`).
+    :type hash_function:  All modern and historic hash algorithms listed in :doc:`src/hash/hash`.
+    :param input_source:  A generator that creates input values for the hash function.
+    :type input_source:   :class:`generator`
+    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
+                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
+    :type kwargs:         :class:`dict`
+    :returns:             The computed suffix, such that `hash_function.new(prefix + suffix).digest()`
+                          fulfills `condition`.
+    :rtype:               :class:`bytes`
+    """
     def wrap_input_source():
         for i in input_source:
             yield prefix + i
@@ -27,6 +61,41 @@ def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
 
 
 def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
+    """
+    Compute a `prefix` for the given `suffix`, such that the digest of `hash_function` with an input
+    of `prefix + suffix` fulfills `condition`.
+
+    >>> # Define a value source
+    >>> def input_source(start):
+    ...     for bf in generate_brute_force(start):
+    ...         yield bytes(bf)
+    >>> # Instantiate a generator
+    >>> generator = input_source([0])
+    >>> # Compute a hash digest whose hex representation starts with '123'
+    >>> condition = lambda g: g.hex().startswith('123')
+    >>> suffix = b'Goodbye, world!'
+    >>> pow_ = compute_prefix(Cryptodome.Hash.SHA1, suffix, condition, generator)
+    >>> print(pow_.hex())
+    0792476f6f646279652c20776f726c6421
+    >>> print(pow_[-15:])
+    b'Goodbye, world!'
+    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
+    12319f09d5cbd7bf26840c9c93842ea180474da4
+
+    :param suffix:        The suffix of the input to `hash_function`.
+    :type suffix:         :class:`bytes`
+    :param hash_function: The hash function to use (e.g. :class:`Crypto.Hash.SHA256.SHA256Hash`).
+    :type hash_function:  All modern and history hash algorithms listed in :doc:`src/hash/hash`.
+    :param input_source:  A generator that creates input values for the hash function. Defaults
+                          to brute force starting at `0`.
+    :type input_source:   :class:`generator`
+    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
+                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
+    :type kwargs:         :class:`dict`
+    :returns:             The computed prefix, such that `hash_function.new(prefix + suffix).digest()`
+                          fulfills `condition`.
+    :rtype:               :class:`bytes`
+    """
     def wrap_input_source():
         for i in input_source:
             yield i + suffix
