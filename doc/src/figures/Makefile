@@ -37,7 +37,7 @@ $(INCLUDEPDFS): %.pdf : %.tex
 	dot -Tpdf "$<" -o "$@"
 
 %.svg: %.pdf
-	inkscape -z -f "$^" -l "$@"
+	[ -x "`which inkscape 2>/dev/null`" ] && inkscape -z -f "$^" -l "$@"
 
 %.png: %.pdf
-	pdftoppm "$<" "$(basename $@)" -png -f 1 -singlefile
+	[ -x "`which pdftoppm 2>/dev/null`" ] && pdftoppm "$<" "$(basename $@)" -png -f 1 -singlefile
