@@ -34,12 +34,13 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`.
    :maxdepth: 4
    :caption: Contents
 
-   rsa/intro.rst
-   lsb_oracle.rst
-   rsa/attack_batch_gcd.rst
+   rsa.rst
+   hash.rst
+   utils.rst
 
-Packages
---------
+
+Package and Module Index
+------------------------
 
 .. toctree::
    :glob:

@@ -40,4 +40,4 @@ $(INCLUDEPDFS): %.pdf : %.tex
 	inkscape -z -f "$^" -l "$@"
 
 %.png: %.pdf
-	convert -density 300 "$<" -quality 90 "$@"
+	pdftoppm "$<" "$(basename $@)" -png -f 1 -singlefile
