@@ -19,6 +19,9 @@ import distutils.core
 
 from unittest.mock import MagicMock
 
+# Install the package
+subprocess.call(['pip', 'install', '-e', '../..', '--no-deps'])
+
 sys.path.insert(0, os.path.abspath('../../cat/'))
 
 # -- Project information -----------------------------------------------------
@@ -204,10 +207,8 @@ apidoc_output_dir = 'modules'
 apidoc_toc_file = False
 apidoc_module_first = True
 apidoc_extra_args = ['-f']
-# Install the package
-subprocess.call(['pip', 'install', '-e', '../..', '--no-deps'])
-# Install package dependencies
 
+# Install package dependencies
 setup_py = distutils.core.run_setup('../../setup.py')
 requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
 print('Installing required modules: {}'.format(requires))
