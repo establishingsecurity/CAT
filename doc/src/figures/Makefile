@@ -16,7 +16,7 @@ DOTSVGS			:= $(DOTPDFS:%.pdf=%.svg)
 DOTPNGS			:= $(DOTPDFS:%.pdf=%.png)
 
 # Targets
-all: $(TEXPDFS) $(TEXSVGS) $(TEXPNGS) $(DOTPDFS) $(DOTSVGS) $(DOTPNGS)
+all: $(TEXPDFS) $(TEXPNGS) $(DOTPDFS) $(DOTPNGS)
 
 clean:
 	rm -rf $(TEXPNGS)
