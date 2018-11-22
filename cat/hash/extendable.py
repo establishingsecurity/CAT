@@ -15,14 +15,14 @@ def load(load_state, input_length):
     length previously given to the hashfunction and returns the a copy of the
     original hash function
 
-    >>> secret = b'TOTALLYSECURE'
-    >>> h1 = SHA256.new(secret)
-    >>> h2 = SHA256.new(pad(secret))
-    >>> h3 = load(h1.digest(), len(secret))
-    >>> h2.update(b'deadbeef')
-    >>> h3.update(b'deadbeef')
-    >>> h2.digest() == h3.digest()
-    True
+    # >>> secret = b'TOTALLYSECURE'
+    # >>> h1 = SHA256.new(secret)
+    # >>> h2 = SHA256.new(pad(secret))
+    # >>> h3 = load(h1.digest(), len(secret))
+    # >>> h2.update(b'deadbeef')
+    # >>> h3.update(b'deadbeef')
+    # >>> h2.digest() == h3.digest()
+    # True
     """
 
     # Swapping groups of four bytes
@@ -86,12 +86,12 @@ def pad(payload):
     - the length of the payload in bit using 8 bytes
     The length of the padded message is, therefore, a multiple of 64 byte
 
-    >>> payload = b'A'*55
-    >>> padded_payload = pad(payload)
-    >>> len(padded_payload) % block_size == 0
-    True
-    >>> padded_payload == b'A'*55 + b'\x80' + b'\x00'*6 + b'\x01\xb8'
-    True
+    # >>> payload = b'A'*55
+    # >>> padded_payload = pad(payload)
+    # >>> len(padded_payload) % block_size == 0
+    # True
+    # >>> padded_payload == b'A'*55 + b'\x80' + b'\x00'*6 + b'\x01\xb8'
+    # True
     """
 
     l = len(payload)
