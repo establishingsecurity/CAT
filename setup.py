@@ -11,7 +11,12 @@ version = '0.0.1'
 #     readme = f.read()
 readme = ''
 
-REQUIRES = ["gmpy2", "pycryptodomex"]
+REQUIRES = [
+    'gmpy2',
+    'pycryptodomex',
+    'typing',
+    'hashpumpy'
+]
 
 setup(
     name='cat',
