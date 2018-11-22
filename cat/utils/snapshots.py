@@ -1,3 +1,4 @@
+import shutil
 from functools import wraps
 from pickle import dumps, load
 from hashlib import sha256
@@ -36,19 +37,28 @@ def long_running(fun):
         return value
     return with_state
 
-def load_snapshot(name, args, kwargs):
+
+def load_snapshot(name, args, kwargs={}):
+    """
+    Loads a snapshot
+    """
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path/str(snap_header)
     if snap_file.is_file():
         with snap_file.open('rb') as f:
             snap = load(f)
-            print(snap)
             return snap
 
 def save_snapshot(name, args, kwargs, value):
+    """
+    Stores a snapshot
+    """
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path/str(snap_header)
     snapshots_path.mkdir(exist_ok=True, parents=True)
     snap = dumps(Snapshot(snap_header, value))
     with snap_file.open('wb') as f:
         f.write(snap)
+
+def clear_snapshots():
+    shutil.rmtree(snapshots_path)
