@@ -212,4 +212,6 @@ setup_py = distutils.core.run_setup('../../setup.py')
 requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
 print('Installing required modules: {}'.format(requires))
 subprocess.call(['pip', 'install'] + requires)
+print('Building figures')
+subprocess.call(['make', '-C', 'figures'])
 

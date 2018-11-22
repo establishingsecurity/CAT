@@ -1,8 +1,3 @@
-"""
-RSA Attacks and Analyses
-========================
-"""
-
 import itertools
 from typing import Callable, NewType, List
 
