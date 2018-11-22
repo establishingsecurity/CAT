@@ -20,7 +20,7 @@ import distutils.core
 from unittest.mock import MagicMock
 
 # Install the package
-subprocess.call(['pip', 'install', '-e', '../..', '--no-deps'])
+subprocess.call(['pip', 'install', '-e', '../..[dev,doc,test]', '--no-deps'])
 
 sys.path.insert(0, os.path.abspath('../../cat/'))
 
