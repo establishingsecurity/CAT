@@ -19,8 +19,27 @@ import distutils.core
 
 from unittest.mock import MagicMock
 
-# Install the package
-subprocess.call(['pip', 'install', '-e', '../..[dev,doc,test]', '--no-deps'])
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+
+# Can't install these modules (e.g. because of C library dependency)
+MOCK_MODULES = ['gmpy2']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+# Install package dependencies
+setup_py = distutils.core.run_setup('../../setup.py')
+extra_requires = list(i for o in setup_py.extras_require.values() for i in o)
+deps = extra_requires + setup_py.install_requires
+requires = list(filter(lambda x: x not in MOCK_MODULES, deps))
+print('Installing required modules: {}'.format(requires))
+subprocess.call(['pip', 'install'] + requires)
+print('Building figures')
+subprocess.call(['make', '-C', 'figures'])
+
+
 
 sys.path.insert(0, os.path.abspath('../../cat/'))
 
@@ -189,17 +208,6 @@ epub_exclude_files = ['search.html']
 #     '.md': CommonMarkParser,
 # }
 
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-
-# Can't install these modules (e.g. because of C library dependency)
-MOCK_MODULES = ['gmpy2']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 # Automatically document all modules
 apidoc_separate_modules = True
 apidoc_module_dir = '../../cat/'
@@ -207,12 +215,4 @@ apidoc_output_dir = 'modules'
 apidoc_toc_file = False
 apidoc_module_first = True
 apidoc_extra_args = ['-f']
-
-# Install package dependencies
-setup_py = distutils.core.run_setup('../../setup.py')
-requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
-print('Installing required modules: {}'.format(requires))
-subprocess.call(['pip', 'install'] + requires)
-print('Building figures')
-subprocess.call(['make', '-C', 'figures'])
 
