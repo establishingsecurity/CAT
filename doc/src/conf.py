@@ -16,13 +16,10 @@ import os
 import sys
 import subprocess
 import distutils.core
-import recommonmark
 
 from unittest.mock import MagicMock
-from recommonmark.parser import CommonMarkParser
-from recommonmark.transform import AutoStructify
 
-sys.path.insert(0, os.path.abspath('../cat/'))
+sys.path.insert(0, os.path.abspath('../../cat/'))
 
 # -- Project information -----------------------------------------------------
 
@@ -31,9 +28,9 @@ copyright = '2018, the open source community'
 author = 'the open source community'
 
 # The short X.Y version
-version = '0.0.1'
+version = '0.0.2'
 # The full version, including alpha/beta/rc tags
-release = '0.0.1-alpha'
+release = '0.0.2-alpha'
 
 # -- General configuration ---------------------------------------------------
 
@@ -51,6 +48,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.apidoc',
 ]
 
 # Links to other documentations
@@ -64,7 +62,7 @@ templates_path = ['templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = '.rst'
-source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
@@ -100,7 +98,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['static']
+html_static_path = ['static', 'figures']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -184,9 +182,9 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
-source_parsers = {
-    '.md': CommonMarkParser,
-}
+# source_parsers = {
+#     '.md': CommonMarkParser,
+# }
 
 
 class Mock(MagicMock):
@@ -200,22 +198,18 @@ MOCK_MODULES = ['gmpy2']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # Automatically document all modules
-subprocess.call(['sphinx-apidoc', '-o', '../cat/'])
+apidoc_separate_modules = True
+apidoc_module_dir = '../../cat/'
+apidoc_output_dir = 'modules'
+apidoc_toc_file = False
+apidoc_module_first = True
+apidoc_extra_args = ['-f']
 # Install the package
-subprocess.call(['pip', 'install', '-e', '..', '--no-deps'])
+subprocess.call(['pip', 'install', '-e', '../..', '--no-deps'])
 # Install package dependencies
 
-setup_py = distutils.core.run_setup('../setup.py')
+setup_py = distutils.core.run_setup('../../setup.py')
 requires = list(filter(lambda x: x not in MOCK_MODULES, setup_py.install_requires))
 print('Installing required modules: {}'.format(requires))
 subprocess.call(['pip', 'install'] + requires)
 
-# At the bottom of conf.py
-def setup(app):
-    app.add_config_value('recommonmark_config', {
-            'url_resolver': lambda url: '/' + url,
-            'auto_toc_tree_section': 'Contents',
-            'enable_math': True,
-            'enable_inline_math': True,
-            }, True)
-    app.add_transform(AutoStructify)
