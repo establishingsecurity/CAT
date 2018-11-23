@@ -199,10 +199,7 @@ def is_hashlib(obj):
     :return: True iff obj is an algorithm from :py:module:`hashlib`.
     """
     algorithms = _MEMBERS['algorithms_guaranteed']
-    for algorithm in algorithms:
-        if _MEMBERS[algorithm] is obj:
-            return True
-    return False
+    return obj in map(lambda x: _MEMBERS[x], algorithms)
 
 
 def hash_pow(alphabet, hash_fn, prefix=b'', suffix=b'', hash_prefix='', hash_suffix='',
