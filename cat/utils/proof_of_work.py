@@ -1,10 +1,73 @@
 """Methods for computing Proof of Works."""
 import re
+import types
 
 from Cryptodome.Hash import SHA1
 
 from cat.utils.compat.utils import hex_str
 from cat.utils.utils import generate_brute_force
+import itertools
+
+
+def generate_with_alphabet(alphabet, prefix=b'', suffix=b'', min_length=1, max_length=None):
+    alphabet = list(set(alphabet))
+    lengths = range(min_length, max_length + 1) if max_length else itertools.count(min_length)
+    for length in lengths:
+        for value in itertools.product(alphabet, repeat=length):
+            yield prefix + bytes(''.join(value), 'utf-8') + suffix
+
+
+def wrap_hashlib(hasher):
+    def _hasher(data):
+        return hasher(data).hexdigest()
+
+    return _hasher
+
+
+def wrap_cryptodome(hasher):
+    def _hasher(byte_str):
+        return hasher.new(byte_str).hexdigest()
+
+    return _hasher
+
+
+def starts_with(prefix):
+    def _starts_with(s):
+        return s.startswith(prefix)
+
+    return _starts_with
+
+
+def ends_with(prefix):
+    def _starts_with(s):
+        return s.startswith(prefix)
+
+    return _starts_with
+
+
+def lor(*fns):
+    """
+    Functionally logical ors the given functions
+
+    >>> lor(starts_with('123'), ends_with('asd'))('asd')
+    True
+    >>> lor(starts_with('123'), ends_with('asd'))('123')
+    True
+    >>> lor(starts_with('123'), ends_with('asd'))('fgh')
+    False
+
+    :param fns: Functions to or
+    :return: False if none of the functions returned a truthy value, the truthy value otherwise.
+    """
+
+    def _f(*args, **kwargs):
+        for f in fns:
+            v = f(*args, **kwargs)
+            if v:
+                return v
+        return False
+
+    return _f
 
 
 def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
@@ -53,7 +116,7 @@ def hash_pow(alphabet, hash_fn, prefix=b'', suffix=b'', hash_prefix='', hash_suf
 
     if type(hash_fn) is types.ModuleType and hash_fn.__package__ == 'Cryptodome.Hash':
         hash_fn = wrap_cryptodome(hash_fn)
-    else if type(hash_fn) is types.BuiltinFunctionType and hash_fn.__module__ == '_hashlib':
+    elif type(hash_fn) is types.BuiltinFunctionType and hash_fn.__module__ == '_hashlib':
         hash_fn = wrap_hashlib(hash_fn)
     if type(hash_fn) is not function:
         raise Exception('Invalid hash function')
