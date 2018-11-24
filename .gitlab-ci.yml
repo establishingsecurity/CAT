@@ -7,6 +7,7 @@ variables:
   DOCKER_DRIVER: overlay2
   BASE_ID: "$CI_REGISTRY_IMAGE/base:$CI_COMMIT_REF_SLUG"
   TEST_ID: "$CI_REGISTRY_IMAGE/test:$CI_COMMIT_REF_SLUG"
+  DOC_ID: "$CI_REGISTRY_IMAGE/doc:$CI_COMMIT_REF_SLUG"
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -14,10 +15,12 @@ before_script:
 pages:
   stage: build
   script:
-    - apk add python3 py3-pip python3-dev gcc make gmp-dev musl-dev mpfr-dev mpc1-dev texlive-full inkscape
-    - pip3 install -r requirements.txt
-    - make -C doc html
-    - mv doc/_build/html/ public/
+    - docker pull $DOC_ID || true
+    - docker build --cache-from $DOC_ID --target doc -t $DOC_ID .
+    - docker push $DOC_ID
+    - docker run --name cat-doc $RUN_ARGS $DOC_ID
+  after_script:
+    - docker cp cat-doc:_build/html/ public/
   artifacts:
     paths:
       - public
