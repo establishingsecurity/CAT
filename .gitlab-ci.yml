@@ -19,8 +19,6 @@ pages:
   artifacts:
     paths:
       - public
-    only:
-      - master
 
 build:
   stage: build
