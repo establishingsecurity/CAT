@@ -55,3 +55,14 @@ test:
   only:
     - dev
     - tags
+
+pages:
+  script:
+    - pip install .
+    - make -C doc html
+    - mv doc/_build/html/ public/
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
