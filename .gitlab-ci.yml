@@ -14,7 +14,7 @@ before_script:
 pages:
   stage: build
   script:
-    - apk add python3 py3-pip python3-dev gcc make gmp-dev musl-dev mpfr-dev mpc1-dev texlive-full
+    - apk add python3 py3-pip python3-dev gcc make gmp-dev musl-dev mpfr-dev mpc1-dev texlive-full inkscape
     - pip3 install -r requirements.txt
     - make -C doc html
     - mv doc/_build/html/ public/
