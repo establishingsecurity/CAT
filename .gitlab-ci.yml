@@ -11,6 +11,17 @@ variables:
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
+pages:
+  script:
+    - pip install .
+    - make -C doc html
+    - mv doc/_build/html/ public/
+  artifacts:
+    paths:
+      - public
+    only:
+      - master
+
 build:
   stage: build
   script:
@@ -56,13 +67,3 @@ test:
     - dev
     - tags
 
-pages:
-  script:
-    - pip install .
-    - make -C doc html
-    - mv doc/_build/html/ public/
-  artifacts:
-    paths:
-    - public
-  only:
-  - master
