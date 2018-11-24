@@ -13,7 +13,8 @@ before_script:
 
 pages:
   script:
-    - pip install .
+    - apt install python3 python3-pip
+    - pip install -r requirements.txt
     - make -C doc html
     - mv doc/_build/html/ public/
   artifacts:
