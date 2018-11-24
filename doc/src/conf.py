@@ -18,10 +18,6 @@ import subprocess
 import distutils.core
 
 
-print('Building figures')
-subprocess.call(['make', '-C', 'figures'])
-
-
 sys.path.insert(0, os.path.abspath('../../cat/'))
 
 # -- Project information -----------------------------------------------------
