@@ -5,6 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SOURCEDIR     = src
+FIGURESDIR    = $(SOURCEDIR)/figures
 BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".
@@ -15,8 +16,10 @@ help:
 
 clean: Makefile
 	rm -rf modules _build
+	$(MAKE) -C $(FIGURESDIR) $@
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
+	$(MAKE) -C $(FIGURESDIR)
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
