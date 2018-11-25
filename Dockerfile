@@ -44,7 +44,7 @@ RUN pip3 install -e ".[dev,test,doc]"
 RUN apt-get update && apt-get install -y \
 	texlive-full \
 	inkscape \
-	poppler \
+	poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
 ADD doc /app/doc
