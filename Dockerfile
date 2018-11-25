@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y \
 	texlive-full \
 	inkscape \
 	poppler-utils \
+	graphviz \
     && rm -rf /var/lib/apt/lists/*
 
 ADD doc /app/doc
