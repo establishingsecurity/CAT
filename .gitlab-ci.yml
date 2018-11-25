@@ -20,7 +20,7 @@ pages:
     - docker push $DOC_ID
     - docker run --name cat-doc $RUN_ARGS $DOC_ID
   after_script:
-    - docker cp cat-doc:_build/html/ public/
+    - docker cp cat-doc:/app/doc/_build/html/ public/
   artifacts:
     paths:
       - public
