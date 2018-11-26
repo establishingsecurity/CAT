@@ -47,7 +47,7 @@ setup(
     install_requires=REQUIRES,
 
     extras_require={
-        'dev': ['ipython'],
+        'dev': ['ipython', 'black', 'isort'],
         'test': ['pytest', 'hypothesis',  'tox', 'pytest-benchmark'],
         'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme']
     }
