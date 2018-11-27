@@ -50,6 +50,6 @@ setup(
         'dev': ['ipython', 'black', 'isort'],
         'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme'],
         'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
-        'test-py3-only': ['pytest-black']
+        'test-formatting': ['pytest-black', 'pytest-isort']
     }
 )
