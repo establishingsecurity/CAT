@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 	libmpfr-dev \
 	libmpc-dev \
 	python3.6 \
+	python3.6-dev \
 	python3-pip \
 	python \
 	python-pip \
