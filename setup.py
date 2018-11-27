@@ -48,7 +48,8 @@ setup(
 
     extras_require={
         'dev': ['ipython', 'black', 'isort'],
-        'test': ['pytest', 'hypothesis',  'tox', 'pytest-benchmark'],
-        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme']
+        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme'],
+        'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
+        'test-py3-only': ['pytest-black']
     }
 )
