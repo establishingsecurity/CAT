@@ -1,19 +1,7 @@
 from Cryptodome.PublicKey import RSA
-from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square
+from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square, floor
 
-from .. import Oracle
-
-def reconstruct_private(pk, p):
-    """
-    Reconstructs the private key from a public key and a factor of the modulus
-    """
-    q = pk.n // p
-    assert p*q == pk.n
-    phi = (p-1)*(q-1)
-    d = int(invert(pk.e, (p-1)*(q-1)))
-    assert pk.e * d % phi == 1
-    return RSA.construct((pk.n, pk.e, d, p, q), consistency_check=True)
-
+from .util import reconstruct_private
 
 def fermat_factoring(pk):
     """
@@ -32,7 +20,7 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    # This is not correct, what we want is ceil(sqrt(pk.n))
+    # FIXME: This is not correct, what we want is ceil(sqrt(pk.n))
     a = isqrt(pk.n)
     bsqr = a*a - pk.n
     while not is_square(bsqr):
@@ -57,38 +45,25 @@ def common_divisor(pk, product):
     p = int(gcd(mpz(pk.n), mpz(product)))
     return reconstruct_private(pk, p)
 
-
-class LSBOracle(Oracle):
+def lsb_oracle(public_key, ciphertext, oracle):
+    # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
     """
-    This class implements an attack against RSA oracles that return the least
-    significant bit of the decrypted ciphertext.
-    It is able to decrypt a single message. This message has to be valid.
-
-    To instantiate it, implement the query method taking an integer and
-    returning the least significant bit returned by the oracle
+    The Least Significant Bit Oracle attack is a simpler variation on
+    Bleichenbacher.
+    
+    It assumes a decryption oracle :math:`LSB(\dot)` that accepts ciphertexts and returns the
+    least significant or parity bit of the decrypted plaintext.
     """
+    mult = powmod(2, public_key.e, public_key.n)
 
-    # TODO: Type this
-    def __init__(self, pk, message):
-        self.pk = pk
-        self.t = mpz(message)
-        self.mult = powmod(2, self.pk.e, self.pk.n)
-
-    def run(self):
-        t = mpz((self.t*self.mult) % self.pk.n)
-        lower = mpfr(0)
-        upper = mpfr(self.pk.n)
-        for i in range(self.pk.n.bit_length()):
-            possible_plaintext = (lower + upper)/2
-            if not self.query(t):
-                upper = possible_plaintext            # plaintext is in the lower half
-            else:
-                lower = possible_plaintext            # plaintext is in the upper half
-            t=(t*self.mult) % self.pk.n
-        return int(upper)
-
-
-
-
-
-
+    t = (ciphertext * mult) % public_key.n
+    lower = mpfr(0)
+    upper = mpfr(public_key.n)
+    for i in range(public_key.n.bit_length()):
+        possible_plaintext = (lower + upper)/2
+        if not oracle(int(t)):
+            upper = possible_plaintext            # plaintext is in the lower half
+        else:
+            lower = possible_plaintext            # plaintext is in the upper half
+        t = (t * mult) % public_key.n
+    return mpz(floor(upper))
