@@ -5,14 +5,14 @@ from pathlib import Path
 import pytest
 
 import cat.config
-from cat.utils.snapshots import long_running, load_snapshot
+from cat.utils.snapshots import long_running, load_snapshot, clear_snapshots
 
 @pytest.fixture()
 def testdir():
     tmpdir = Path(tempfile.mkdtemp())
-    cat.config.snapshots_path = tmpdir
+    cat.config.getcontext().snapshots_path = tmpdir
     yield tmpdir
-    shutil.rmtree(tmpdir)
+    clear_snapshots()
 
 
 def test_long_running_kwargs(testdir):
@@ -26,7 +26,6 @@ def test_long_running_kwargs(testdir):
     v = f(1,2,c=3)
 
     snap = load_snapshot(f.__name__, (1,2), {'c':3})
-    print(cat.config.snapshots_path)
 
     assert snap
     assert snap.value == v
@@ -48,7 +47,6 @@ def test_long_running_no_kwargs(testdir):
     assert snap
     assert snap.value == v
 
-# @pytest.mark.xfail(reason="Testdir is not used by cat")
 def test_long_running_fail(testdir):
     @long_running
     def f(a, b, c=None):
