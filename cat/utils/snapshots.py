@@ -24,6 +24,9 @@ class Snapshot():
 
 
 def long_running(fun):
+    """
+    A word of warning: This is not temporally hyper context sensitive
+    """
     @wraps(fun)
     def with_state(*args, **kwargs):
         # Check if we cached the result
