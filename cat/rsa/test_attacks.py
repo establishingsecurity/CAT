@@ -3,7 +3,7 @@ from binascii import hexlify
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Cipher import PKCS1_v1_5
 from Cryptodome.Util.number import getPrime
-from gmpy2 import powmod, next_prime
+from gmpy2 import powmod, next_prime, mpz
 
 from .attacks import *
 
@@ -49,18 +49,30 @@ def test_common_divisor(key, x, plain):
     assert int(powmod(cipher, sk.d, sk.n)) == plain
 
 
+def test_lsb_oracle_fix(key):
+    plain = 0xdeadbeef
+    assert plain < key.n
+
+    d = mpz(key.d)
+    n = mpz(key.n)
+
+    def oracle(c):
+        return powmod(c, d, n) % 2
+
+    target = powmod(plain, key.e, key.n)
+    assert plain == lsb_oracle(key.publickey(), target, oracle)
+
 @given(integers(min_value=1))
 @settings(deadline=None)
 @pytest.mark.slow
 def test_lsb_oracle(key, plain):
     assume(0 < plain < key.n)
 
-    class TestLSBOracle(LSBOracle):
-        def query(self, m):
-            return powmod(m, key.d, self.pk.n) % 2
+    d = mpz(key.d)
+    n = mpz(key.n)
+
+    def oracle(c):
+        return powmod(c, d, n) % 2
 
     target = powmod(plain, key.e, key.n)
-    o = TestLSBOracle(key.publickey(), target)
-    assert o.run() == plain
-
-
+    assert plain == lsb_oracle(key.publickey(), target, oracle)
