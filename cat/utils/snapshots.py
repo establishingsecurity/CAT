@@ -3,7 +3,7 @@ from functools import wraps
 from pickle import dumps, load
 from hashlib import sha256
 
-from cat.config import snapshots_path
+from cat.config import getcontext
 
 class SnapshotHeader():
     def __init__(self, name, args, kwargs):
@@ -42,6 +42,7 @@ def load_snapshot(name, args, kwargs={}):
     """
     Loads a snapshot
     """
+    snapshots_path = getcontext().snapshots_path
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path/str(snap_header)
     print("Loading from {}".format(snapshots_path))
@@ -50,10 +51,12 @@ def load_snapshot(name, args, kwargs={}):
             snap = load(f)
             return snap
 
+
 def save_snapshot(name, args, kwargs, value):
     """
     Stores a snapshot
     """
+    snapshots_path = getcontext().snapshots_path
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path/str(snap_header)
     snapshots_path.mkdir(exist_ok=True, parents=True)
@@ -62,5 +65,7 @@ def save_snapshot(name, args, kwargs, value):
     with snap_file.open('wb') as f:
         f.write(snap)
 
+
 def clear_snapshots():
+    snapshots_path = getcontext().snapshots_path
     shutil.rmtree(snapshots_path)
