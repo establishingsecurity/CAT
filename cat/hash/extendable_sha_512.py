@@ -26,14 +26,14 @@ def load(load_state, input_length):
     length previously given to the hashfunction and returns the a copy of the
     original hash function
 
-    >>> secret = b'TOTALLYSECURE'
-    >>> h1 = SHA512.new(secret)
-    >>> h2 = SHA512.new(pad(secret))
-    >>> h3 = load(h1.digest(), len(secret))
-    >>> h2.update(b'deadbeef')
-    >>> h3.update(b'deadbeef')
-    >>> h2.digest() == h3.digest()
-    True
+    # >>> secret = b'TOTALLYSECURE'
+    # >>> h1 = SHA512.new(secret)
+    # >>> h2 = SHA512.new(pad(secret))
+    # >>> h3 = load(h1.digest(), len(secret))
+    # >>> h2.update(b'deadbeef')
+    # >>> h3.update(b'deadbeef')
+    # >>> h2.digest() == h3.digest()
+    # True
     """
 
     # calcuate the number of state entries in the buffer
@@ -112,12 +112,12 @@ def pad(payload):
     - the length of the payload in bit using 16 bytes
     The length of the padded message is, therefore, a multiple of 64 byte
 
-    >>> payload = b'A'*111
-    >>> padded_payload = pad(payload)
-    >>> len(padded_payload) % block_size == 0
-    True
-    >>> padded_payload == b'A'*111 + b'\x80' + b'\x00'*14 + b'\x03\x78'
-    True
+    # >>> payload = b'A'*111
+    # >>> padded_payload = pad(payload)
+    # >>> len(padded_payload) % block_size == 0
+    # True
+    # >>> padded_payload == b'A'*111 + b'\x80' + b'\x00'*14 + b'\x03\x78'
+    # True
     """
 
     payload_length = len(payload)
