@@ -47,8 +47,9 @@ setup(
     install_requires=REQUIRES,
 
     extras_require={
-        'dev': ['ipython'],
-        'test': ['pytest', 'hypothesis',  'tox', 'pytest-benchmark'],
-        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme']
+        'dev': ['ipython', 'black', 'isort'],
+        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme'],
+        'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
+        'test-formatting': ['pytest-black', 'pytest-isort']
     }
 )
