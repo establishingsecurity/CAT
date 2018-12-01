@@ -9,7 +9,6 @@ from Cryptodome.Hash import (
     BLAKE2s, BLAKE2b,
     SHA1, MD2, MD5, RIPEMD160, keccak
 )
-from unittest.mock import patch
 
 
 from cat.utils import proof_of_work
