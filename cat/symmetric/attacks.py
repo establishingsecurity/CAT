@@ -1,5 +1,7 @@
 from bitstring import BitArray
 
+from cat.symmetric.util import *
+
 
 def cbc_padding_oracle(iv, target, oracle):
     """
@@ -46,19 +48,21 @@ def cbc_padding_oracle_length(iv, target, oracle):
     This is the length determination part of the CBC Padding Oracle attack.
     It returns the actual length of the plaintext
     """
+    block_length = len(iv)
     ciphertext_length = len(target) * len(iv)
     if len(target) >= 2:
-        iv_bytes = BitArray(bytes=target[-2], length=len(iv) * 8)
+        iv_bytes = target[-2]
     else:
-        iv_bytes = BitArray(bytes=iv, length=len(iv) * 8)
-
-    guess = BitArray(int=0x01, length=len(iv) * 8)
+        iv_bytes = iv
 
     # Slide the error term to the left byte by byte
-    for p in range(1, 17):
-        iv_guess = iv_bytes ^ (guess << (p * 8))
-        if oracle(iv_guess.tobytes(), target[-1]):
+    # We begin at position -2 because we expect at least one byte of padding in
+    # the last block
+    for p in range(2, block_length+1):
+        # Guess the length of the padding is p-1
+        guess_iv = edit_cbc_block(iv_bytes, block_length - p, b'\x00', b'\xff')
+        if oracle(guess_iv, target[-1]):
             # Length is length of the ciphertext minus the length of the padding
-            return ciphertext_length - p
+            return ciphertext_length - (p - 1)
     # If we did not find the length, it must be a whole block of padding
-    return ciphertext_length - len(iv)
+    return ciphertext_length - block_length
