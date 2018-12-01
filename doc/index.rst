@@ -37,6 +37,7 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`.
    src/rsa/intro.rst
    lsb_oracle
    src/rsa/attack_batch_gcd.rst
+   src/hash/length_extension.rst
 
    modules/cat
 
