@@ -31,7 +31,12 @@ def test_cbc_padding_oracle_single():
     recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
     assert plaintext == recovered
 
-@given(binary(min_size=16, max_size=16), binary(min_size=16, max_size=16), binary(min_size=16, max_size=16))
+
+@given(
+    binary(min_size=16, max_size=16),
+    binary(min_size=16, max_size=16),
+    binary(min_size=16, max_size=16),
+)
 def test_cbc_padding_oracle_full_block(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
@@ -51,7 +56,12 @@ def test_cbc_padding_oracle_full_block(key, base_iv, plaintext):
     recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
     assert plaintext == recovered
 
-@given(binary(min_size=16, max_size=16), binary(min_size=16, max_size=16), binary(min_size=0, max_size=32))
+
+@given(
+    binary(min_size=16, max_size=16),
+    binary(min_size=16, max_size=16),
+    binary(min_size=0, max_size=32),
+)
 def test_cbc_padding_oracle_arbitrary(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
@@ -71,7 +81,12 @@ def test_cbc_padding_oracle_arbitrary(key, base_iv, plaintext):
     recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
     assert plaintext == recovered
 
-@given(binary(min_size=16, max_size=16), binary(min_size=16, max_size=16), binary(min_size=0, max_size=32))
+
+@given(
+    binary(min_size=16, max_size=16),
+    binary(min_size=16, max_size=16),
+    binary(min_size=0, max_size=32),
+)
 def test_cbc_padding_oracle_length(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
@@ -90,7 +105,12 @@ def test_cbc_padding_oracle_length(key, base_iv, plaintext):
 
     assert len(plaintext) == cbc_padding_oracle_length(base_iv, ciphertext, oracle)
 
-@given(binary(min_size=32, max_size=32), binary(min_size=16, max_size=16), binary(min_size=0, max_size=32))
+
+@given(
+    binary(min_size=32, max_size=32),
+    binary(min_size=16, max_size=16),
+    binary(min_size=0, max_size=32),
+)
 def test_cbc_padding_oracle_length_256(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 

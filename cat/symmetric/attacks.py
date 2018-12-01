@@ -23,7 +23,7 @@ def cbc_padding_oracle(iv, target, oracle):
     for iv_block, target_block in zip(ciphertext[:-2], ciphertext[1:-1]):
         plaintext_block = BitArray(int=0x0, length=block_length * 8)
         for i in range(1, block_length + 1):
-            pos_bit = (i-1) * 8
+            pos_bit = (i - 1) * 8
             for guess in range(0, 256):
                 pad_bytes = BitArray(
                     bytes=(
@@ -36,7 +36,9 @@ def cbc_padding_oracle(iv, target, oracle):
                 iv_guess = iv_bytes ^ guess_bytes ^ pad_bytes ^ plaintext_block
                 # import ipdb; ipdb.set_trace()
                 if oracle(iv_guess.tobytes(), target_block):
-                    plaintext_block.overwrite(BitArray(int=guess, length=8), (block_length*8) - (i*8))
+                    plaintext_block.overwrite(
+                        BitArray(int=guess, length=8), (block_length * 8) - (i * 8)
+                    )
                     break
 
         plaintext.append(plaintext_block.tobytes()[::-1])
@@ -58,9 +60,9 @@ def cbc_padding_oracle_length(iv, target, oracle):
     # Slide the error term to the left byte by byte
     # We begin at position -2 because we expect at least one byte of padding in
     # the last block
-    for p in range(2, block_length+1):
+    for p in range(2, block_length + 1):
         # Guess the length of the padding is p-1
-        guess_iv = edit_cbc_block(iv_bytes, block_length - p, b'\x00', b'\xff')
+        guess_iv = edit_cbc_block(iv_bytes, block_length - p, b"\x00", b"\xff")
         if oracle(guess_iv, target[-1]):
             # Length is length of the ciphertext minus the length of the padding
             return ciphertext_length - (p - 1)
