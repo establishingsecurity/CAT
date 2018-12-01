@@ -1,5 +1,6 @@
 from bitstring import BitArray
 
+
 def block_chunks(text, block_size):
     """
     Collects the blocks from a ciphertext or padded plaintext and returns a list of it
@@ -10,7 +11,7 @@ def block_chunks(text, block_size):
     if len(text) % block_size != 0:
         return None
     for i in range(0, len(text), block_size):
-        yield text[i:i+block_size]
+        yield text[i : i + block_size]
 
 
 def edit_cbc_block(pre, position, from_value, to_value):
@@ -27,7 +28,7 @@ def edit_cbc_block(pre, position, from_value, to_value):
     from_value = BitArray(bytes=from_value)
     to_value = BitArray(bytes=to_value)
 
-    delta = BitArray(length=block_size*8)
-    delta.overwrite(from_value ^ to_value, position*8)
+    delta = BitArray(length=block_size * 8)
+    delta.overwrite(from_value ^ to_value, position * 8)
 
     return (pre ^ delta).tobytes()
