@@ -42,6 +42,12 @@ CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 FROM base as doc
 
 RUN pip3 install -e ".[dev,test,doc]"
+RUN apt-get update && apt-get install -y \
+	texlive-full \
+	inkscape \
+	poppler-utils \
+	graphviz \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD doc /app/doc
 

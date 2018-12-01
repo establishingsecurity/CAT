@@ -48,7 +48,7 @@ setup(
 
     extras_require={
         'dev': ['ipython', 'black', 'isort'],
-        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme'],
+        'doc': ['sphinx', 'sphinx_rtd_theme', 'sphinxcontrib-apidoc'],
         'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
         'test-formatting': ['pytest-black', 'pytest-isort']
     }
