@@ -29,12 +29,4 @@ def test_length_extension_attack_sha256(secret, original_data, data_to_add):
     assert message.endswith(data_to_add)
     pad = message[len(original_data):-len(data_to_add)]
     assert original_data + pad + data_to_add == message
-    print(f'sha256="{h}"')
-    print(f'secret={secret}')
-    print(f'original_data={original_data}')
-    print(f'data_to_add={data_to_add}')
-    print(f'digest="{digest}"')
-    print(f'message={message}')
-    print(f'pad={pad}')
-    print()
     assert SHA256.new(secret + message).hexdigest() == digest
