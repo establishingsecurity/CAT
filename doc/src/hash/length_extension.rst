@@ -98,9 +98,13 @@ In fact for Merkle-Damgård constructions, when we know :math:`m` and the length
 We need to know the length of :math:`k` to pad the message correctly during hashing.
 
 .. glossary::
+
    MAC
+
       Message Authentication Code. Enables symmetric authentication and verification of messages. In contrast to cryptographic hash functions, MACs are keyed, and provide entirely different properties.
+
    IV
+
       `Initialization Vector`_
 
       .. _`Initialization Vector`: https://en.wikipedia.org/wiki/Initialization_vector
