@@ -6,15 +6,16 @@ import random
 
 from gmpy2 import mpz
 
-from cat.rsa.batch_gcd import compute_product
-from cat.rsa.batch_gcd import _compute_product_0, _compute_product_1
-from cat.rsa.batch_gcd import build_product_tree
-from cat.rsa.batch_gcd import _build_product_tree_0, _build_product_tree_1
-from cat.rsa.batch_gcd import build_remainder_tree
-from cat.rsa.batch_gcd import _build_remainder_tree_0
-from cat.rsa.batch_gcd import compute_remainders
-from cat.rsa.batch_gcd import attack_batch_gcd
-from cat.rsa.batch_gcd import _attack_batch_gcd_0, _attack_batch_gcd_1
+from cat.rsa.batch_gcd import (compute_product,
+                               _compute_product_0, _compute_product_1,
+                               build_product_tree,
+                               _build_product_tree_0, _build_product_tree_1,
+                               build_remainder_tree,
+                               _build_remainder_tree_0,
+                               compute_remainders,
+                               attack_batch_gcd,
+                               _attack_batch_gcd_0, _attack_batch_gcd_1
+                               )
 
 
 compute_product_list = [compute_product, _compute_product_0, _compute_product_1]

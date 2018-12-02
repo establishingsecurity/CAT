@@ -25,8 +25,8 @@ def generate_brute_force(start):
     ...
     >>> print(guess)
     [1, 0]
-    >>> print(bytes(guess))
-    b'\\x01\\x00'
+    >>> print(bytearray(guess))
+    bytearray(b'\\x01\\x00')
 
     :param start:       A start value for the brute force attempt.
     :type start:        :class:`list` [:class:`int`]
@@ -41,10 +41,10 @@ def generate_brute_force(start):
         return (carry, sum_)
 
     while True:
-        val = start.copy()
+        val = list(start)
         yield val
         carry = 0
-        for i in range(length-1, -1, -1):
+        for i in range(length - 1, -1, -1):
             carry, start[i] = next_value(start[i], carry)
             if not carry:
                 break

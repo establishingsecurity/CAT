@@ -1,23 +1,10 @@
 """Methods for computing Proof of Works."""
-import os
 import re
-import Cryptodome
 
-from Cryptodome import Hash
-from multiprocessing import Process, Queue
+from Cryptodome.Hash import SHA1
 
+from cat.utils.compat.utils import hex_str
 from cat.utils.utils import generate_brute_force
-
-
-def _guess(compute, condition, guesses, correct_guesses, **kwargs):
-    while correct_guesses.empty():
-        try:
-            guess = guesses.get(timeout=1)
-            if condition(compute(guess, **kwargs)):
-                correct_guesses.put(guess)
-                return
-        except Queue.Empty:
-            pass
 
 
 def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
@@ -32,15 +19,9 @@ def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a hash digest whose hex representation ends with '123'
-    >>> condition = lambda g: g.hex().endswith('123')
+    >>> condition = lambda g: hex_str(g).endswith('123')
     >>> prefix = b'Hello, world!'
-    >>> pow_ = compute_suffix(Cryptodome.Hash.SHA1, prefix, condition, generator)
-    >>> print(pow_.hex())
-    48656c6c6f2c20776f726c642109f2
-    >>> print(pow_[:13])
-    b'Hello, world!'
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    af480840fd76a7371ac29988b4b62eba1516f123
+    >>> guess = compute_suffix(SHA1, prefix, condition, generator)
 
     :param prefix:        The prefix of the input to `hash_function`.
     :type prefix:         :class:`bytes`
@@ -55,9 +36,11 @@ def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
                           fulfills `condition`.
     :rtype:               :class:`bytes`
     """
+
     def wrap_input_source():
         for i in input_source:
             yield prefix + i
+
     return compute(hash_function, condition, wrap_input_source(), **kwargs)
 
 
@@ -73,15 +56,9 @@ def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a hash digest whose hex representation starts with '123'
-    >>> condition = lambda g: g.hex().startswith('123')
+    >>> condition = lambda g: hex_str(g).startswith('123')
     >>> suffix = b'Goodbye, world!'
-    >>> pow_ = compute_prefix(Cryptodome.Hash.SHA1, suffix, condition, generator)
-    >>> print(pow_.hex())
-    0792476f6f646279652c20776f726c6421
-    >>> print(pow_[-15:])
-    b'Goodbye, world!'
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    12319f09d5cbd7bf26840c9c93842ea180474da4
+    >>> guess = compute_prefix(SHA1, suffix, condition, generator)
 
     :param suffix:        The suffix of the input to `hash_function`.
     :type suffix:         :class:`bytes`
@@ -97,9 +74,11 @@ def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
                           fulfills `condition`.
     :rtype:               :class:`bytes`
     """
+
     def wrap_input_source():
         for i in input_source:
             yield i + suffix
+
     return compute(hash_function, condition, wrap_input_source(), **kwargs)
 
 
@@ -111,26 +90,18 @@ def compute_with_pattern(hash_function, pattern, input_source, **kwargs):
     >>> def input_source(init):
     ...     for bf in generate_brute_force(init):
     ...         yield bytes(bf)
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'^1{h}1$', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    0d
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    11f4de6b8b45cf8051b1d17fa4cde9ad935cea41
+    >>> guess = compute_with_pattern(SHA1, r'^1{h}1$', input_source([0]))
+    >>> digest = SHA1.new(guess).hexdigest()
+    >>> assert digest[0] == '1' and digest[-1] == '1'
 
     >>> # Compute a digest with '123' somewhere
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'{h}123{h}', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    0178
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    754da6b34a4b1c42f5aa7ef08123ca5b5ac72f03
+    >>> guess = compute_with_pattern(SHA1, r'{h}123{h}', input_source([0]))
+    >>> digest = SHA1.new(guess).hexdigest()
+    >>> assert '123' in digest
 
     >>> # Compute a digest with '1', '2' and '3' separated by at least one
     >>> # value in-between
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'{h}1{h}2{h}3{h}', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    00
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    5ba93c9db0cff93f52b521d7420e43f6eda2784f
+    >>> guess = compute_with_pattern(SHA1, r'{h}1{h}2{h}3{h}', input_source([0]))
 
     :param pattern:       The regex pattern that the resulting digest should conform to.
                           You can insert '{h}' wherever you want non fixed values, or '{h_}'
@@ -162,9 +133,9 @@ def compute_with_pattern(hash_function, pattern, input_source, **kwargs):
     if block_size and len(pattern.replace('{h}', '').replace('{h_}', '')) >= block_size:
         raise Exception('Your pattern must be smaller than the block size of ' +
                         '{} (or you already know what your hash looks like)'.format(
-                        hash_function))
+                            hash_function))
     p = re.compile(pattern.format(h=r'\w+', h_=r'\w*'))
-    match = lambda x: p.match(x.hex())
+    match = lambda x: p.match(hex_str(x))
     return compute(hash_function, match, input_source, **kwargs)
 
 
@@ -179,12 +150,10 @@ def compute(hash_function, condition, input_source, **kwargs):
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a digest with '123' somewhere
-    >>> condition = lambda d: '123' in d.hex()
-    >>> pow_ = compute(Cryptodome.Hash.SHA1, condition, generator)
-    >>> print(pow_.hex())
-    0178
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    754da6b34a4b1c42f5aa7ef08123ca5b5ac72f03
+    >>> condition = lambda d: '123' in hex_str(d)
+    >>> 
+    >>> guess = compute(SHA1, condition, generator)
+    >>> assert '123' in SHA1.new(data=guess).hexdigest()
 
     :param condition:     A function checking whether a given hexdigest fulfills the proof of
                           work condition.
@@ -200,31 +169,10 @@ def compute(hash_function, condition, input_source, **kwargs):
                           specified by `condition` when used as input for `hash_function.new`.
     :rtype:               :class:`bytes`
     """
+
     def _compute_digest(data, **kwargs):
         return hash_function.new(data=data, **kwargs).digest()
 
-    correct_guesses = Queue()
-    guesses = Queue(maxsize=500)
-    procs = []
-    cpus = os.cpu_count()
-
-    for i in range(0, cpus):
-        args = (_compute_digest, condition, guesses, correct_guesses)
-        proc = Process(target=_guess, args=args, kwargs=kwargs)
-        procs.append(proc)
-        proc.start()
-
-    while correct_guesses.empty():
-        guesses.put(next(input_source), timeout=5)
-
-    correct_guess = correct_guesses.get()
-
-    for proc in procs:
-        proc.join()
-
-    guesses.close()
-    guesses.join_thread()
-    correct_guesses.close()
-    correct_guesses.join_thread()
-
-    return correct_guess
+    for guess in input_source:
+        if condition(_compute_digest(guess, **kwargs)):
+            return guess
