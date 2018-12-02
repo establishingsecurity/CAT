@@ -9,4 +9,3 @@
    :glob:
 
    hash/length_extension.rst
-   hash/*
