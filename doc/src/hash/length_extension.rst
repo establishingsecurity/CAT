@@ -55,8 +55,9 @@ Given a fixed-length collision resistant compression function :math:`h: \{0,1\}^
 #. Append a 1 bit at the end of the message
 #. Pad the input with zeros to a multiple of :math:`n`.
 #. Append a block containing the :math:`n` bit representation of the message length (or add it in the padding block, if there are at least :math:`n` padding bits)
-#. Set :math:`z_0 = \IV = 0^n` (the :term:`IV` may be arbitrary)
-#. For each block :math:`i` compute :math:`z_i = h(z_{i-1}\|x_i)`
+#. Set :math:`z = \IV = 0^n` (the :term:`IV` may be arbitrary)
+#. For each block :math:`i` set :math:`z = h(z_{i-1}\|x_i)`
+#. Output :math:`z`
 
 .. image:: ../figures/merkle_damgard.*
    :width: 100 %
