@@ -15,7 +15,9 @@ REQUIRES = [
     'gmpy2',
     'pycryptodomex',
     'typing',
-    'hashpumpy @ https://github.com/bwall/HashPump/tarball/master'
+    'hashpumpy @ https://github.com/bwall/HashPump/tarball/master',
+    'dask',
+    'distributed',
 ]
 
 setup(
@@ -52,8 +54,9 @@ setup(
     install_requires=REQUIRES,
 
     extras_require={
-        'dev': ['ipython'],
-        'test': ['pytest', 'hypothesis',  'tox', 'pytest-benchmark'],
-        'doc': ['sphinx', 'sphinx_rtd_theme', 'sphinxcontrib-apidoc']
+        'dev': ['ipython', 'black', 'isort'],
+        'doc': ['sphinx', 'sphinx_rtd_theme', 'sphinxcontrib-apidoc'],
+        'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
+        'test-formatting': ['pytest-black', 'pytest-isort']
     }
 )
