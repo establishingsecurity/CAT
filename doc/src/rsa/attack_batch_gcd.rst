@@ -1,5 +1,5 @@
-Batch GCD attack on RSA
-=======================
+Batch GCD
+=========
 
 .. note::
 
