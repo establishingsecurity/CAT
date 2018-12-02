@@ -11,7 +11,13 @@ version = '0.0.1'
 #     readme = f.read()
 readme = ''
 
-REQUIRES = ['gmpy2', 'pycryptodomex', 'typing']
+REQUIRES = [
+    'gmpy2',
+    'pycryptodomex',
+    'typing',
+    'dask',
+    'distributed'
+]
 
 setup(
     name='cat',
@@ -47,8 +53,9 @@ setup(
     install_requires=REQUIRES,
 
     extras_require={
-        'dev': ['ipython'],
-        'test': ['pytest', 'hypothesis',  'tox', 'pytest-benchmark'],
-        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme']
+        'dev': ['ipython', 'black', 'isort'],
+        'doc': ['sphinx', 'sphinx_rtd_theme', 'sphinxcontrib-apidoc'],
+        'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
+        'test-formatting': ['pytest-black', 'pytest-isort']
     }
 )
