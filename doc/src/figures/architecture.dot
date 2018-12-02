@@ -1,0 +1,77 @@
+digraph G {
+    node [style=filled, fillcolor=moccasin];
+
+    graph [nodesep="0.5", ranksep="1.5", compound=true, fillcolor=transparent];
+    subgraph cluster_lib {
+	style=filled;
+	fillcolor=ghostwhite;
+	subgraph cluster_rsa {
+		rsa [label="RSA"];
+		rsaanalysis [label="Analysis", fillcolor=darkseagreen1];
+		rsaattacks [label="Attacks", fillcolor=darkslategray2];
+		rsa -> rsaanalysis;
+		rsa -> rsaattacks;
+		label = "RSA";
+	}
+
+	subgraph cluster_eg {
+		eg [label="ElGamal"];
+		eganalysis [label="Analysis", fillcolor=darkseagreen1];
+		eg -> eganalysis;
+		label = "ElGamal";
+	}
+	subgraph cluster_dh {
+		dh [label="DH"];
+		dhanalysis [label="Analysis", fillcolor=darkseagreen1];
+		dh -> dhanalysis;
+		label = "Diffie Hellman";
+	}
+	subgraph cluster_ecdh {
+		ecdh [label="ECDH"];
+		ecdhanalysis [label="Analysis", fillcolor=darkseagreen1];
+		ecdh -> ecdhanalysis;
+		label = "Elliptic Curve Diffie Hellman";
+	}
+	subgraph cluster_lcg {
+		lcg [label="LCG"];
+		lcgattacks [label="Attacks", fillcolor=darkslategray2];
+		lcg -> lcgattacks;
+		label = "Linear Congruential Generators";
+	}
+
+	subgraph cluster_sym {
+		sym [label="Sym"];
+		symanalysis [label="Analysis", fillcolor=darkseagreen1];
+		symattacks [label="Attacks", fillcolor=darkslategray2];
+		sym -> symanalysis;
+		sym -> symattacks;
+		label = "Symmetric";
+	}
+	libentry [style = invis];
+	libentry -> rsa [ style = invis ];
+	libentry -> eg [ style = invis ];
+	libentry -> dh [ style = invis ];
+	libentry -> ecdh [ style = invis ];
+	libentry -> lcg [ style = invis ];
+	libentry -> sym [ style = invis ];
+
+	config [label = "Config", fillcolor=slategray3];
+	util [label = "Utils", fillcolor=slategray3];
+	rsaattacks -> util [ltail=cluster_rsa];
+	/* rsaanalysis -> util [ltail=cluster_rsa]; */
+	eganalysis -> util [ltail=cluster_eg];
+	dhanalysis -> util [ltail=cluster_dh];
+	ecdhanalysis -> util [ltail=cluster_ecdh];
+	lcgattacks -> util [ltail=cluster_lcg];
+	symattacks -> util [ltail=cluster_sym];
+	/* symanalysis -> util [ltail=cluster_sym]; */
+	label = "Library";
+    }
+
+    cli [label = "CLI", fillcolor=plum1];
+    cli -> libentry[lhead=cluster_lib];
+
+    exp [label = "Exploit", shape="doublecircle", fillcolor=plum1];
+    exp -> libentry[lhead=cluster_lib];
+
+}
