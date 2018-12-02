@@ -8,4 +8,4 @@
 .. toctree::
    :glob:
 
-   modules/cat.hash.rst
+   hash/length_extension.rst
