@@ -21,6 +21,8 @@ pages:
     - docker run --name cat-doc $RUN_ARGS $DOC_ID
   after_script:
     - docker cp cat-doc:/app/doc/_build/html/ public/
+  only:
+    - master
   artifacts:
     paths:
       - public
