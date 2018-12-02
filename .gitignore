@@ -1,3 +1,6 @@
+# Dask
+dask-worker-space/
+
 # Figure outputs
 doc/figures/*.pdf
 doc/figures/*.png
