@@ -93,8 +93,6 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 #
 html_theme_options = {
-    # Set the name of the project to appear in the sidebar
-    "project_nav_name": "Crypto Attack Toolkit",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

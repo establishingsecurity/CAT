@@ -95,8 +95,30 @@ Let's try to construct a MAC using a Merkle-Damgård hash function :math:`H_{\IV
    \end{align*}
 
 This theoretical gap translates to a practical attack on the constructed insecure MAC.
-In fact for Merkle-Damgård constructions, when we know :math:`m` and the length of :math:`k`, we may append another block and compute :math:`\Mac_k(\pad(m) \| m') = H_{0^n}(\pad(m)\|m') = H_{\pad(m)}(m')`.
+In fact for Merkle-Damgård constructions, when we know the length of :math:`m\|k`, we may append a message :math:`m'` and compute :math:`\Mac_k(\pad(m) \| m') = H_{0^n}(pad(k\|m)\|m') = H_{\pad(k\|m)}(m')`.
 We need to know the length of :math:`k` to pad the message correctly during hashing.
+
+Example
+-------
+
+We expose the excellent hashpumpy_ library:
+
+.. _hashpumpy: https://github.com/bwall/HashPump/
+
+.. testcode ::
+
+   from cat.hash import hashpump
+   from hashlib import sha1
+   key = b'secret'
+   message = b'message'
+   digest = sha1(key + message).hexdigest()
+   to_add = b'hello world'
+
+   new_digest, new_message = hashpump(digest, message, to_add, len(key))
+
+   assert sha1(key + new_message).hexdigest() == new_digest
+   assert new_message.endswith(to_add)
+   assert new_message.startswith(message)
 
 .. glossary::
 
