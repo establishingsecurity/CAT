@@ -57,8 +57,8 @@ def build_product_tree(xs):
         - Provide an example
         - Describe the inputs
         - Think about returned value for the empty list input. It is currently
-        [[0]] because the default value for product of empty list is 0. This
-        value will also affect build_remainder_tree below.
+          [[0]] because the default value for product of empty list is 0. This
+          value will also affect build_remainder_tree below.
     """
 
     return _build_product_tree_0(xs)
