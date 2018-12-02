@@ -8,7 +8,7 @@ Bleichenbacher.
 It assumes a decryption oracle :math:`LSB(\cdot)` that accepts ciphertexts and returns the
 least significant or parity bit of the decrypted plaintext.
 
-This oracle leaks at least one bit of the plaintext, but can be used to reveal the whole plaintext using the multplicative homomorphic property of RSA.
+This oracle leaks at least one bit of the plaintext, but can be used to reveal the whole plaintext using the multiplicative homomorphic property of RSA.
 
 =========
 Intuition
@@ -39,7 +39,7 @@ Depending on the two bits revealed so far we get:
 
 We can reformulate this as a tree:
 
-.. image:: figures/lsb_tree.*
+.. image:: ../figures/lsb_tree.*
    :width: 100 %
 
 The attack works by binary searching this tree and getting stricter bounds on
