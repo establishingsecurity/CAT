@@ -15,8 +15,9 @@ REQUIRES = [
     'gmpy2',
     'pycryptodomex',
     'typing',
+    'hashpumpy @ https://github.com/bwall/HashPump/tarball/master',
     'dask',
-    'distributed'
+    'distributed',
 ]
 
 setup(
