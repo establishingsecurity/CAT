@@ -1,140 +1,274 @@
 """Methods for computing Proof of Works."""
-import os
+import hashlib
+import inspect
 import re
-import Cryptodome
+import types
+import itertools
 
-from Cryptodome import Hash
-from multiprocessing import Process, Queue
-
+from cat.utils.compat.utils import hex_str
 from cat.utils.utils import generate_brute_force
+from typing import TypeVar, Callable, Iterator
 
 
-def _guess(compute, condition, guesses, correct_guesses, **kwargs):
-    while correct_guesses.empty():
-        try:
-            guess = guesses.get(timeout=1)
-            if condition(compute(guess, **kwargs)):
-                correct_guesses.put(guess)
-                return
-        except Queue.Empty:
-            pass
-
-
-def compute_suffix(hash_function, prefix, condition, input_source, **kwargs):
+def generate_with_alphabet(alphabet, prefix=b'', suffix=b'', min_length=0, max_length=None):
     """
-    Compute a `suffix` for the given `prefix` and `input_source`, such that the resulting hash
-    digest satisfies the given `condition`.
+    Generator returning strings of all possible combinations of letters from the given :attr:`alphabet`
+    of length :math:`i`, where :math:`\mathit{min\_length} \leq i \leq \mathit{max\_length}`.
 
-    >>> # Define a value source
-    >>> def input_source(start):
-    ...     for bf in generate_brute_force(start):
-    ...         yield bytes(bf)
-    >>> # Instantiate a generator
-    >>> generator = input_source([0])
-    >>> # Compute a hash digest whose hex representation ends with '123'
-    >>> condition = lambda g: g.hex().endswith('123')
-    >>> prefix = b'Hello, world!'
-    >>> pow_ = compute_suffix(Cryptodome.Hash.SHA1, prefix, condition, generator)
-    >>> print(pow_.hex())
-    48656c6c6f2c20776f726c642109f2
-    >>> print(pow_[:13])
-    b'Hello, world!'
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    af480840fd76a7371ac29988b4b62eba1516f123
+    The :attr:`prefix` and :attr:`suffix` are prepended and appended to each yielded value, respectively.
 
-    :param prefix:        The prefix of the input to `hash_function`.
-    :type prefix:         :class:`bytes`
-    :param hash_function: The hash function to use (e.g. :class:`Crypto.Hash.SHA256.SHA256Hash`).
-    :type hash_function:  All modern and historic hash algorithms listed in :doc:`src/hash/hash`.
-    :param input_source:  A generator that creates input values for the hash function.
-    :type input_source:   :class:`generator`
-    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
-                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
-    :type kwargs:         :class:`dict`
-    :returns:             The computed suffix, such that `hash_function.new(prefix + suffix).digest()`
-                          fulfills `condition`.
-    :rtype:               :class:`bytes`
+    Shorter strings are yielded before longer ones.
+    The order of the returned strings within a single length may change with each run.
+
+    >>> lencmp = lambda x: (len(x), x)
+    >>> sorted(list(generate_with_alphabet('abc', max_length=2)), key=lencmp)
+    [b'a', b'b', b'c', b'aa', b'ab', b'ac', b'ba', b'bb', b'bc', b'ca', b'cb', b'cc']
+
+    >>> sorted(list(generate_with_alphabet('abc', prefix=b'hi', max_length=2)), key=lencmp)
+    [b'hia', b'hib', b'hic', b'hiaa', b'hiab', b'hiac', b'hiba', b'hibb', b'hibc', b'hica', b'hicb', b'hicc']
+
+    :param alphabet: A set of characters
+    :param prefix: A prefix to prepend to the yielded value
+    :param suffix: A suffix to append to the yielded value
+    :param min_length: The minimum length of the returned bytes
+    :param max_length: The maximum length of the returned bytes, or None for unbounded
+    :return: Generator yielding bytes
     """
-    def wrap_input_source():
-        for i in input_source:
-            yield prefix + i
-    return compute(hash_function, condition, wrap_input_source(), **kwargs)
+    alphabet = list(set(alphabet))
+    lengths = range(min_length, max_length + 1) if max_length else itertools.count(min_length)
+    for length in lengths:
+        for value in itertools.product(alphabet, repeat=length):
+            guess = bytes(''.join(value), 'utf-8')
+            yield prefix + guess + suffix, guess
 
 
-def compute_prefix(hash_function, suffix, condition, input_source, **kwargs):
+def wrap_hashlib(hasher, length=None):
     """
-    Compute a `prefix` for the given `suffix`, such that the digest of `hash_function` with an input
-    of `prefix + suffix` fulfills `condition`.
+    Wraps hashlib's functions, returning a function that returns the hex-digest of its input.
 
-    >>> # Define a value source
-    >>> def input_source(start):
-    ...     for bf in generate_brute_force(start):
-    ...         yield bytes(bf)
-    >>> # Instantiate a generator
-    >>> generator = input_source([0])
-    >>> # Compute a hash digest whose hex representation starts with '123'
-    >>> condition = lambda g: g.hex().startswith('123')
-    >>> suffix = b'Goodbye, world!'
-    >>> pow_ = compute_prefix(Cryptodome.Hash.SHA1, suffix, condition, generator)
-    >>> print(pow_.hex())
-    0792476f6f646279652c20776f726c6421
-    >>> print(pow_[-15:])
-    b'Goodbye, world!'
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    12319f09d5cbd7bf26840c9c93842ea180474da4
+    >>> from hashlib import sha1
+    >>> wrap_hashlib(sha1)(b'heyo')
+    'f8bb1031d6d82b30817a872b8a2ec31d5380cee5'
 
-    :param suffix:        The suffix of the input to `hash_function`.
-    :type suffix:         :class:`bytes`
-    :param hash_function: The hash function to use (e.g. :class:`Crypto.Hash.SHA256.SHA256Hash`).
-    :type hash_function:  All modern and history hash algorithms listed in :doc:`src/hash/hash`.
-    :param input_source:  A generator that creates input values for the hash function. Defaults
-                          to brute force starting at `0`.
-    :type input_source:   :class:`generator`
-    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
-                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
-    :type kwargs:         :class:`dict`
-    :returns:             The computed prefix, such that `hash_function.new(prefix + suffix).digest()`
-                          fulfills `condition`.
-    :rtype:               :class:`bytes`
+    :param hasher: A function from :py:module:`hashlib`
+    :return: Function
     """
-    def wrap_input_source():
-        for i in input_source:
-            yield i + suffix
-    return compute(hash_function, condition, wrap_input_source(), **kwargs)
+
+    args = []
+    if length is not None:
+        args = [length]
+
+    def _hasher(data):
+        print(args)
+        return hasher(data).hexdigest(*args)
+
+    return _hasher
 
 
-def compute_with_pattern(hash_function, pattern, input_source, **kwargs):
+def wrap_cryptodome(hasher, **kwargs):
+    """
+    Wraps cryptodome's modules, returning a function that returns the hex-digest of its input.
+
+    >>> from Cryptodome.Hash import SHA1
+    >>> wrap_cryptodome(SHA1)(b'heyo')
+    'f8bb1031d6d82b30817a872b8a2ec31d5380cee5'
+
+    :param hasher: A module from :py:class:`Cryptodome.Hash`
+    :return: Function
+    """
+
+    def _hasher(byte_str):
+        return hasher.new(data=byte_str, **kwargs).hexdigest()
+
+    return _hasher
+
+
+def starts_with(prefix):
+    """
+    Returns a function calling startswith using the given prefix on a given value.
+
+    >>> starts_with('abc')('abc123')
+    True
+    >>> starts_with('123')('abc123')
+    False
+
+    :param prefix: Prefix to check
+    :return: Function
+    """
+
+    def _starts_with(s):
+        return s.startswith(prefix)
+
+    return _starts_with
+
+
+def ends_with(suffix):
+    """
+    Returns a function calling endswith using the given prefix on a given value.
+
+    >>> ends_with('123')('abc123')
+    True
+    >>> ends_with('abc')('abc123')
+    False
+
+    :param suffix: Suffix to check
+    :return: Function
+    """
+
+    def _ends_with(s):
+        return s.endswith(suffix)
+
+    return _ends_with
+
+
+def contains(str):
+    """
+    Returns a function checking if the input contains the given string.
+
+    >>> contains('123')('abc123')
+    True
+    >>> contains('fgh')('abc123')
+    False
+
+    :param str: String that must be contained in the string that's given to the returned function
+    :return: function
+    """
+
+    def _contains(s):
+        return str in s
+
+    return _contains
+
+
+def lor(*fns):
+    """
+    Functionally logical ors the given functions.
+
+    >>> lor(starts_with('123'), ends_with('asd'))('asd')
+    True
+    >>> lor(starts_with('123'), ends_with('asd'))('123')
+    True
+    >>> lor(starts_with('123'), ends_with('asd'))('fgh')
+    False
+
+    :param fns: Functions to or
+    :return: False if none of the functions returned a truthy value, the truthy value otherwise.
+    """
+
+    def _f(*args, **kwargs):
+        for f in fns:
+            v = f(*args, **kwargs)
+            if v:
+                return v
+        return False
+
+    return _f
+
+
+def land(*fns):
+    """
+    Functionally logical ands the given functions.
+
+    >>> lor(starts_with('123'), ends_with('asd'))('123asd')
+    True
+    >>> land(starts_with('123'), ends_with('asd'))('asd')
+    False
+    >>> land(starts_with('123'), ends_with('asd'))('123')
+    False
+
+    :param fns: Functions to and
+    :return: True if all of the functions return a truthy value, otherwise the first falsey value
+    """
+
+    def _f(*args, **kwargs):
+        for f in fns:
+            v = f(*args, **kwargs)
+            if not v:
+                return v
+        return True
+
+    return _f
+
+
+_MEMBERS = dict(inspect.getmembers(hashlib))
+
+
+def is_hashlib(obj):
+    """
+    :param obj: Any object
+    :return: True iff obj is an algorithm from :py:module:`hashlib`.
+    """
+    algorithms = _MEMBERS['algorithms_guaranteed']
+    return obj in map(lambda x: _MEMBERS[x], algorithms)
+
+
+def hash_pow(alphabet, hash_fn, prefix=b'', suffix=b'', hash_prefix='', hash_suffix='',
+             min_length=0, max_length=None, condition=None):
+    """
+    Computes a :math:`g` such that:
+
+    .. math::
+        H_\it{hex}(\mathit{prefix} \| g \| \mathit{suffix}) = \mathit{hash\_prefix} \| \ldots \| \mathit{hash\_suffix}
+
+    Where :math:`H_\it{hex}` is a function returning the hexadecimal digest of its input.
+
+    >>> from Cryptodome.Hash import SHA1
+    >>> response = hash_pow('abc', SHA1, prefix=b'challenge', hash_prefix='fff')
+    >>> assert SHA1.new(b'challenge' + response).hexdigest().startswith('fff')
+
+    :param alphabet: Letters to use in :math:`g`
+    :param hash_fn: Hash function, e.g. hashlib.sha256 or Cryptodome.Hash.SHA256
+                    Accepts arbitrary functions that turn data into a string
+    :param prefix: Prefix prepended to the guess
+    :param suffix: Suffix appended to the guess
+    :param hash_prefix: The resulting digest must start with these bytes
+    :param hash_suffix: The resulting digest must end with these bytes
+    :param condition:   Additional condition the digest must conform to
+    :param min_length: minimum length of :math:`g`
+    :param max_length: maximum length of :math:`g`
+    :return: :math:`g`
+    """
+    hash_condition = land(starts_with(hash_prefix), ends_with(hash_suffix))
+    if condition:
+        hash_condition = land(condition, hash_condition)
+
+    if isinstance(hash_fn, types.ModuleType) and hash_fn.__package__ == 'Cryptodome.Hash':
+        hash_fn = wrap_cryptodome(hash_fn)
+    elif is_hashlib(hash_fn):
+        hash_fn = wrap_hashlib(hash_fn)
+    if not isinstance(hash_fn, types.FunctionType):
+        raise Exception('Invalid hash function')
+    values = generate_with_alphabet(alphabet,
+                                    prefix=prefix, suffix=suffix,
+                                    min_length=min_length, max_length=max_length)
+    return compute(hash_condition, hash_fn, values)[1]
+
+
+def with_pattern(pattern):
     """
     Compute a Proof of Work based on the given pattern.
 
     >>> # Compute a digest that starts and ends with a '1'
-    >>> def input_source(init):
-    ...     for bf in generate_brute_force(init):
-    ...         yield bytes(bf)
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'^1{h}1$', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    0d
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    11f4de6b8b45cf8051b1d17fa4cde9ad935cea41
+    >>> from Cryptodome.Hash import SHA1
+    >>> guess = hash_pow('abc', SHA1, prefix=b'challenge', condition=with_pattern(r'^1{h}1$'))
+    >>> digest = SHA1.new(b'challenge' + guess).hexdigest()
+    >>> assert digest[0] == '1' and digest[-1] == '1'
 
     >>> # Compute a digest with '123' somewhere
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'{h}123{h}', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    0178
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    754da6b34a4b1c42f5aa7ef08123ca5b5ac72f03
+    >>> guess = hash_pow('abc', SHA1, prefix=b'challenge', condition=with_pattern(r'{h}123{h}'))
+    >>> digest = SHA1.new(b'challenge' + guess).hexdigest()
+    >>> assert '123' in digest
 
     >>> # Compute a digest with '1', '2' and '3' separated by at least one
     >>> # value in-between
-    >>> pow_ = compute_with_pattern(Cryptodome.Hash.SHA1, r'{h}1{h}2{h}3{h}', input_source([0]))
-    >>> print(bytes(pow_).hex())
-    00
-    >>> print(Cryptodome.Hash.SHA1.new(data=bytes(pow_)).hexdigest())
-    5ba93c9db0cff93f52b521d7420e43f6eda2784f
+    >>> guess = hash_pow('abc', SHA1, prefix=b'challenge', condition=with_pattern(r'{h}1{h}2{h}3{h}'))
+    >>> digest = SHA1.new(b'challenge' + guess).hexdigest()
+    >>> # Check solution
+    >>> assert re.match(r'.*1.*2.*3.*', digest)
 
     :param pattern:       The regex pattern that the resulting digest should conform to.
-                          You can insert '{h}' wherever you want non fixed values, or '{h_}'
-                          for an optional non fixed value (i.e. '{h_}' can result in '', '{h}'
+                          You can insert '{h}' wherever you want non fixed values, or '{h+}'
+                          for an optional non fixed value (i.e. '{h+}' can result in '', '{h}'
                           reliably results in some character in the digest), which is just
                           r'\w+' and r'\w*' for people who hate regex.
                           The rest of the string is interpreted as a regex pattern. You want
@@ -150,27 +284,33 @@ def compute_with_pattern(hash_function, pattern, input_source, **kwargs):
     :param action:        An action performed on the `base_input` and the values from the
                           `input_source`. Defaults to appending the values to `base_input`.
     :type action:         :class:`function`
-    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
-                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
-    :type kwargs:         :class:`dict`
     :returns:             A bytestring that produces a `hash_function` hexdigest of the form
                           specified by `pattern` when used as input for `hash_function.new`.
                           `suffix`.
     :rtype:               :class:`bytes`
     """
-    block_size = getattr(hash_function, 'block_size', None)
-    if block_size and len(pattern.replace('{h}', '').replace('{h_}', '')) >= block_size:
-        raise Exception('Your pattern must be smaller than the block size of ' +
-                        '{} (or you already know what your hash looks like)'.format(
-                        hash_function))
-    p = re.compile(pattern.format(h=r'\w+', h_=r'\w*'))
-    match = lambda x: p.match(x.hex())
-    return compute(hash_function, match, input_source, **kwargs)
+
+    p = re.compile(pattern.format(**{
+        'h': r'\w+',
+        'h+': r'\w*'
+    }))
+
+    def _with_pattern(s):
+        return p.match(s)
+
+    return _with_pattern
 
 
-def compute(hash_function, condition, input_source, **kwargs):
+ReturnType = TypeVar('ReturnType')
+Guess = TypeVar('Guess')
+Hash = TypeVar('Hash')
+
+
+def compute(condition, fn, values_source):
+    # type: (Callable[[Hash], bool], Callable[[ReturnType], Hash], Iterator[(Guess, ReturnType)]) -> (Guess, ReturnType)
     """
-    Compute a Proof of Work based on the given condition function and input source.
+    Returns the first return-value from the generator where :code:`condition(fn(guess))` returns True.
+
 
     >>> # Define a simple input source
     >>> def input_source(start):
@@ -179,52 +319,21 @@ def compute(hash_function, condition, input_source, **kwargs):
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a digest with '123' somewhere
-    >>> condition = lambda d: '123' in d.hex()
-    >>> pow_ = compute(Cryptodome.Hash.SHA1, condition, generator)
-    >>> print(pow_.hex())
-    0178
-    >>> print(Cryptodome.Hash.SHA1.new(data=pow_).hexdigest())
-    754da6b34a4b1c42f5aa7ef08123ca5b5ac72f03
+    >>> condition = lambda d: '123' in hex_str(d)
+    >>> from Cryptodome.Hash import SHA1
+    >>> guess = compute(SHA1, condition, generator)
+    >>> assert '123' in SHA1.new(data=guess).hexdigest()
 
-    :param condition:     A function checking whether a given hexdigest fulfills the proof of
-                          work condition.
+    :param condition:     A function checking whether a given  fulfills the proof of
     :type condition:      function(x: :class:`bytes`) -> :class:`bool`
-    :param hash_function: The hash function to use (e.g. :class:`Crypto.Hash.SHA256.SHA256Hash`).
-    :type hash_function:  All modern and history hash algorithms listed in :doc:`src/hash/hash`.
+    :param fn:            A function returning a :type:`Hash`
     :param input_source:  A generator that creates input values for the hash function.
     :type input_source:   :class:`generator` -> :class:`bytes`
-    :param kwargs:        Additional keyword arguments that get passed to `hash_function.new`
-                          (e.g. `digest_bytes` for :class:`Crypto.Hash.BLAKE2s`).
-    :type kwargs:         :class:`dict`
     :returns:             A bytestring that produces a `hash_function` hexdigest of the form
                           specified by `condition` when used as input for `hash_function.new`.
     :rtype:               :class:`bytes`
     """
-    def _compute_digest(data, **kwargs):
-        return hash_function.new(data=data, **kwargs).digest()
 
-    correct_guesses = Queue()
-    guesses = Queue(maxsize=500)
-    procs = []
-    cpus = os.cpu_count()
-
-    for i in range(0, cpus):
-        args = (_compute_digest, condition, guesses, correct_guesses)
-        proc = Process(target=_guess, args=args, kwargs=kwargs)
-        procs.append(proc)
-        proc.start()
-
-    while correct_guesses.empty():
-        guesses.put(next(input_source), timeout=5)
-
-    correct_guess = correct_guesses.get()
-
-    for proc in procs:
-        proc.join()
-
-    guesses.close()
-    guesses.join_thread()
-    correct_guesses.close()
-    correct_guesses.join_thread()
-
-    return correct_guess
+    for guess, rv in values_source:
+        if condition(fn(guess)):
+            return guess, rv

@@ -11,7 +11,15 @@ version = '0.0.1'
 #     readme = f.read()
 readme = ''
 
-REQUIRES = ["gmpy2", "pycryptodomex", "bitstring"]
+REQUIRES = [
+    'gmpy2',
+    'pycryptodomex',
+    'typing',
+    'hashpumpy @ https://github.com/bwall/HashPump/tarball/master',
+    'dask',
+    'distributed',
+    'bitstring'
+]
 
 setup(
     name='cat',
@@ -47,8 +55,8 @@ setup(
     install_requires=REQUIRES,
 
     extras_require={
-        'dev': ['ipython', 'black', 'isort', 'ipdb'],
-        'doc': ['sphinx', 'recommonmark', 'sphinx_rtd_theme'],
+        'dev': ['ipython', 'black', 'isort'],
+        'doc': ['sphinx', 'sphinx_rtd_theme', 'sphinxcontrib-apidoc'],
         'test': ['pytest', 'hypothesis', 'tox', 'pytest-benchmark'],
         'test-formatting': ['pytest-black', 'pytest-isort']
     }
