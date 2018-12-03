@@ -1,11 +1,11 @@
-from hypothesis import given, example, assume, settings
-from hypothesis.strategies import binary, integers
-
 from binascii import unhexlify
-from Cryptodome.Cipher import AES
-from Cryptodome.Util.Padding import pad, unpad
 
 import pytest
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import pad, unpad
+from hypothesis import assume, example, given, settings
+from hypothesis.strategies import binary, integers
+
 from cat.symmetric.attacks import *
 from cat.symmetric.util import block_chunks
 
@@ -36,6 +36,11 @@ def test_cbc_padding_oracle_single():
     key=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
     base_iv=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
     plaintext=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+)
+@example(
+    key=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    base_iv=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    plaintext=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x01",
 )
 @given(
     binary(min_size=16, max_size=16),
