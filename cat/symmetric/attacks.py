@@ -24,19 +24,17 @@ def guess_cbc_byte(
     :return: Correct byte of target block at byte_pos
     """
     block_size = len(pre)
-    # TODO: Remove this constraint, it just catches errors in calling
-    assert block_size <= 64
     pre = BitArray(bytes=pre)
 
-    # Generate the padding
-    padding = (block_size - byte_pos).to_bytes(1, byteorder="big") * (
-        block_size - byte_pos
-    )
-    assert len(padding) == (block_size - byte_pos)
-    padding_bytes = BitArray(bytes=b"\x00" * byte_pos + padding)
-    assert len(padding_bytes) == block_size * 8
-
     assert len(rem_plaintext) == (block_size - byte_pos) - 1
+
+    # Generate the padding
+    padding_byte = (block_size - byte_pos).to_bytes(1, byteorder="big")
+    padding = padding_byte * (block_size - byte_pos)
+
+    padding = BitArray(bytes=b"\x00" * byte_pos + padding)
+    assert len(padding) == block_size * 8
+
     rem_plaintext = BitArray(bytes=(b"\x00" * (byte_pos + 1)) + rem_plaintext)
     assert len(rem_plaintext) == block_size * 8
 
@@ -44,18 +42,24 @@ def guess_cbc_byte(
         # Generate the guess
         guess_bytes = BitArray(length=block_size * 8)
         guess_bytes.overwrite(guess, byte_pos * 8)
-        if guess_bytes == padding_bytes:
+
+        # TODO: Proof that this is sound or find a sound alternative
+        # If we query for the last byte, we change the second to last byte to
+        # fix a corner case
+        if byte_pos == block_size - 1:
+            guess_bytes.overwrite(b'\x01', (byte_pos-1)*8)
+
+        if guess_bytes == padding:
             continue
 
-        guess_pre = padding_bytes ^ rem_plaintext ^ guess_bytes ^ pre
-        # import ipdb; ipdb.set_trace()
+        guess_pre = padding ^ rem_plaintext ^ guess_bytes ^ pre
 
         # Something doesn't work here
         if oracle(guess_pre.tobytes(), target_block):
             return guess
 
     # We have hit the condition of guess_bytes == padding_bytes here
-    return padding_bytes.tobytes()[-1].to_bytes(1, byteorder='big')
+    return padding_byte
 
 def cbc_padding_oracle(iv, target, oracle):
     """
