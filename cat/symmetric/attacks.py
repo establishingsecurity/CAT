@@ -47,7 +47,7 @@ def guess_cbc_byte(
         # If we query for the last byte, we change the second to last byte to
         # fix a corner case
         if byte_pos == block_size - 1:
-            guess_bytes.overwrite(b"\x01", (byte_pos - 1) * 8)
+            guess_bytes.overwrite(b"\xff", (byte_pos - 1) * 8)
 
         if guess_bytes == padding:
             continue
