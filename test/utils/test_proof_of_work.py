@@ -1,18 +1,18 @@
 """Tests for the proof-of-work module"""
+import hashlib
 
-import re
 import pytest
-
 from Cryptodome.Hash import (
     SHA224, SHA256, SHA384, SHA512,
     SHA3_224, SHA3_256, SHA3_384, SHA3_512,
     BLAKE2s, BLAKE2b,
     SHA1, MD2, MD5, RIPEMD160, keccak
 )
-from unittest.mock import patch
-
+from hypothesis import given
+from hypothesis.strategies import binary, sampled_from
 
 from cat.utils import proof_of_work
+from cat.utils.proof_of_work import wrap_cryptodome, wrap_hashlib
 from cat.utils.utils import generate_brute_force
 
 
@@ -21,54 +21,74 @@ def input_source(start):
         yield bytes(bf)
 
 
-def test_sha2_hash_functions():
-    hashes = [SHA224, SHA256, SHA384, SHA512]
-
+def hashes_test(hashes, wrapper, test_unwrapped=True, prefix=b'challenge', suffix=b'suffix', **kwargs):
     for hash_function in hashes:
-        condition = lambda d: d.hex().startswith('0')
+        condition = lambda d: d.startswith('0')
+        wrapped = wrapper(hash_function, **kwargs)
+        if test_unwrapped:
+            guess = proof_of_work.hash_pow('alphabet', hash_function, prefix, suffix, condition=condition)
+            digest = wrapped(prefix + guess + suffix)
+            assert condition(digest)
+        guess = proof_of_work.hash_pow('alphabet', wrapped, prefix, suffix, condition=condition)
+        digest = wrapped(prefix + guess + suffix)
+        assert condition(digest)
 
-        generator = input_source([0])
-        pow_ = proof_of_work.compute_prefix(hash_function, b'', condition, generator)
-        pow_ = hash_function.new(data=pow_).digest()
-        assert condition(pow_)
+
+def test_sha2_hash_functions():
+    """Test SHA-2 family"""
+    hashes_test([SHA224, SHA256, SHA384, SHA512], wrap_cryptodome)
 
 
 def test_sha3_hash_functions():
     """Test SHA-3 family"""
-    hashes = [SHA3_224, SHA3_256, SHA3_384, SHA3_512]
-
-    for hash_function in hashes:
-        condition = lambda d: d.hex().startswith('0')
-
-        generator = input_source([0])
-        pow_ = proof_of_work.compute_prefix(hash_function, b'', condition, generator)
-        pow_ = hash_function.new(data=pow_).digest()
-        assert condition(pow_)
+    hashes_test([SHA3_224, SHA3_256, SHA3_384, SHA3_512], wrap_cryptodome)
 
 
 def test_blake2_hash_functions():
-    hashes = [BLAKE2s, BLAKE2b]
-    for hash_function in hashes:
-        condition = lambda d: d.hex().startswith('0')
-
-        generator = input_source([0])
-        pow_ = proof_of_work.compute_prefix(hash_function, b'', condition, generator)
-        pow_ = hash_function.new(data=pow_).digest()
-        assert condition(pow_)
+    hashes_test([BLAKE2s, BLAKE2b], wrap_cryptodome, digest_bytes=32, test_unwrapped=False)
 
 
 def test_legacy_hash_functions():
-    hashes = [SHA1, MD2, MD5, RIPEMD160]
+    hashes_test([SHA1, MD2, MD5, RIPEMD160], wrap_cryptodome)
 
-    for hash_function in hashes:
-        condition = lambda d: d.hex().startswith('0')
 
-        generator = input_source([0])
-        pow_ = proof_of_work.compute_prefix(hash_function, b'', condition, generator)
-        pow_ = hash_function.new(data=pow_).digest()
-        assert condition(pow_)
+def test_keccak():
+    hashes_test([keccak], wrap_cryptodome, digest_bytes=32, test_unwrapped=False)
 
-    generator = input_source([0])
-    pow_ = proof_of_work.compute_prefix(keccak, b'', condition, generator, digest_bytes=32)
-    pow_ = keccak.new(data=pow_, digest_bytes=32).digest()
-    assert condition(pow_)
+
+def test_sha2_hashlib_functions():
+    """Test SHA-2 family"""
+    hashes_test([hashlib.sha224, hashlib.sha256, hashlib.sha384, hashlib.sha512], wrap_hashlib)
+
+
+def test_sha3_hashlib_functions():
+    """Test SHA-3 family"""
+    hashes_test([hashlib.sha3_224, hashlib.sha3_256, hashlib.sha3_384, hashlib.sha3_512], wrap_hashlib)
+
+
+def test_blake2_hashlib_functions():
+    hashes_test([hashlib.blake2s, hashlib.blake2b], wrap_hashlib)
+
+
+def test_legacy_hashlib_functions():
+    hashes_test([hashlib.sha1, hashlib.md5], wrap_hashlib)
+
+
+def test_shake():
+    hashes_test([hashlib.shake_128, hashlib.shake_256], wrap_hashlib, length=32, test_unwrapped=False)
+
+
+@pytest.mark.slow
+@given(binary(), binary(), sampled_from([SHA1, SHA512, SHA3_224, MD5]))
+def test_hypothesis(prefix, suffix, hash_fn):
+    hashes_test([hash_fn], wrap_cryptodome, True, prefix, suffix)
+
+
+@pytest.mark.slow
+@given(binary(), binary(), sampled_from([hashlib.sha1, hashlib.sha512, hashlib.sha3_224, hashlib.md5]))
+def test_hypothesis(prefix, suffix, hash_fn):
+    hashes_test([hash_fn], wrap_hashlib, True, prefix, suffix)
+
+
+def test_is_hashlib():
+    pass
