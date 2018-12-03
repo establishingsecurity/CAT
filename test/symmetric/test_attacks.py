@@ -1,23 +1,22 @@
-from hypothesis import given
-from hypothesis.strategies import binary
+from hypothesis import given, example, assume, settings
+from hypothesis.strategies import binary, integers
 
 from binascii import unhexlify
 from Cryptodome.Cipher import AES
 from Cryptodome.Util.Padding import pad, unpad
 
-from cat.symmetric.attacks import cbc_padding_oracle, cbc_padding_oracle_length
+import pytest
+from cat.symmetric.attacks import *
 from cat.symmetric.util import block_chunks
 
 
 def test_cbc_padding_oracle_single():
-    plaintext = b"\x01" * 31
+    plaintext = pad(b"A" * 30, AES.block_size)
     key = unhexlify("deadbeef" * 4)
     base_iv = unhexlify("beefdead" * 4)
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
-    ciphertext = list(
-        block_chunks(cipher.encrypt(pad(plaintext, AES.block_size)), AES.block_size)
-    )
+    ciphertext = list(block_chunks(cipher.encrypt(plaintext), AES.block_size))
 
     def oracle(iv, ciphertext):
         cipher = AES.new(key, AES.MODE_CBC, iv=iv)
@@ -29,20 +28,27 @@ def test_cbc_padding_oracle_single():
             return False
 
     recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
+    assert len(plaintext) == len(recovered)
     assert plaintext == recovered
 
 
+@example(
+    key=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    base_iv=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    plaintext=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01",
+)
 @given(
     binary(min_size=16, max_size=16),
     binary(min_size=16, max_size=16),
     binary(min_size=16, max_size=16),
 )
-def test_cbc_padding_oracle_full_block(key, base_iv, plaintext):
+@settings(deadline=None)
+@pytest.mark.slow
+def test_guess_cbc_byte(key, base_iv, plaintext):
+    plaintext = pad(plaintext, AES.block_size)
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
-    ciphertext = list(
-        block_chunks(cipher.encrypt(pad(plaintext, AES.block_size)), AES.block_size)
-    )
+    ciphertext = list(block_chunks(cipher.encrypt(plaintext), AES.block_size))
 
     def oracle(iv, ciphertext):
         cipher = AES.new(key, AES.MODE_CBC, iv=iv)
@@ -53,21 +59,62 @@ def test_cbc_padding_oracle_full_block(key, base_iv, plaintext):
         except:
             return False
 
-    recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
-    assert plaintext == recovered
+    for byte_pos in range(len(base_iv)):
+        recovered = guess_cbc_byte(
+            base_iv, ciphertext[0], oracle, byte_pos, plaintext[byte_pos + 1 : 16]
+        )
+        assert recovered == plaintext[byte_pos].to_bytes(1, byteorder="big")
 
 
+@example(
+    key=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    base_iv=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    plaintext=b"\x00",
+)
 @given(
     binary(min_size=16, max_size=16),
     binary(min_size=16, max_size=16),
-    binary(min_size=0, max_size=32),
+    binary(min_size=1, max_size=32),
 )
+@settings(deadline=None)
+@pytest.mark.slow
 def test_cbc_padding_oracle_arbitrary(key, base_iv, plaintext):
+    plaintext = pad(plaintext, AES.block_size)
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
 
-    ciphertext = list(
-        block_chunks(cipher.encrypt(pad(plaintext, AES.block_size)), AES.block_size)
-    )
+    ciphertext = list(block_chunks(cipher.encrypt(plaintext), AES.block_size))
+
+    def oracle(iv, ciphertext):
+        cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+        plaintext = cipher.decrypt(ciphertext)
+        try:
+            unpad(plaintext, AES.block_size)
+            return True
+        except:
+            return False
+
+    recovered = b"".join(list(cbc_padding_oracle(base_iv, ciphertext, oracle)))
+    assert len(plaintext) == len(recovered)
+    assert plaintext == recovered
+
+
+@example(
+    key=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    base_iv=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+    plaintext=b"\x00",
+)
+@given(
+    binary(min_size=32, max_size=32),
+    binary(min_size=16, max_size=16),
+    binary(min_size=1, max_size=32),
+)
+@settings(deadline=None)
+@pytest.mark.slow
+def test_cbc_padding_oracle_arbitrary_256(key, base_iv, plaintext):
+    plaintext = pad(plaintext, AES.block_size)
+    cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
+
+    ciphertext = list(block_chunks(cipher.encrypt(plaintext), AES.block_size))
 
     def oracle(iv, ciphertext):
         cipher = AES.new(key, AES.MODE_CBC, iv=iv)
@@ -85,7 +132,7 @@ def test_cbc_padding_oracle_arbitrary(key, base_iv, plaintext):
 @given(
     binary(min_size=16, max_size=16),
     binary(min_size=16, max_size=16),
-    binary(min_size=0, max_size=32),
+    binary(min_size=1, max_size=32),
 )
 def test_cbc_padding_oracle_length(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
@@ -109,7 +156,7 @@ def test_cbc_padding_oracle_length(key, base_iv, plaintext):
 @given(
     binary(min_size=32, max_size=32),
     binary(min_size=16, max_size=16),
-    binary(min_size=0, max_size=32),
+    binary(min_size=1, max_size=32),
 )
 def test_cbc_padding_oracle_length_256(key, base_iv, plaintext):
     cipher = AES.new(key, AES.MODE_CBC, iv=base_iv)
