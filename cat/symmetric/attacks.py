@@ -47,7 +47,7 @@ def guess_cbc_byte(
         # If we query for the last byte, we change the second to last byte to
         # fix a corner case
         if byte_pos == block_size - 1:
-            guess_bytes.overwrite(b'\x01', (byte_pos-1)*8)
+            guess_bytes.overwrite(b"\x01", (byte_pos - 1) * 8)
 
         if guess_bytes == padding:
             continue
@@ -60,6 +60,7 @@ def guess_cbc_byte(
 
     # We have hit the condition of guess_bytes == padding_bytes here
     return padding_byte
+
 
 def cbc_padding_oracle(iv, target, oracle):
     """
@@ -75,7 +76,7 @@ def cbc_padding_oracle(iv, target, oracle):
     ciphertext = [iv] + target
     for iv_block, target_block in zip(ciphertext[:-1], ciphertext[1:]):
         plaintext_block = b""
-        for byte_pos in range(block_size-1, -1, -1):
+        for byte_pos in range(block_size - 1, -1, -1):
             plaintext_block = (
                 guess_cbc_byte(
                     iv_block, target_block, oracle, byte_pos, plaintext_block
