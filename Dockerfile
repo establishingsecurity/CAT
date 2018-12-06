@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 	python3-pip \
 	python \
 	python-pip \
+	libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
