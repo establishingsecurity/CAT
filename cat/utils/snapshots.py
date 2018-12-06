@@ -1,11 +1,12 @@
 import shutil
 from functools import wraps
-from pickle import dumps, load
 from hashlib import sha256
+from pickle import dumps, load
 
 from cat.config import getcontext
 
-class SnapshotHeader():
+
+class SnapshotHeader:
     def __init__(self, name, args, kwargs):
         self.name = name
         self.args = args
@@ -17,7 +18,7 @@ class SnapshotHeader():
         return h.hexdigest()
 
 
-class Snapshot():
+class Snapshot:
     def __init__(self, header, value):
         self.header = header
         self.value = value
@@ -27,6 +28,7 @@ def long_running(fun):
     """
     A word of warning: This is not temporally hyper context sensitive
     """
+
     @wraps(fun)
     def with_state(*args, **kwargs):
         # Check if we cached the result
@@ -38,6 +40,7 @@ def long_running(fun):
         value = fun(*args, **kwargs)
         save_snapshot(fun.__name__, args, kwargs, value)
         return value
+
     return with_state
 
 
@@ -47,10 +50,10 @@ def load_snapshot(name, args, kwargs={}):
     """
     snapshots_path = getcontext().snapshots_path
     snap_header = SnapshotHeader(name, args, kwargs)
-    snap_file = snapshots_path/str(snap_header)
+    snap_file = snapshots_path / str(snap_header)
     print("Loading from {}".format(snapshots_path))
     if snap_file.is_file():
-        with snap_file.open('rb') as f:
+        with snap_file.open("rb") as f:
             snap = load(f)
             return snap
 
@@ -61,11 +64,11 @@ def save_snapshot(name, args, kwargs, value):
     """
     snapshots_path = getcontext().snapshots_path
     snap_header = SnapshotHeader(name, args, kwargs)
-    snap_file = snapshots_path/str(snap_header)
+    snap_file = snapshots_path / str(snap_header)
     snapshots_path.mkdir(exist_ok=True, parents=True)
     print("Saving to {}".format(snapshots_path))
     snap = dumps(Snapshot(snap_header, value))
-    with snap_file.open('wb') as f:
+    with snap_file.open("wb") as f:
         f.write(snap)
 
 

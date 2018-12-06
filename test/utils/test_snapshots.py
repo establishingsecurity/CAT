@@ -7,6 +7,7 @@ import pytest
 import cat.config
 from cat.utils.snapshots import long_running, load_snapshot, clear_snapshots
 
+
 @pytest.fixture()
 def testdir():
     tmpdir = Path(tempfile.mkdtemp())
@@ -23,13 +24,12 @@ def test_long_running_kwargs(testdir):
         else:
             return a + b + c
 
-    v = f(1,2,c=3)
+    v = f(1, 2, c=3)
 
-    snap = load_snapshot(f.__name__, (1,2), {'c':3})
+    snap = load_snapshot(f.__name__, (1, 2), {"c": 3})
 
     assert snap
     assert snap.value == v
-
 
 
 def test_long_running_no_kwargs(testdir):
@@ -40,12 +40,13 @@ def test_long_running_no_kwargs(testdir):
         else:
             return a + b + c
 
-    v = f(1,2,3)
+    v = f(1, 2, 3)
 
-    snap = load_snapshot(f.__name__, (1,2,3))
+    snap = load_snapshot(f.__name__, (1, 2, 3))
 
     assert snap
     assert snap.value == v
+
 
 def test_long_running_fail(testdir):
     @long_running
@@ -55,8 +56,8 @@ def test_long_running_fail(testdir):
         else:
             return a + b + c
 
-    v = f(1,2,3)
+    v = f(1, 2, 3)
 
-    snap = load_snapshot(f.__name__, (1,2), {'c':3})
+    snap = load_snapshot(f.__name__, (1, 2), {"c": 3})
 
     assert snap == None

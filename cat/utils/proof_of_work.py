@@ -1,16 +1,18 @@
 """Methods for computing Proof of Works."""
 import hashlib
 import inspect
+import itertools
 import re
 import types
-import itertools
+from typing import Callable, Iterator, TypeVar
 
 from cat.utils.compat.utils import hex_str
 from cat.utils.utils import generate_brute_force
-from typing import TypeVar, Callable, Iterator
 
 
-def generate_with_alphabet(alphabet, prefix=b'', suffix=b'', min_length=0, max_length=None):
+def generate_with_alphabet(
+    alphabet, prefix=b"", suffix=b"", min_length=0, max_length=None
+):
     """
     Generator returning strings of all possible combinations of letters from the given :attr:`alphabet`
     of length :math:`i`, where :math:`\mathit{min\_length} \leq i \leq \mathit{max\_length}`.
@@ -35,10 +37,12 @@ def generate_with_alphabet(alphabet, prefix=b'', suffix=b'', min_length=0, max_l
     :return: Generator yielding bytes
     """
     alphabet = list(set(alphabet))
-    lengths = range(min_length, max_length + 1) if max_length else itertools.count(min_length)
+    lengths = (
+        range(min_length, max_length + 1) if max_length else itertools.count(min_length)
+    )
     for length in lengths:
         for value in itertools.product(alphabet, repeat=length):
-            guess = bytes(''.join(value), 'utf-8')
+            guess = bytes("".join(value), "utf-8")
             yield prefix + guess + suffix, guess
 
 
@@ -198,12 +202,21 @@ def is_hashlib(obj):
     :param obj: Any object
     :return: True iff obj is an algorithm from :py:module:`hashlib`.
     """
-    algorithms = _MEMBERS['algorithms_guaranteed']
+    algorithms = _MEMBERS["algorithms_guaranteed"]
     return obj in map(lambda x: _MEMBERS[x], algorithms)
 
 
-def hash_pow(alphabet, hash_fn, prefix=b'', suffix=b'', hash_prefix='', hash_suffix='',
-             min_length=0, max_length=None, condition=None):
+def hash_pow(
+    alphabet,
+    hash_fn,
+    prefix=b"",
+    suffix=b"",
+    hash_prefix="",
+    hash_suffix="",
+    min_length=0,
+    max_length=None,
+    condition=None,
+):
     """
     Computes a :math:`g` such that:
 
@@ -232,15 +245,22 @@ def hash_pow(alphabet, hash_fn, prefix=b'', suffix=b'', hash_prefix='', hash_suf
     if condition:
         hash_condition = land(condition, hash_condition)
 
-    if isinstance(hash_fn, types.ModuleType) and hash_fn.__package__ == 'Cryptodome.Hash':
+    if (
+        isinstance(hash_fn, types.ModuleType)
+        and hash_fn.__package__ == "Cryptodome.Hash"
+    ):
         hash_fn = wrap_cryptodome(hash_fn)
     elif is_hashlib(hash_fn):
         hash_fn = wrap_hashlib(hash_fn)
     if not isinstance(hash_fn, types.FunctionType):
-        raise Exception('Invalid hash function')
-    values = generate_with_alphabet(alphabet,
-                                    prefix=prefix, suffix=suffix,
-                                    min_length=min_length, max_length=max_length)
+        raise Exception("Invalid hash function")
+    values = generate_with_alphabet(
+        alphabet,
+        prefix=prefix,
+        suffix=suffix,
+        min_length=min_length,
+        max_length=max_length,
+    )
     return compute(hash_condition, hash_fn, values)[1]
 
 
@@ -290,10 +310,7 @@ def with_pattern(pattern):
     :rtype:               :class:`bytes`
     """
 
-    p = re.compile(pattern.format(**{
-        'h': r'\w+',
-        'h+': r'\w*'
-    }))
+    p = re.compile(pattern.format(**{"h": r"\w+", "h+": r"\w*"}))
 
     def _with_pattern(s):
         return p.match(s)
@@ -301,9 +318,9 @@ def with_pattern(pattern):
     return _with_pattern
 
 
-ReturnType = TypeVar('ReturnType')
-Guess = TypeVar('Guess')
-Hash = TypeVar('Hash')
+ReturnType = TypeVar("ReturnType")
+Guess = TypeVar("Guess")
+Hash = TypeVar("Hash")
 
 
 def compute(condition, fn, values_source):

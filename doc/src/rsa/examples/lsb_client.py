@@ -8,14 +8,17 @@ from cat.rsa import RSADriver
 # Security parameter in bits
 SECURITY_PARAMETER = 1024
 # Security parameter in bytes in hex
-MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
-INT_SIZE = (SECURITY_PARAMETER//8)
+MESSAGE_SIZE = (SECURITY_PARAMETER // 8) * 2
+INT_SIZE = SECURITY_PARAMETER // 8
+
 
 def int_to_hex(n):
-    return hexlify(n.to_bytes(INT_SIZE, 'big'))
+    return hexlify(n.to_bytes(INT_SIZE, "big"))
+
 
 def hex_to_int(s):
-    return int.from_bytes(unhexlify(s), 'big')
+    return int.from_bytes(unhexlify(s), "big")
+
 
 HOST, PORT = "localhost", 9999
 
@@ -33,8 +36,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         return hex_to_int(sock.recv(MESSAGE_SIZE).strip())
 
     r = RSADriver()
-    KeyTuple = namedtuple('KeyTuple', 'n e')
+    KeyTuple = namedtuple("KeyTuple", "n e")
     r.keys = [KeyTuple(e=e, n=n)]
     r.add_lsb_oracle(oracle)
     print(r.run_lsb_oracle(t))
-
