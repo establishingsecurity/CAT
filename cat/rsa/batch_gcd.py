@@ -57,8 +57,8 @@ def build_product_tree(xs):
         - Provide an example
         - Describe the inputs
         - Think about returned value for the empty list input. It is currently
-        [[0]] because the default value for product of empty list is 0. This
-        value will also affect build_remainder_tree below.
+          [[0]] because the default value for product of empty list is 0. This
+          value will also affect build_remainder_tree below.
     """
 
     return _build_product_tree_0(xs)
@@ -97,10 +97,12 @@ def _build_product_tree_1(xs):
     tree = [xs]
 
     while len(tree[-1]) != 1:
-        tree.append([
-            functools.reduce(operator.mul, tree[-1][2 * i : 2 * i + 2])
-            for i in range((len(tree[-1]) + 1) // 2)
-        ])
+        tree.append(
+            [
+                functools.reduce(operator.mul, tree[-1][2 * i : 2 * i + 2])
+                for i in range((len(tree[-1]) + 1) // 2)
+            ]
+        )
 
     return tree
 
@@ -205,5 +207,3 @@ def _attack_batch_gcd_1(ns):
         rs = [rs[i // 2] % ns[i] ** 2 for i in range(len(ns))]
 
     return [gmpy2.gcd(r // n, n) for r, n in zip(rs, ns)]
-
-

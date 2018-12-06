@@ -6,7 +6,7 @@ from cat.rsa.batch_gcd import (
     _build_product_tree_0,
     _build_product_tree_1,
     _attack_batch_gcd_0,
-    _attack_batch_gcd_1
+    _attack_batch_gcd_1,
 )
 
 INTS = list(range(1, 10000))

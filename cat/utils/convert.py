@@ -1,6 +1,8 @@
-from binascii import unhexlify
 from base64 import b64decode
+from binascii import unhexlify
+
 from Cryptodome.Util.number import long_to_bytes
+
 
 def hex_to_bytes(h):
     # type: str -> bytes
@@ -9,6 +11,7 @@ def hex_to_bytes(h):
     """
     return unhexlify(h)
 
+
 def base64_to_bytes(h):
     # type: str -> bytes
     """
@@ -16,10 +19,10 @@ def base64_to_bytes(h):
     """
     return b64decode(h)
 
+
 def int_to_bytes(i):
     # type: int -> bytes
     """
     Converts a long integer to bytes
     """
     return long_to_bytes(i)
-
