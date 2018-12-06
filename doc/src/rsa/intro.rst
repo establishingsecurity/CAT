@@ -86,6 +86,24 @@ You could also generate RSA keys with OpenSSH_:
 
 The above command generates a 2048 bit RSA key pair. It stores private key in ``file_name`` and public key ``file_name.pub``. If you set a password, it will encrypt ``file_name``.
 
+You could also generate RSA keys with OpenSSL_:
+
+.. _OpenSSL: https://www.openssl.org/
+
+.. code-block:: sh
+
+    openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+
+From this private key, you could extract the corresponding public key by doing:
+
+.. code-block:: sh
+
+    openssl rsa -pubout -in private_key.pem -out public_key.pem
+
+.. note::
+
+    Talk about different file formats that could be used to store these keys
+
 .. Another option is to use GnuPG_:
 ..
 .. .. _GnuPG: https://www.gnupg.org/
