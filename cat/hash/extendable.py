@@ -1,5 +1,6 @@
-from hashpumpy import hashpump as _hashpump
 from typing import Tuple
+
+from hashpumpy import hashpump as _hashpump
 
 
 def hashpump(hexdigest, original_data, data_to_add, key_length):

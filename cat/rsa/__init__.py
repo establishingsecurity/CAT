@@ -7,13 +7,13 @@ from Cryptodome.PublicKey import RSA
 from . import util
 from .attacks import lsb_oracle
 
-RSACiphertext = NewType('RSACiphertext', int)
-RSAPlaintext = NewType('RSAPlaintext', int)
+RSACiphertext = NewType("RSACiphertext", int)
+RSAPlaintext = NewType("RSAPlaintext", int)
 
-RSAKey = NewType('RSAKey', RSA)
+RSAKey = NewType("RSAKey", RSA)
 
 
-class RSADriver():
+class RSADriver:
     def __init__(self):
         self._keys = []
         self._factors = []

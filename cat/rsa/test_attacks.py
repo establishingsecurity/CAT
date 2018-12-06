@@ -1,19 +1,21 @@
 from binascii import hexlify
 
-from Cryptodome.PublicKey import RSA
+import pytest
 from Cryptodome.Cipher import PKCS1_v1_5
+from Cryptodome.PublicKey import RSA
 from Cryptodome.Util.number import getPrime
-from gmpy2 import powmod, next_prime, mpz
+from hypothesis import assume, given, reject, settings
+from hypothesis.strategies import integers, sampled_from, text
+
+from gmpy2 import mpz, next_prime, powmod
 
 from .attacks import *
 
-import pytest
-from hypothesis import given, reject, assume, settings
-from hypothesis.strategies import integers, text, sampled_from
 
 @pytest.fixture()
 def key():
     return RSA.generate(1024)
+
 
 @pytest.fixture()
 def close_primes():
@@ -21,22 +23,25 @@ def close_primes():
     q = int(next_prime(p))
     return (p, q)
 
+
 @pytest.fixture()
 def plain_int():
     return 512
+
 
 def test_fermat_factoring(close_primes, plain_int):
     p = close_primes[0]
     q = close_primes[1]
     plain = plain_int
-    e = 2**16 + 1
-    pk = RSA.construct((p*q, e))
+    e = 2 ** 16 + 1
+    pk = RSA.construct((p * q, e))
     key = reconstruct_private(pk, p)
 
     sk = fermat_factoring(pk)
 
     cipher = powmod(plain, key.e, key.n)
     assert int(powmod(cipher, sk.d, sk.n)) == plain
+
 
 @given(integers(), integers(min_value=1))
 @settings(deadline=None)
@@ -50,7 +55,7 @@ def test_common_divisor(key, x, plain):
 
 
 def test_lsb_oracle_fix(key):
-    plain = 0xdeadbeef
+    plain = 0xDEADBEEF
     assert plain < key.n
 
     d = mpz(key.d)
@@ -61,6 +66,7 @@ def test_lsb_oracle_fix(key):
 
     target = powmod(plain, key.e, key.n)
     assert plain == lsb_oracle(key.publickey(), target, oracle)
+
 
 @given(integers(min_value=1))
 @settings(deadline=None)

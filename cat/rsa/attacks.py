@@ -1,7 +1,9 @@
 from Cryptodome.PublicKey import RSA
-from gmpy2 import mpz, mpfr, invert, powmod, gcd, isqrt, is_square, floor
+
+from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
 from .util import reconstruct_private
+
 
 def fermat_factoring(pk):
     """
@@ -22,10 +24,10 @@ def fermat_factoring(pk):
     """
     # FIXME: This is not correct, what we want is ceil(sqrt(pk.n))
     a = isqrt(pk.n)
-    bsqr = a*a - pk.n
+    bsqr = a * a - pk.n
     while not is_square(bsqr):
         a = a + 1
-        bsqr = a*a - pk.n
+        bsqr = a * a - pk.n
 
     return reconstruct_private(pk, int(a - isqrt(bsqr)))
 
@@ -45,6 +47,7 @@ def common_divisor(pk, product):
     p = int(gcd(mpz(pk.n), mpz(product)))
     return reconstruct_private(pk, p)
 
+
 def lsb_oracle(public_key, ciphertext, oracle):
     # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
     """
@@ -60,10 +63,10 @@ def lsb_oracle(public_key, ciphertext, oracle):
     lower = mpfr(0)
     upper = mpfr(public_key.n)
     for i in range(public_key.n.bit_length()):
-        possible_plaintext = (lower + upper)/2
+        possible_plaintext = (lower + upper) / 2
         if not oracle(int(t)):
-            upper = possible_plaintext            # plaintext is in the lower half
+            upper = possible_plaintext  # plaintext is in the lower half
         else:
-            lower = possible_plaintext            # plaintext is in the upper half
+            lower = possible_plaintext  # plaintext is in the upper half
         t = (t * mult) % public_key.n
     return mpz(floor(upper))
