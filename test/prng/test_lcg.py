@@ -2,7 +2,7 @@ from sympy import Matrix
 
 from cat.prng.lcg import reconstruct_lower_bits, get_upper_bits
 from hypothesis import given, assume, example
-from hypothesis.strategies import integers, floats, lists
+from hypothesis.strategies import integers, floats
 
 
 def test_reconstruct_lower_bits_sanity():
