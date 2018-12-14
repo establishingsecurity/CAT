@@ -16,6 +16,13 @@ def fplll_to_matrix(matrix):
 
 
 def reconstruct_lower_bits(L, m, ys):
+    """
+    Reconstructs the lower bits of a system of linear congurential equations
+    :param L: The system of linear equation in matrix form (evaluating to 0)
+    :param m: The modulus used for all the equations
+    :param ys: The higher bits that are known for the variables
+    :return: The lower bits for the variables
+    """
     B = fplll_to_matrix(LLL.reduction(matrix_to_fplll(L)))
     Bys = Matrix(B @ ys)
     ks = Matrix([round(x) for x in Bys / m])
