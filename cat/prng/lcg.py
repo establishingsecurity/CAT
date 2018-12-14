@@ -45,6 +45,4 @@ def reconstruct_lower_bits(L, m, ys):
 def get_upper_bits(v, n=None):
     if n is None:
         n = max([e.bit_length() // 2 for e in v])
-    return [x - x % 2 ** n for x in v]
-
-
+    return [x - (x % 2 ** n) for x in v]
