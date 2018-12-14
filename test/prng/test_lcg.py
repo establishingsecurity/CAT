@@ -2,7 +2,7 @@ from sympy import Matrix
 
 from cat.prng.lcg import reconstruct_lower_bits, get_upper_bits
 from hypothesis import given, assume, example
-from hypothesis.strategies import integers, floats
+from hypothesis.strategies import integers, floats, lists
 
 
 def test_reconstruct_lower_bits_sanity():
@@ -20,7 +20,7 @@ def test_reconstruct_lower_bits_sanity():
     assert xs == (ys + zs)
 
 
-@example(m=4294967291, a=598176085, s=252291025, bits_proportion=1 / 2)
+@example(m=406, a=2, s=1, bits_proportion=0.5)
 @given(integers(0), integers(2), integers(), floats(1 / 2, 1))
 def test_reconstruct_lower_bits(m, a, s, bits_proportion):
     assume(a < m and s < m)
@@ -32,5 +32,5 @@ def test_reconstruct_lower_bits(m, a, s, bits_proportion):
     zs = reconstruct_lower_bits(L, m, ys)
     expected_zs = Matrix(xs - ys)
     print(zs, expected_zs)
-    assert zs == expected_zs
     assert xs == (ys + zs)
+    assert zs == expected_zs
