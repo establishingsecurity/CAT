@@ -19,9 +19,7 @@ def reconstruct_lower_bits(L, m, ys):
     B = fplll_to_matrix(LLL.reduction(matrix_to_fplll(L)))
     Bys = Matrix(B @ ys)
     ks = Matrix([round(x) for x in Bys / m])
-    Bzs = m * ks - Bys
-    B = Matrix(B)
-    Bzs = Matrix(Bzs)
+    Bzs = Matrix(m * ks - Bys)
     zs = B.solve(Bzs)
     assert B @ zs == Bzs
     return Matrix(zs)
