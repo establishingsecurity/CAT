@@ -31,6 +31,45 @@ def test_reconstruct_lower_bits_prime_30(s):
     zs = reconstruct_lower_bits(L, m, ys)
 
     assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+
+
+@example(s=252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_glibc_params(s):
+    a = 1_103_515_245
+    # b = 12345
+    m = 2 ** 32
+    shift = 16
+    size = 5
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, shift)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+
+
+@example(s=252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_java_params(s):
+    a = 0x5DEECE66D
+    # b = 0xbl
+    m = 2 ** 48
+    shift = 16
+    size = 5
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, shift)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
 @settings(max_iterations=10000)
@@ -48,6 +87,7 @@ def test_reconstruct_lower_bits_prime_60(s):
     zs = reconstruct_lower_bits(L, m, ys)
 
     assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
 @settings(max_iterations=10000)
@@ -65,6 +105,7 @@ def test_reconstruct_lower_bits_prime_128(s):
     zs = reconstruct_lower_bits(L, m, ys)
 
     assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
 @settings(max_iterations=10000)
@@ -73,7 +114,7 @@ def test_reconstruct_lower_bits_prime_128(s):
 def test_reconstruct_lower_bits_prime_512(s):
     m = int(next_prime(2 ** 512))
     a = int(next_prime(2 ** 256))
-    size = 30
+    size = 10
 
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
     L = construct_lattice(m, a, size)
@@ -82,3 +123,4 @@ def test_reconstruct_lower_bits_prime_512(s):
     zs = reconstruct_lower_bits(L, m, ys)
 
     assert xs[0] == (ys[0] + zs[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
