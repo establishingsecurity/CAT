@@ -3,9 +3,9 @@ from flint import fmpz_mat
 
 def reconstruct_lower_bits(L, m, ys):
     """
-    Reconstructs the lower bits of a system of linear congurential equations in lattice form with
-    L * xs = 0 mod m for solution xs.
-    It works by computing a smaller basis B from the basis L and solving equations in the smaller basis
+    Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
+    :math:`L \cdot xs = 0 \mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
+    It works by computing a smaller basis :math:`B` from the basis :math:`L` and solving equations in the smaller basis.
 
     :param L: The system of linear equation in matrix form (evaluating to 0)
     :param m: The modulus used for all the equations
