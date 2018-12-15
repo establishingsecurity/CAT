@@ -41,6 +41,23 @@ def reconstruct_lower_bits(L, m, ys):
     assert B @ zs == Bzs
     return Matrix(zs)
 
+def reconstruct_lower_bits_flint(L, m, ys):
+    from flint import fmpz_mat
+    L = fmpz_mat([[*row] for row in L])
+    ys = fmpz_mat([[y] for y in ys])
+    B = L.lll()
+    # Reducing the lattice basis L to a smaller basis B
+
+    Bys = B * ys
+
+    # TODO: There might be a better solution to find the individual ks
+    # NB: B * (ys + zs) = m * ks for some ks
+    ks =  fmpz_mat([[round(int(x)/m)] for x in Bys])
+
+    # We know solve the system of linear equations B zs = m * ks - B ys for zs
+    Bzs = m * ks - Bys
+    return B.solve(Bzs)
+
 
 def get_upper_bits(v, n=None):
     if n is None:
