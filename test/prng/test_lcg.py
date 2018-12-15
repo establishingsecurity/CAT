@@ -1,6 +1,6 @@
 from sympy import Matrix
 
-from cat.prng.lcg import reconstruct_lower_bits, get_upper_bits
+from cat.prng.lcg import *
 from hypothesis import given, assume, example
 from hypothesis.strategies import integers, floats
 
@@ -19,6 +19,15 @@ def test_reconstruct_lower_bits_sanity():
     assert zs == expected_zs
     assert xs == (ys + zs)
 
+def test_reconstruct_lower_bits_sanity_flint():
+    m = 4294967291
+    a = 598176085
+    s = 252291025
+    L = [[m, 0, 0, 0], [a, -1, 0, 0], [a ** 2, 0, -1, 0], [a ** 3, 0, 0, -1]]
+    xs = [1477951715, 3597964208, 2802631510, 3169049466]
+    ys = get_upper_bits(xs, 16)
+    zs = reconstruct_lower_bits_flint(L, m, ys)
+    assert zs.table() == [[49379], [37808], [50006], [56186]]
 
 @example(m=406, a=2, s=1, bits_proportion=0.5)
 @given(integers(0), integers(2), integers(), floats(1 / 2, 1))
