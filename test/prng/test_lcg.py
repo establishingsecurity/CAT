@@ -11,7 +11,7 @@ def test_reconstruct_lower_bits_sanity():
     xs = [1477951715, 3597964208, 2802631510, 3169049466]
     ys = get_upper_bits(xs, 16)
     zs = reconstruct_lower_bits(L, m, ys)
-    assert zs.table() == [[49379], [37808], [50006], [56186]]
+    assert zs == [49379, 37808, 50006, 56186]
 
 
 @given(integers(3), integers(2), integers(2), floats(1 / 2, 1))
