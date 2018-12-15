@@ -15,8 +15,9 @@ def test_reconstruct_lower_bits_sanity():
     zs = reconstruct_lower_bits(L, m, ys)
     assert zs == [49379, 37808, 50006, 56186]
 
+
 @settings(max_iterations=10000)
-@example(s = 252_291_025)
+@example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_30(s):
     m = int(next_prime(2 ** 32))
@@ -31,12 +32,13 @@ def test_reconstruct_lower_bits_prime_30(s):
 
     assert xs[0] == (ys[0] + zs[0]) % m
 
+
 @settings(max_iterations=10000)
-@example(s = 252_291_025)
+@example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_60(s):
     m = int(next_prime(2 ** 64))
-    a = int(next_prime(2 ** 60))
+    a = int(next_prime(2 ** 32))
     size = 10
 
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
@@ -47,12 +49,13 @@ def test_reconstruct_lower_bits_prime_60(s):
 
     assert xs[0] == (ys[0] + zs[0]) % m
 
+
 @settings(max_iterations=10000)
-@example(s = 252_291_025)
+@example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_128(s):
     m = int(next_prime(2 ** 128))
-    a = int(next_prime(2 ** 120))
+    a = int(next_prime(2 ** 64))
     size = 10
 
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
@@ -63,36 +66,19 @@ def test_reconstruct_lower_bits_prime_128(s):
 
     assert xs[0] == (ys[0] + zs[0]) % m
 
-@settings(max_iterations=10000)
-@given(integers(2), integers(2), floats(1 / 2, 1))
-def test_reconstruct_lower_bits(m, s, bits_proportion):
-    assume(s < m)
-    m = int(next_prime(m))
-    a = 2
-    size = 25
-    nbits = int(m.bit_length() * bits_proportion)
 
-    L = [[m] + (size - 1) * [0]] + [
-        ([pow(a, i, m)] + [0] * (i - 1) + [-1] + [0] * (size - i - 1))
-        for i in range(1, size)
-    ]
-    assert len(L) == size and all([len(l) == size for l in L])
+@settings(max_iterations=10000)
+@example(s=252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_prime_512(s):
+    m = int(next_prime(2 ** 512))
+    a = int(next_prime(2 ** 256))
+    size = 30
 
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    assert len(xs) == size
+    L = construct_lattice(m, a, size)
 
-    ys = get_upper_bits(xs, nbits)
-    # ys can't be 0
-    assume(all(y != 0 for y in ys))
-    zs = [(x - y) % m for x, y in zip(xs, ys)]
-    recovered_zs = reconstruct_lower_bits(L, m, ys)
+    ys = get_upper_bits(xs, 128)
+    zs = reconstruct_lower_bits(L, m, ys)
 
-    if xs[0] != (ys[0] + recovered_zs[0]) % m:
-        print()
-        print(f"m = {m}, a = {a}, s={a}")
-        print(
-            f"x_0 = {xs[0]}, y_0 = {ys[0]} + rz_0={recovered_zs[0]} = {ys[0] + recovered_zs[0]},"
-        )
-        print(zs)
-        print(recovered_zs)
-    assert xs[0] == (ys[0] + recovered_zs[0]) % m
+    assert xs[0] == (ys[0] + zs[0]) % m
