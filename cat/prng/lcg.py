@@ -9,6 +9,7 @@ def construct_lattice(m, a, size):
     assert len(L) == size and all([len(l) == size for l in L])
     return L
 
+
 def reconstruct_lower_bits(L, m, ys):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
@@ -36,5 +37,3 @@ def reconstruct_lower_bits(L, m, ys):
     zs = B.solve(Bzs)
     assert all(z.denom() == 1 for z in zs)
     return [z.numer() % m for z in zs]
-
-
