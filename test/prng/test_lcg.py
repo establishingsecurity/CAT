@@ -57,12 +57,13 @@ def test_reconstruct_lower_bits_few_bits():
     assert xs[0] != (ys[0] + zs[0]) % m
 
 
-@settings(max_iterations=10000)
+@settings(max_examples=500)
 @example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_30(s):
     m = int(next_prime(2 ** 32))
     a = int(next_prime(2 ** 30))
+    s %= m
     shift = 32 - 16
     size = 20
 
@@ -82,6 +83,7 @@ def test_reconstruct_lower_bits_glibc_params(s):
     a = 1_103_515_245
     # b = 12345
     m = 2 ** 32
+    s %= m
     shift = 32 - 16
     size = 5
 
@@ -101,6 +103,7 @@ def test_reconstruct_lower_bits_java_params(s):
     m = 2 ** 48
     a = 0x5DEECE66D
     # b = 0xbl
+    s %= m
     shift = 48 - 16
     size = 5
 
@@ -114,12 +117,12 @@ def test_reconstruct_lower_bits_java_params(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@settings(max_iterations=10000)
 @example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_60(s):
     m = int(next_prime(2 ** 64))
     a = int(next_prime(2 ** 32))
+    s %= m
     shift = 64 - 16
     size = 10
 
@@ -133,12 +136,12 @@ def test_reconstruct_lower_bits_prime_60(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@settings(max_iterations=10000)
 @example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_128(s):
     m = int(next_prime(2 ** 128))
     a = int(next_prime(2 ** 64))
+    s %= m
     shift = 128 - 64
     size = 10
 
@@ -152,12 +155,12 @@ def test_reconstruct_lower_bits_prime_128(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@settings(max_iterations=10000)
 @example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_512(s):
     m = int(next_prime(2 ** 512))
     a = int(next_prime(2 ** 256))
+    s %= m
     shift = 512 - 256
     size = 10
 
@@ -169,3 +172,35 @@ def test_reconstruct_lower_bits_prime_512(s):
 
     assert xs[0] == (ys[0] + zs[0]) % m
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+
+
+@given(integers(2))
+def test_reconstruct_upper_bits_prime_64(s):
+    m = int(next_prime(2 ** 64))
+    a = 2
+    size = 10
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+
+    ys = blank_lower_bits(xs, 32)
+    zs = [x - y for x, y in zip(xs, ys)]
+    L = construct_lattice(m, a, size)
+
+    recovered_ys = reconstruct_lower_bits(L, m, zs)
+
+    assert xs[0] == (recovered_ys[0] + zs[0]) % m
+
+
+@given(integers(2))
+def test_reconstruct_upper_bits_prime_512(s):
+    m = int(next_prime(2 ** 512))
+    a = int(next_prime(2 ** 256))
+    size = 10
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+
+    ys = blank_lower_bits(xs, 384)
+    zs = [x - y for x, y in zip(xs, ys)]
+    L = construct_lattice(m, a, size)
+
+    recovered_ys = reconstruct_lower_bits(L, m, zs)
+
+    assert xs[0] == (recovered_ys[0] + zs[0]) % m

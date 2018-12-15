@@ -12,7 +12,7 @@ def construct_lattice(m, a, size):
 def reconstruct_lower_bits(L, m, ys):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
-    :math:`L \cdot xs = 0 \mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
+    :math:`L \\cdot xs = 0 \\mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
     It works by computing a smaller basis :math:`B` from the basis :math:`L` and solving equations in the smaller basis.
 
     :param L: The system of linear equation in matrix form (evaluating to 0)
