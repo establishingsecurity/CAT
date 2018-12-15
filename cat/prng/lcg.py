@@ -25,7 +25,9 @@ def reconstruct_lower_bits(L, m, ys):
 
     # We know solve the system of linear equations B zs = m * ks - B ys for zs
     Bzs = m * ks - Bys
-    return B.solve(Bzs)
+    zs = B.solve(Bzs)
+    assert all(z.denom() == 1 for z in zs)
+    return [z.numer() % m for z in zs]
 
 
 def get_upper_bits(v, n=None):
