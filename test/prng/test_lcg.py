@@ -15,26 +15,53 @@ def test_reconstruct_lower_bits_sanity():
     zs = reconstruct_lower_bits(L, m, ys)
     assert zs == [49379, 37808, 50006, 56186]
 
-
-def test_reconstruct_lower_bits_prime():
+@settings(max_iterations=10000)
+@example(s = 252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_prime_30(s):
     m = int(next_prime(2 ** 32))
     a = int(next_prime(2 ** 30))
-    s = 252_291_025
     size = 20
-    L = [[m] + (size - 1) * [0]] + [
-        ([pow(a, i, m)] + [0] * (i - 1) + [-1] + [0] * (size - i - 1))
-        for i in range(1, size)
-    ]
-    assert len(L) == size and all([len(l) == size for l in L])
 
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    assert len(xs) == size
+    L = construct_lattice(m, a, size)
 
     ys = get_upper_bits(xs, 16)
     zs = reconstruct_lower_bits(L, m, ys)
 
     assert xs[0] == (ys[0] + zs[0]) % m
 
+@settings(max_iterations=10000)
+@example(s = 252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_prime_60(s):
+    m = int(next_prime(2 ** 64))
+    a = int(next_prime(2 ** 60))
+    size = 10
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, 16)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    assert xs[0] == (ys[0] + zs[0]) % m
+
+@settings(max_iterations=10000)
+@example(s = 252_291_025)
+@given(integers(2))
+def test_reconstruct_lower_bits_prime_128(s):
+    m = int(next_prime(2 ** 128))
+    a = int(next_prime(2 ** 120))
+    size = 10
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, 16)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    assert xs[0] == (ys[0] + zs[0]) % m
 
 @settings(max_iterations=10000)
 @given(integers(2), integers(2), floats(1 / 2, 1))
