@@ -4,6 +4,10 @@ from hypothesis.strategies import floats, integers
 from cat.prng.lcg import *
 from gmpy2 import mpz, next_prime
 
+def get_upper_bits(v, n=None):
+    if n is None:
+        n = max([e.bit_length() // 2 for e in v])
+    return [x - (x % 2 ** (x.bit_length()-n)) for x in v]
 
 def test_reconstruct_lower_bits_sanity():
     m = 4_294_967_291
@@ -15,6 +19,36 @@ def test_reconstruct_lower_bits_sanity():
     zs = reconstruct_lower_bits(L, m, ys)
     assert zs == [49379, 37808, 50006, 56186]
 
+def test_reconstruct_lower_bits_few_outputs():
+    m = int(next_prime(2 ** 64))
+    a = int(next_prime(2 ** 30))
+    s = 252_291_025
+    size = 2
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, 16)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    # Only two states should not be able to predictable (even information theoretically?)
+    assert xs[0] != (ys[0] + zs[0]) % m
+    assert all((x != y + z % m) for x, y, z in zip(xs, ys, zs))
+
+def test_reconstruct_lower_bits_few_bits():
+    m = int(next_prime(2 ** 512))
+    a = int(next_prime(2 ** 128))
+    s = 252_291_025
+    size = 5
+
+    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    L = construct_lattice(m, a, size)
+
+    ys = get_upper_bits(xs, 16)
+    zs = reconstruct_lower_bits(L, m, ys)
+
+    # Only a few bits should not be able to predictable (even information theoretically?)
+    assert xs[0] == (ys[0] + zs[0]) % m
 
 @settings(max_iterations=10000)
 @example(s=252_291_025)
