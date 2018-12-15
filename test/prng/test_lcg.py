@@ -205,3 +205,32 @@ def test_reconstruct_upper_bits_prime_512(s):
     recovered_ys = reconstruct_lower_bits(L, m, zs)
 
     assert xs[0] == (recovered_ys[0] + zs[0]) % m
+
+
+@given(integers(2))
+def test_reconstruct_lower_bits_prime_30_with_constant(s):
+    """
+    TODO: fixme
+    """
+    m = int(next_prime(2 ** 32))
+    a = int(next_prime(2 ** 30))
+    b = int(next_prime(2 ** 10))
+    s %= m
+    shift = 32 - 16
+    size = 20
+
+    def _generate(state):
+        for i in range(size):
+            state = (a * state + b) % m
+            yield state
+
+    xs = list(_generate(s))
+    L = construct_lattice(m, a, size - 1)
+
+    ys = blank_lower_bits(xs, shift)
+    lemuhr_style_lcg = [xp - x for xp, x in zip(ys[1:], ys)]
+    zs = reconstruct_lower_bits(L, m, lemuhr_style_lcg)
+    z_prime = retrieve_state(m, a, b, zs[0])
+
+    # assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+    # assert xs[0] == (ys[0] + z_prime) % m
