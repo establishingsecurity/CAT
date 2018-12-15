@@ -29,6 +29,18 @@ def test_reconstruct_lower_bits_sanity_flint():
     zs = reconstruct_lower_bits_flint(L, m, ys)
     assert zs.table() == [[49379], [37808], [50006], [56186]]
 
+@given(integers(2**8), integers(2), integers(), floats(1 / 2, 1))
+def test_reconstruct_lower_bits_flint(m, a, s, bits_proportion):
+    assume(a < m and s < m)
+    assume(m != 406)
+    nbits = int(m.bit_length() * bits_proportion)
+    L = [[m, 0, 0, 0], [a, -1, 0, 0], [a ** 2 % m, 0, -1, 0], [a ** 3 % m, 0, 0, -1]]
+    xs = [(a ** (i + 1) * s) % m for i in range(4)]
+    ys = get_upper_bits(xs, nbits)
+    expected_zs = [[x - y] for x,y in zip(xs, ys)]
+    zs = reconstruct_lower_bits_flint(L, m, ys)
+    assert zs.table() == expected_zs
+
 @example(m=406, a=2, s=1, bits_proportion=0.5)
 @given(integers(0), integers(2), integers(), floats(1 / 2, 1))
 def test_reconstruct_lower_bits(m, a, s, bits_proportion):
