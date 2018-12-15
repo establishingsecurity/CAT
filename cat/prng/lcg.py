@@ -52,7 +52,7 @@ def reconstruct_lower_bits_flint(L, m, ys):
 
     # TODO: There might be a better solution to find the individual ks
     # NB: B * (ys + zs) = m * ks for some ks
-    ks =  fmpz_mat([[round(int(x)/m)] for x in Bys])
+    ks = fmpz_mat([[round(int(x)/m)] for x in Bys])
 
     # We know solve the system of linear equations B zs = m * ks - B ys for zs
     Bzs = m * ks - Bys
