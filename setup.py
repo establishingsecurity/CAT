@@ -24,6 +24,7 @@ REQUIRES = [
     "cysignals",
     "fpylll",
     "numpy",
+    "python-flint",
 ]
 
 setup(
