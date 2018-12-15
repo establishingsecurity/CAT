@@ -1,3 +1,4 @@
+import gmpy2
 from flint import fmpz_mat
 
 
@@ -37,3 +38,7 @@ def reconstruct_lower_bits(L, m, ys):
     zs = B.solve(Bzs)
     assert all(z.denom() == 1 for z in zs)
     return [z.numer() % m for z in zs]
+
+
+def retrieve_state(m, a, b, z):
+    return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
