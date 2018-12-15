@@ -1,6 +1,14 @@
 from flint import fmpz_mat
 
 
+def construct_lattice(m, a, size):
+    L = [[m] + (size - 1) * [0]] + [
+        ([pow(a, i, m)] + [0] * (i - 1) + [-1] + [0] * (size - i - 1))
+        for i in range(1, size)
+    ]
+    assert len(L) == size and all([len(l) == size for l in L])
+    return L
+
 def reconstruct_lower_bits(L, m, ys):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
