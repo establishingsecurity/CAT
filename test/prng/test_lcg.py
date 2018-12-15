@@ -55,6 +55,7 @@ def test_reconstruct_lower_bits_few_bits():
 
     # Only a few bits should not be able to predictable (even information theoretically?)
     assert xs[0] != (ys[0] + zs[0]) % m
+    assert all((x != y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
 @settings(max_examples=500)
