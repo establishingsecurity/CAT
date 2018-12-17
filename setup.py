@@ -49,7 +49,7 @@ setup(
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
     packages=find_packages(),
-    setup_requires=["Cython", "cysignals"],
+    setup_requires=["Cython"],
     install_requires=REQUIRES,
     extras_require={
         "dev": ["ipython", "black", "isort"],
