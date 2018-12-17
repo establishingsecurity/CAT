@@ -20,6 +20,11 @@ REQUIRES = [
     "dask",
     "distributed",
     "bitstring",
+    "Cython",
+    "cysignals",
+    "fpylll",
+    "numpy",
+    "python-flint",
 ]
 
 setup(
