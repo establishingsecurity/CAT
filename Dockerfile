@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
 	python \
 	python-pip \
 	libssl-dev \
+	cython \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
