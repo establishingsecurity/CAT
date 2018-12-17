@@ -20,8 +20,6 @@ REQUIRES = [
     "dask",
     "distributed",
     "bitstring",
-    "Cython",
-    "cysignals",
     "numpy",
     "python-flint",
 ]
@@ -51,6 +49,7 @@ setup(
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
     packages=find_packages(),
+    setup_requires=["Cython", "cysignals"],
     install_requires=REQUIRES,
     extras_require={
         "dev": ["ipython", "black", "isort"],
