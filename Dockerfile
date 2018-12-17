@@ -18,7 +18,7 @@ WORKDIR /app
 ADD README.md /app/README.md
 ADD setup.py /app/setup.py
 
-RUN pip3 install cython
+RUN pip3 install cython numpy
 RUN pip3 install -e "."
 
 ADD cat /app/cat
@@ -31,7 +31,6 @@ RUN apt-get update && apt-get install -y \
 	pypy \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install cython
 RUN pip3 install -e ".[test]"
 
 ADD conftest.py /app/conftest.py
@@ -44,7 +43,6 @@ CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 # Doc image
 FROM base as doc
 
-RUN pip3 install cython
 RUN pip3 install -e ".[dev,test,doc]"
 RUN apt-get update && apt-get install -y \
 	texlive-full \
