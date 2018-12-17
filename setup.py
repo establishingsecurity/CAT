@@ -22,7 +22,6 @@ REQUIRES = [
     "bitstring",
     "Cython",
     "cysignals",
-    "fpylll",
     "numpy",
     "python-flint",
 ]
