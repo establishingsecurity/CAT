@@ -13,12 +13,14 @@ RUN apt-get update && apt-get install -y \
 	python-pip \
 	libssl-dev \
 	libflint-dev \
+	libflint-arb-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ADD README.md /app/README.md
 ADD setup.py /app/setup.py
 
+# TODO: Fix this madness
 RUN pip3 install cython numpy
 RUN pip3 install -e "."
 
