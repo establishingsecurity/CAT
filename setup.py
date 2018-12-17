@@ -1,6 +1,7 @@
-from setuptools import find_packages, setup
 from codecs import open
 from os import path
+
+from setuptools import find_packages, setup
 
 version = "0.0.3"
 
@@ -15,8 +16,7 @@ REQUIRES = [
     "gmpy2",
     "pycryptodomex",
     "typing",
-    "hashpumpy",
-    # 'hashpumpy @ https://github.com/bwall/HashPump/tarball/master',
+    "hashpumpy @ https://github.com/bwall/HashPump/tarball/master",
     "dask",
     "distributed",
     "bitstring",
