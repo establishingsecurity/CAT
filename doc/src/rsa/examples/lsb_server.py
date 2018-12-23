@@ -59,7 +59,7 @@ class LSBHandler(socketserver.BaseRequestHandler):
                 self.request.sendall(int_to_hex(int(self.oracle(cipher))))
             except BrokenPipeError:
                 break
-        print(self.plaintext)
+        print("Plaintext is {}".format(self.plaintext))
 
 
 if __name__ == "__main__":
