@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
 	pypy \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install -e ".[test]"
+RUN pip3 install -e ".[test,format]"
 
 ADD conftest.py /app/conftest.py
 ADD tox.ini /app/tox.ini
@@ -56,7 +56,7 @@ CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 # Doc image
 FROM base as doc
 
-RUN pip3 install -e ".[dev,test,doc]"
+RUN pip3 install -e ".[dev,doc]"
 RUN apt-get update && apt-get install -y \
 	texlive-full \
 	inkscape \
