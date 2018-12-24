@@ -40,10 +40,6 @@ ADD cat /app/cat
 FROM base as test
 ENV RUN_ARGS=""
 
-RUN apt-get update && apt-get install -y \
-	pypy \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN pip3 install -e ".[test,format]"
 
 ADD conftest.py /app/conftest.py
