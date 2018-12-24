@@ -44,9 +44,9 @@ build:
     - docker pull $TEST_ID || true
     - docker build --cache-from $TEST_ID --target test -t $TEST_ID .
     - docker push $TEST_ID
-    - docker run --name cat-test $RUN_ARGS $TEST_ID || true
+    - docker run --name cat-test $RUN_ARGS $TEST_ID
   after_script:
-    - docker cp cat-test:/app/test-results.json test-results.json || true
+    - docker cp cat-test:/app/test-results.json test-results.json
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml || true
     - docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml || true
   artifacts:
@@ -77,8 +77,8 @@ test_else:
   stage: test
   script:
     - docker pull "$CI_REGISTRY_IMAGE/test:dev" || true
-    - docker build --cache-from "$CI_REGISTRY_IMAGE/test:dev"  --target test .
-    - docker run --name cat-test "$CI_REGISTRY_IMAGE/test:dev" || true
+    - docker build --cache-from "$CI_REGISTRY_IMAGE/test:dev"  --target test -t $TEST_ID.
+    - docker run --name cat-test $TEST_ID
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
     - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml || true
