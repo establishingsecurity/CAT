@@ -77,7 +77,7 @@ test_else:
   stage: test
   script:
     - docker pull "$CI_REGISTRY_IMAGE/test:dev" || true
-    - docker build --cache-from "$CI_REGISTRY_IMAGE/test:dev"  --target test -t $TEST_ID.
+    - docker build --cache-from "$CI_REGISTRY_IMAGE/test:dev"  --target test -t $TEST_ID .
     - docker run --name cat-test $TEST_ID
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
