@@ -46,6 +46,7 @@ ADD conftest.py /app/conftest.py
 ADD tox.ini /app/tox.ini
 
 RUN tox --notest
+ADD test /app/test
 
 CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 
