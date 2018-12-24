@@ -22,7 +22,7 @@ WORKDIR /build
 ADD https://github.com/fredrik-johansson/arb/archive/2.16.0.tar.gz /build/
 RUN tar xvf "2.16.0.tar.gz"
 WORKDIR /build/arb-2.16.0
-RUN ./configure && make && make install
+RUN ./configure && make && make install && ldconfig
 
 WORKDIR /app
 ADD README.md /app/README.md
