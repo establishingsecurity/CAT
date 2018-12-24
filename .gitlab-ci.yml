@@ -81,8 +81,8 @@ test_else:
     - docker run --name cat-test "$CI_REGISTRY_IMAGE/test:dev"
   after_script:
     - docker cp cat-test:/app/test-results.json test-results.json
-    - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml
-    - docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml
+    - docker cp cat-test:/app/test-results-py2.xml test-results-py2.xml || true
+    - docker cp cat-test:/app/test-results-py3.xml test-results-py3.xml || true
   artifacts:
     when: always
     paths:
