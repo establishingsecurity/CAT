@@ -22,6 +22,7 @@ REQUIRES = [
     "bitstring",
     "numpy",
     "python-flint",
+    "sympy"
 ]
 
 setup(
@@ -54,6 +55,6 @@ setup(
         "dev": ["ipython", "black", "isort"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
         "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "test-formatting": ["pytest-black", "pytest-isort"],
+        "format": ["pytest-black", "pytest-isort"],
     },
 )
