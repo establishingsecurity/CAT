@@ -14,7 +14,7 @@ The main ones are the following:
 * Offer a uniform interface to analyses and attacks
 * Consolidation of attacks against primitives
 * Attacks are accompanied by thorough and comprehensible documentation
-- Each major attack is documented by an accompanying tutorial in a corresponding attack scenario
+* Each major attack is documented by an accompanying tutorial in a corresponding attack scenario
 * Code is easy to read and understand with inline and external documentation
 * Progress is saved during long running attacks
 * Extensible and modular architecture
