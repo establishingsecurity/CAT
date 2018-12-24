@@ -9,7 +9,7 @@ from hypothesis.strategies import integers, sampled_from, text
 
 from gmpy2 import mpz, next_prime, powmod
 
-from .attacks import *
+from cat.rsa.attacks import *
 
 
 @pytest.fixture()
