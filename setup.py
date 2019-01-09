@@ -5,12 +5,11 @@ from setuptools import find_packages, setup
 
 version = "0.0.3"
 
-# here = path.abspath(path.dirname(__file__))
+here = path.abspath(path.dirname(__file__))
 
-# # Get the long description from the README file
-# with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-#     readme = f.read()
-readme = ""
+# Get the long description from the README file
+with open(path.join(here, "README.md"), encoding="utf-8") as f:
+    readme = f.read()
 
 REQUIRES = [
     "gmpy2",
@@ -22,7 +21,7 @@ REQUIRES = [
     "bitstring",
     "numpy",
     "python-flint",
-    "sympy"
+    "sympy",
 ]
 
 setup(
@@ -47,14 +46,13 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
     ],
     packages=find_packages(),
     install_requires=REQUIRES,
     extras_require={
-        "dev": ["ipython", "black", "isort"],
+        "dev": ["ipython"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
         "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "format": ["pytest-black", "pytest-isort"],
+        "format": ["isort", "black", "pytest-black", "pytest-isort"],
     },
 )
