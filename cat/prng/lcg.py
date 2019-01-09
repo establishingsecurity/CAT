@@ -1,5 +1,6 @@
 import gmpy2
 from flint import fmpz_mat
+from itertools import product
 
 
 def construct_lattice(m, a, size):
@@ -42,3 +43,28 @@ def reconstruct_lower_bits(L, m, ys):
 
 def retrieve_state(m, a, b, z):
     return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
+
+def reconstruct_initial_state(m, a, b, ys):
+    """
+    Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
+    :math:`L \\cdot xs = 0 \\mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
+    It works by computing a smaller basis :math:`B` from the basis :math:`L` and solving equations in the smaller basis.
+
+    :param m: The modulus used for all the equations
+    :param a: The multiplier used for all the equations
+    :param b: The increment used for all the equations
+    :param ys: Partial solutions for the variables (xs = ys + zs)
+    :return: The remaining operands of the solutions zs
+    """
+    size = len(ys) - 1
+    L = construct_lattice(m, a, size)
+    yprimes = [[(y - yp)%m, (y - yp - 1)%m] for (y, yp) in zip(ys[1:], ys[:-1])]
+
+    zss = [reconstruct_lower_bits(L, m, row) for row in product(*yprimes)]
+    return [zs[0] for zs in zss]
+
+# SolveLCG[a_, b_, r_, lh1_, lh2_, lh3_, lh4_] := 
+#     Flatten[Table[SolveMCG[a, b, r, h1, h2, h3],
+#                  {h1, Mod[{lh2 - lh1 - 1, lh2 - lh1}, 2^(b - r)]},
+#                  {h2, Mod[{lh3 - lh2 - 1, lh3 - lh2}, 2^(b - r)]},
+#                  {h3, Mod[{lh4 - lh3 - 1, lh4 - lh3}, 2^(b - r)]}], 3]
