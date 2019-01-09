@@ -213,6 +213,7 @@ def test_reconstruct_upper_bits_prime_512(s):
 
 
 @given(integers(2))
+@pytest.mark.xfail()
 def test_reconstruct_lower_bits_prime_30_with_constant(s):
     """
     TODO: fixme
@@ -237,5 +238,26 @@ def test_reconstruct_lower_bits_prime_30_with_constant(s):
     zs = reconstruct_lower_bits(L, m, lemuhr_style_lcg)
     z_prime = retrieve_state(m, a, b, zs[0])
 
+    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+    assert xs[0] == (ys[0] + z_prime) % m
+
+@example(s=252_291_025)
+@given(integers(2))
+def test_predict_lcg_glibc_params(s):
+    a = 1_103_515_245
+    b = 12345
+    m = 2 ** 32
+    s %= m
+    shift = 32 - 16
+    size = 5
+
+    xs = [(a ** i * s + b) % m for i in range(1, size + 1)]
+
+    ys = blank_lower_bits(xs, shift)
+    recovered_zs = reconstruct_initial_state(m, a, b, ys)
+
+    lehmer_init_state = ((a-1) * s + b)
+    print("Real values:\t{}".format(lehmer_init_state))
+    print(recovered_zs)
+    # assert xs[0] == (ys[0] + zs[0]) % m
     # assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-    # assert xs[0] == (ys[0] + z_prime) % m
