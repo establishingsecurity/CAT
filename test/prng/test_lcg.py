@@ -1,5 +1,4 @@
 import pytest
-
 from hypothesis import assume, example, given, settings
 from hypothesis.strategies import floats, integers
 
@@ -254,7 +253,7 @@ def test_predict_lcg_glibc_params(s):
 
     def _generate(state):
         for i in range(size):
-            yield state
+            yield state  # TODO: dump the state after updating?
             state = (a * state + b) % m
 
     xs = list(_generate(s))
@@ -263,7 +262,9 @@ def test_predict_lcg_glibc_params(s):
     lehmer_style_lcg = [(xp - x) % m for xp, x in zip(xs[1:], xs)]
     # yprimes = [[(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)]
     blanked = blank_lower_bits(lehmer_style_lcg, shift)
-    yprimes = [[(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)]
+    yprimes = [
+        [(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)
+    ]
     print("Blanked in guessed? {}".format(tuple(blanked) in product(*yprimes)))
 
     # print(f'ACTUAL   {blanked[0]:032b}')
@@ -273,15 +274,18 @@ def test_predict_lcg_glibc_params(s):
     # if tuple(blanked) in pyp:
     #    print(pyp)
     #    print(lehmer_style_lcg)
-    #recovered_zs = reconstruct_initial_state(m, a, b, ys, shift)
+    # recovered_zs = reconstruct_initial_state(m, a, b, ys, shift)
 
-    L = construct_lattice(m, a, size-1) # DONTCOPY
-    recovered_zs = [int(y + z) % m for y, z in zip(blanked, reconstruct_lower_bits(L, m, list(blanked)))]
+    L = construct_lattice(m, a, size - 1)  # DONTCOPY
+    recovered_zs = [
+        int(y + z) % m
+        for y, z in zip(blanked, reconstruct_lower_bits(L, m, list(blanked)))
+    ]
 
     lehmer_init_states = [(a ** i * (a - 1) * s + b) % m for i in range(10)]
-    print('Lehmer real: {}'.format(lehmer_init_states))
-    print('Recovered: {}'.format(recovered_zs))
-    print('Intersection: {}'.format(set(lehmer_init_states) & set(recovered_zs)))
-    print('')
+    print("Lehmer real: {}".format(lehmer_init_states))
+    print("Recovered: {}".format(recovered_zs))
+    print("Intersection: {}".format(set(lehmer_init_states) & set(recovered_zs)))
+    print("")
     # assert xs[0] == (ys[0] + zs[0]) % m
     # assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
