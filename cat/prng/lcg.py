@@ -44,7 +44,8 @@ def reconstruct_lower_bits(L, m, ys):
 def retrieve_state(m, a, b, z):
     return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
 
-def reconstruct_initial_state(m, a, b, ys):
+
+def reconstruct_initial_state(m, a, b, ys, shift):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
     :math:`L \\cdot xs = 0 \\mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
@@ -58,10 +59,10 @@ def reconstruct_initial_state(m, a, b, ys):
     """
     size = len(ys) - 1
     L = construct_lattice(m, a, size)
-    yprimes = [[(y - yp)%m, (y - yp - 1)%m] for (y, yp) in zip(ys[1:], ys[:-1])]
+    yprimes = [[(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)]
 
     zss = [reconstruct_lower_bits(L, m, row) for row in product(*yprimes)]
-    return [zs[0] for zs in zss]
+    return [int(x + z) % m for zs in zss for x, z in zip(ys, zs)]
 
 # SolveLCG[a_, b_, r_, lh1_, lh2_, lh3_, lh4_] := 
 #     Flatten[Table[SolveMCG[a, b, r, h1, h2, h3],
