@@ -42,7 +42,17 @@ def reconstruct_lower_bits(L, m, ys):
 
 
 def retrieve_state(m, a, b, z):
-    return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
+    # return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
+    # (a - 1) * s + b = z (mod m)
+    a = a - 1
+    z = (z - b) % m
+    # a * s = z (mod m)
+    d = gmpy2.gcd(a, m)
+    if z % d != 0:
+        raise Exception('Cannot retrieve state')
+    # (a*s)//d = z//d (mod m//d)
+    a_inv = gmpy2.invert(a // d, m // d)
+    return [(((z // d) * a_inv) + m // d * k) % m for k in range(0, d)]
 
 
 def reconstruct_initial_state(m, a, b, ys, shift):
