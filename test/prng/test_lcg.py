@@ -1,3 +1,5 @@
+from functools import reduce
+
 import pytest
 from hypothesis import assume, example, given, settings
 from hypothesis.strategies import floats, integers
@@ -283,9 +285,11 @@ def test_predict_lcg_glibc_params(s):
     ]
 
     lehmer_init_states = [(a ** i * (a - 1) * s + b) % m for i in range(10)]
+    recovered_state = retrieve_state(m, a, b, recovered_zs[0])
     print("Lehmer real: {}".format(lehmer_init_states))
     print("Recovered: {}".format(recovered_zs))
     print("Intersection: {}".format(set(lehmer_init_states) & set(recovered_zs)))
     print("")
+    assert s in recovered_state
     # assert xs[0] == (ys[0] + zs[0]) % m
     # assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
