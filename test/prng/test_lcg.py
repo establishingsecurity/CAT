@@ -68,6 +68,7 @@ def test_reconstruct_lehmer_lower_sanity():
 
 
 @settings(max_examples=500)
+@example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lehmer_lower(rng_params, s):
     m, a, b, shift, size = rng_params
@@ -90,6 +91,7 @@ def test_reconstruct_lehmer_lower(rng_params, s):
 
 
 @settings(max_examples=500)
+@example(s=252_291_025)
 @given(integers(2))
 def test_reconstruct_lcg_lower(rng_params, s):
     m, a, b, shift, size = rng_params
@@ -172,7 +174,7 @@ def test_reconstruct_upper_bits_prime_64(s):
 def test_reconstruct_upper_bits_prime_512(s):
     m = int(next_prime(2 ** 512))
     a = int(next_prime(2 ** 256))
-    size = 10
+    size = 25
     xs = [(a ** i * s) % m for i in range(1, size + 1)]
 
     ys = blank_lower_bits(xs, 384)
@@ -184,67 +186,11 @@ def test_reconstruct_upper_bits_prime_512(s):
     assert xs[0] == (recovered_ys[0] + zs[0]) % m
 
 
-@given(integers(2))
-@pytest.mark.xfail()
-def test_reconstruct_lower_bits_prime_30_with_constant(s):
-    """
-    TODO: fixme
-    """
-    m = int(next_prime(2 ** 32))
-    a = int(next_prime(2 ** 30))
-    b = int(next_prime(2 ** 10))
-    s %= m
-    shift = 32 - 16
-    size = 20
-
-    def _generate(state):
-        for i in range(size):
-            state = (a * state + b) % m
-            yield state
-
-    xs = list(_generate(s))
-    L = construct_lattice(m, a, size - 1)
-
-    ys = blank_lower_bits(xs, shift)
-    lehmer_style_lcg = [xp - x for xp, x in zip(ys[1:], ys)]
-    zs = reconstruct_lehmer_lower(L, m, lehmer_style_lcg)
-    z_prime = retrieve_states(m, a, b, zs[0])
-
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-    assert xs[0] == (ys[0] + z_prime) % m
-
-
 @example(s=252_291_025)
 @given(integers(2))
-def test_predict_lcg_glibc_params(s):
-    a = 1_103_515_245
-    b = 12345
-    m = 2 ** 32
+def test_viable_lcg_state_glibc_params(rng_paramss):
+    m, a, b, shift, size = rng_params
     s %= m
-    shift = 32 - 16
-    size = 5
-
-    def _generate_lcg_states(state):
-        for i in range(size):
-            state = (a * state + b) % m
-            yield state
-
-    states = list(_generate_lcg_states(s))
-    higher = blank_lower_bits(states, shift)
-
-    recovered_state = reconstruct_lcg_state(m, a, b, higher, shift)
-    assert states[0] in recovered_state
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_viable_lcg_state_glibc_params(s):
-    a = 1_103_515_245
-    b = 12345
-    m = 2 ** 32
-    s %= m
-    shift = 32 - 16
-    size = 5
 
     def _generate_lcg_states(state):
         for i in range(size):
