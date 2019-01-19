@@ -7,35 +7,48 @@ from hypothesis.strategies import floats, integers
 from cat.prng.lcg import *
 from gmpy2 import mpz, next_prime
 
+
 def glibc_params():
     return (
-        2 ** 32,    # m
-        1103515245, # a
-        12345,      # b
-        16,         # shift
-        10          # number of samples
+        2 ** 32,  # m
+        1_103_515_245,  # a
+        12345,  # b
+        16,  # shift
+        10,  # number of samples
     )
 
 
 def java_params():
     return (
-        2 ** 48,        # m
-        0x5DEECE66D,    # a
-        0xb,            # b
-        48 - 16,        # shift
-        10              # number of samples
+        2 ** 48,  # m
+        0x5DEECE66D,  # a
+        0xB,  # b
+        48 - 16,  # shift
+        10,  # number of samples
     )
 
 
-@pytest.fixture(scope="module", params = [32, 64, 128, 256, glibc_params, java_params])
+def prime_params():
+    return (
+        int(next_prime(2 ** 128)),  # m
+        int(next_prime(2 ** 64)),  # a
+        int(next_prime(2 ** 32)),  # b
+        64,  # shift
+        10,  # number of samples
+    )
+
+
+@pytest.fixture(
+    scope="module", params=[32, 64, 128, 256, glibc_params, java_params, prime_params]
+)
 def rng_params(request):
     if isinstance(request.param, int):
         n = request.param
         m = int(next_prime(2 ** n))
-        a = int(next_prime(2 ** (n//2)))
+        a = int(next_prime(2 ** (n // 2)))
         # Chosen by fair dice roll
-        b = (2**(n//4)) + 4
-        shift = (n//2)
+        b = (2 ** (n // 4)) + 4
+        shift = n // 2
         sample_size = 5 if n < 128 else 20
 
         yield (m, a, b, shift, sample_size)
@@ -93,6 +106,7 @@ def test_reconstruct_lcg_lower(rng_params, s):
 
     assert states[0] in candidate_states
 
+
 @given(integers(2))
 def test_reconstruct_lehmer_lower_few_outputs(rng_params, s):
     m, a, b, shift, size = rng_params
@@ -112,6 +126,7 @@ def test_reconstruct_lehmer_lower_few_outputs(rng_params, s):
     # TODO: Maybe throw an exception for to few states?
     assert states[0] != (higher[0] + lower[0]) % m
     assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
+
 
 def test_reconstruct_lehmer_lower_few_bits():
     m = int(next_prime(2 ** 256))
@@ -217,8 +232,9 @@ def test_predict_lcg_glibc_params(s):
     states = list(_generate_lcg_states(s))
     higher = blank_lower_bits(states, shift)
 
-    recovered_state = reconstruct_lcg_state(m,a,b,higher,shift)
+    recovered_state = reconstruct_lcg_state(m, a, b, higher, shift)
     assert states[0] in recovered_state
+
 
 @example(s=252_291_025)
 @given(integers(2))
@@ -239,4 +255,3 @@ def test_viable_lcg_state_glibc_params(s):
     higher = blank_lower_bits(states, shift)
 
     assert viable_lcg_state(m, a, b, states[0], higher[-1], shift)
-
