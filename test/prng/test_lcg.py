@@ -38,9 +38,7 @@ def prime_params():
     )
 
 
-@pytest.fixture(
-    scope="module", params=[32, 64, 128, 256, glibc_params, java_params, prime_params]
-)
+@pytest.fixture(params=[32, 64, 128, 256, glibc_params, java_params, prime_params])
 def rng_params(request):
     if isinstance(request.param, int):
         n = request.param
@@ -188,7 +186,7 @@ def test_reconstruct_upper_bits_prime_512(s):
 
 @example(s=252_291_025)
 @given(integers(2))
-def test_viable_lcg_state_glibc_params(rng_paramss):
+def test_viable_lcg_state_glibc_params(rng_params, s):
     m, a, b, shift, size = rng_params
     s %= m
 
