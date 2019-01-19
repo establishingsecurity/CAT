@@ -13,7 +13,7 @@ def construct_lattice(m, a, size):
     return L
 
 
-def reconstruct_lower_bits(L, m, ys):
+def reconstruct_lehmer_lower(L, m, ys):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
     :math:`L \\cdot xs = 0 \\mod m` for solution :math:`xs`, where :math:`xs = ys + zs`.
@@ -42,7 +42,7 @@ def reconstruct_lower_bits(L, m, ys):
     return [z.numer() % m for z in zs]
 
 
-def retrieve_state(m, a, b, z):
+def retrieve_states(m, a, b, z):
     # return ((z - b) * int(gmpy2.invert(a - 1, m))) % m
     # (a - 1) * s + b = z (mod m)
     a = a - 1
@@ -56,12 +56,13 @@ def retrieve_state(m, a, b, z):
     return [(((z // d) * a_inv) + m // d * k) % m for k in range(0, d)]
 
 
-def reconstruct_initial_state(m, a, b, highs, shift):
+def reconstruct_lcg_state(m, a, b, highs, shift):
     """
     :param m: The modulus used for all the equations
     :param a: The multiplier used for all the equations
     :param b: The increment used for all the equations
-    :param ys: Partial solutions for the variables (xs = ys + zs)
+    :param highs: Partial solutions for the variables (xs = ys + zs)
+    :param shift: Number of bits that
     :return: The remaining operands of the solutions zs
     """
     size = len(highs) - 1
@@ -79,15 +80,36 @@ def reconstruct_initial_state(m, a, b, highs, shift):
     for delta_highs in product(*delta_high_options):
         delta_highs = list(delta_highs)
         # Recover possible lower bits of (a - 1) * s + b (lehmerized states)
-        delta_lows = [int(z) % m for z in reconstruct_lower_bits(L, m, delta_highs)]
-        delta_states = [(y + z) % m for y, z in zip(delta_higs, delta_lows)]
-        state = retrieve_state(m, a, b, delta_states[0])
+        delta_lows = [int(z) % m for z in reconstruct_lehmer_lower(L, m, delta_highs)]
+        delta_states = [(y + z) % m for y, z in zip(delta_highs, delta_lows)]
+        states = retrieve_states(m, a, b, delta_states[0])
         # TODO: Check if this state is correct by testing if it predicts the highs
-    return [int(x + z) % m for zs in zss for x, z in zip(ys, zs)]
+        for state in states:
+            yield state
+
+def lcg_step_state(m, a, b, state, n=10):
+    for _ in range(n):
+        yield (a * state + b) % m
+
+def blank_lower_bits(v, n=None):
+    if n is None:
+        n = v.bit_length() // 2
+    return v - (v % 2 ** n)
 
 
-# SolveLCG[a_, b_, r_, lh1_, lh2_, lh3_, lh4_] :=
-#     Flatten[Table[SolveMCG[a, b, r, h1, h2, h3],
-#                  {h1, Mod[{lh2 - lh1 - 1, lh2 - lh1}, 2^(b - r)]},
-#                  {h2, Mod[{lh3 - lh2 - 1, lh3 - lh2}, 2^(b - r)]},
-#                  {h3, Mod[{lh4 - lh3 - 1, lh4 - lh3}, 2^(b - r)]}], 3]
+def viable_lcg_state(m, a, b, state, highs, shift):
+    """
+    This predicate is true if the state is consistent with the following high outputs
+
+    :param m: The modulus used for all the equations
+    :param a: The multiplier used for all the equations
+    :param b: The increment used for all the equations
+    :param state:
+    :param highs:
+    :return:
+    """
+    states = lcg_step_state(m, a, b, state, len(highs))
+    return all(map(lambda s: blank_lower_bits(s[0], shift) == s[1], [(s,h) for s, h in zip(states,highs)]))
+
+
+

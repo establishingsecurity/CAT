@@ -7,176 +7,132 @@ from hypothesis.strategies import floats, integers
 from cat.prng.lcg import *
 from gmpy2 import mpz, next_prime
 
+def glibc_params():
+    return (
+        2 ** 32,    # m
+        1103515245, # a
+        12345,      # b
+        16,         # shift
+        10          # number of samples
+    )
 
-def blank_lower_bits(v, n=None):
-    if n is None:
-        n = max([e.bit_length() // 2 for e in v])
-    return [x - (x % 2 ** n) for x in v]
+
+def java_params():
+    return (
+        2 ** 48,        # m
+        0x5DEECE66D,    # a
+        0xb,            # b
+        48 - 16,        # shift
+        10              # number of samples
+    )
 
 
-def test_reconstruct_lower_bits_sanity():
+@pytest.fixture(scope="module", params = [32, 64, 128, 256, glibc_params, java_params])
+def rng_params(request):
+    if isinstance(request.param, int):
+        n = request.param
+        m = int(next_prime(2 ** n))
+        a = int(next_prime(2 ** (n//2)))
+        # Chosen by fair dice roll
+        b = (2**(n//4)) + 4
+        shift = (n//2)
+        sample_size = 5 if n < 128 else 20
+
+        yield (m, a, b, shift, sample_size)
+    else:
+        yield request.param()
+
+
+def test_reconstruct_lehmer_lower_sanity():
     m = 4_294_967_291
     a = 598_176_085
     s = 252_291_025
     L = [[m, 0, 0, 0], [a, -1, 0, 0], [a ** 2, 0, -1, 0], [a ** 3, 0, 0, -1]]
     xs = [1_477_951_715, 3_597_964_208, 2_802_631_510, 3_169_049_466]
-    ys = blank_lower_bits(xs, 16)
-    zs = reconstruct_lower_bits(L, m, ys)
+    ys = [blank_lower_bits(x, 16) for x in xs]
+    zs = reconstruct_lehmer_lower(L, m, ys)
     assert zs == [49379, 37808, 50006, 56186]
 
 
-def test_reconstruct_lower_bits_few_outputs():
-    m = int(next_prime(2 ** 64))
-    a = int(next_prime(2 ** 30))
-    s = 252_291_025
-    shift = 64 - 32
-    size = 2
+@settings(max_examples=500)
+@given(integers(2))
+def test_reconstruct_lehmer_lower(rng_params, s):
+    m, a, b, shift, size = rng_params
+    s %= m
 
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    def _generate_lehmer_states(state):
+        for i in range(size):
+            state = (a * state) % m
+            yield state
+
+    states = list(_generate_lehmer_states(s))
+    higher = [blank_lower_bits(state, shift) for state in states]
     L = construct_lattice(m, a, size)
+    lower = reconstruct_lehmer_lower(L, m, higher)
 
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    # Only two states should not be able to predictable (even information theoretically?)
-    assert xs[0] != (ys[0] + zs[0]) % m
-    assert all((x != y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-def test_reconstruct_lower_bits_few_bits():
-    m = int(next_prime(2 ** 512))
-    a = int(next_prime(2 ** 128))
-    s = 252_291_025
-    shift = 512 - 32
-    size = 15
-
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    L = construct_lattice(m, a, size)
-
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    # Only a few bits should not be able to predictable (even information theoretically?)
-    assert xs[0] != (ys[0] + zs[0]) % m
-    assert all((x != y + z % m) for x, y, z in zip(xs, ys, zs))
+    diff = states[0] - ((higher[0] + lower[0]) % m)
+    assert diff == 0
+    assert states[0] == (higher[0] + lower[0]) % m
+    assert all((x == y + z % m) for x, y, z in zip(states, higher, lower))
 
 
 @settings(max_examples=500)
-@example(s=252_291_025)
 @given(integers(2))
-def test_reconstruct_lower_bits_prime_30(s):
-    m = int(next_prime(2 ** 32))
-    a = int(next_prime(2 ** 30))
+def test_reconstruct_lcg_lower(rng_params, s):
+    m, a, b, shift, size = rng_params
     s %= m
-    shift = 32 - 16
-    size = 20
 
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    def _generate_lcg_states(state):
+        for i in range(size):
+            state = (a * state + b) % m
+            yield state
+
+    states = list(_generate_lcg_states(s))
+    higher = [blank_lower_bits(state, shift) for state in states]
+    candidate_states = reconstruct_lcg_state(m, a, b, higher, shift)
+
+    assert states[0] in candidate_states
+
+@given(integers(2))
+def test_reconstruct_lehmer_lower_few_outputs(rng_params, s):
+    m, a, b, shift, size = rng_params
+    s %= m
+    size = 1
+
+    def _generate_lehmer_states(state):
+        for i in range(size):
+            state = (a * state) % m
+            yield state
+
+    states = list(_generate_lehmer_states(s))
+    higher = [blank_lower_bits(state, shift) for state in states]
     L = construct_lattice(m, a, size)
+    lower = reconstruct_lehmer_lower(L, m, higher)
 
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
+    # TODO: Maybe throw an exception for to few states?
+    assert states[0] != (higher[0] + lower[0]) % m
+    assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
 
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_reconstruct_lower_bits_glibc_params(s):
-    a = 1_103_515_245
-    # b = 12345
-    m = 2 ** 32
-    s %= m
-    shift = 32 - 16
-    size = 5
-
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    L = construct_lattice(m, a, size)
-
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_reconstruct_lower_bits_java_params(s):
-    m = 2 ** 48
-    a = 0x5DEECE66D
-    # b = 0xbl
-    s %= m
-    shift = 48 - 16
-    size = 5
-
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    L = construct_lattice(m, a, size)
-
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_reconstruct_lower_bits_prime_60(s):
-    m = int(next_prime(2 ** 64))
-    a = int(next_prime(2 ** 32))
-    s %= m
-    shift = 64 - 16
-    size = 10
-
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    L = construct_lattice(m, a, size)
-
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_reconstruct_lower_bits_prime_128(s):
-    m = int(next_prime(2 ** 128))
-    a = int(next_prime(2 ** 64))
-    s %= m
-    shift = 128 - 64
-    size = 10
-
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-    L = construct_lattice(m, a, size)
-
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
-
-
-@example(s=252_291_025)
-@given(integers(2))
-@pytest.mark.slow
-def test_reconstruct_lower_bits_prime_512(s):
-    m = int(next_prime(2 ** 512))
-    a = int(next_prime(2 ** 256))
-    s %= m
-    shift = 512 - 256 - 128
+def test_reconstruct_lehmer_lower_few_bits():
+    m = int(next_prime(2 ** 256))
+    a = int(next_prime(2 ** 128))
+    s = 252_291_025
+    shift = 256 - 16
     size = 15
 
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
+    def _generate_lehmer_states(state):
+        for i in range(size):
+            state = (a * state) % m
+            yield state
+
+    states = list(_generate_lehmer_states(s))
+    higher = [blank_lower_bits(state, shift) for state in states]
     L = construct_lattice(m, a, size)
+    lower = reconstruct_lehmer_lower(L, m, higher)
 
-    ys = blank_lower_bits(xs, shift)
-    zs = reconstruct_lower_bits(L, m, ys)
-
-    assert xs[0] == (ys[0] + zs[0]) % m
-    assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+    # Only a few bits should not be able to predictable
+    assert states[0] != (higher[0] + lower[0]) % m
+    assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
 
 
 @given(integers(2))
@@ -191,7 +147,7 @@ def test_reconstruct_upper_bits_prime_64(s):
     zs = [x - y for x, y in zip(xs, ys)]
     L = construct_lattice(m, a, size)
 
-    recovered_ys = reconstruct_lower_bits(L, m, zs)
+    recovered_ys = reconstruct_lehmer_lower(L, m, zs)
 
     assert xs[0] == (recovered_ys[0] + zs[0]) % m
 
@@ -208,7 +164,7 @@ def test_reconstruct_upper_bits_prime_512(s):
     zs = [x - y for x, y in zip(xs, ys)]
     L = construct_lattice(m, a, size)
 
-    recovered_ys = reconstruct_lower_bits(L, m, zs)
+    recovered_ys = reconstruct_lehmer_lower(L, m, zs)
 
     assert xs[0] == (recovered_ys[0] + zs[0]) % m
 
@@ -236,8 +192,8 @@ def test_reconstruct_lower_bits_prime_30_with_constant(s):
 
     ys = blank_lower_bits(xs, shift)
     lehmer_style_lcg = [xp - x for xp, x in zip(ys[1:], ys)]
-    zs = reconstruct_lower_bits(L, m, lehmer_style_lcg)
-    z_prime = retrieve_state(m, a, b, zs[0])
+    zs = reconstruct_lehmer_lower(L, m, lehmer_style_lcg)
+    z_prime = retrieve_states(m, a, b, zs[0])
 
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
     assert xs[0] == (ys[0] + z_prime) % m
@@ -253,43 +209,34 @@ def test_predict_lcg_glibc_params(s):
     shift = 32 - 16
     size = 5
 
-    def _generate(state):
+    def _generate_lcg_states(state):
         for i in range(size):
-            yield state  # TODO: dump the state after updating?
             state = (a * state + b) % m
+            yield state
 
-    xs = list(_generate(s))
-    ys = blank_lower_bits(xs, shift)
+    states = list(_generate_lcg_states(s))
+    higher = blank_lower_bits(states, shift)
 
-    lehmer_style_lcg = [(xp - x) % m for xp, x in zip(xs[1:], xs)]
-    # yprimes = [[(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)]
-    blanked = blank_lower_bits(lehmer_style_lcg, shift)
-    yprimes = [
-        [(y - yp) % m, (y - yp - pow(2, shift)) % m] for (y, yp) in zip(ys[1:], ys)
-    ]
-    print("Blanked in guessed? {}".format(tuple(blanked) in product(*yprimes)))
+    recovered_state = reconstruct_lcg_state(m,a,b,higher,shift)
+    assert states[0] in recovered_state
 
-    # print(f'ACTUAL   {blanked[0]:032b}')
-    # print(f'PROPOSE1 {yprimes[0][0]:032b}')
-    # print(f'PROPOSE2 {yprimes[0][1]:032b}')
-    # pyp = list(product(*yprimes))
-    # if tuple(blanked) in pyp:
-    #    print(pyp)
-    #    print(lehmer_style_lcg)
-    # recovered_zs = reconstruct_initial_state(m, a, b, ys, shift)
+@example(s=252_291_025)
+@given(integers(2))
+def test_viable_lcg_state_glibc_params(s):
+    a = 1_103_515_245
+    b = 12345
+    m = 2 ** 32
+    s %= m
+    shift = 32 - 16
+    size = 5
 
-    L = construct_lattice(m, a, size - 1)  # DONTCOPY
-    recovered_zs = [
-        int(y + z) % m
-        for y, z in zip(blanked, reconstruct_lower_bits(L, m, list(blanked)))
-    ]
+    def _generate_lcg_states(state):
+        for i in range(size):
+            state = (a * state + b) % m
+            yield state
 
-    lehmer_init_states = [(a ** i * (a - 1) * s + b) % m for i in range(10)]
-    recovered_state = retrieve_state(m, a, b, recovered_zs[0])
-    print("Lehmer real: {}".format(lehmer_init_states))
-    print("Recovered: {}".format(recovered_zs))
-    print("Intersection: {}".format(set(lehmer_init_states) & set(recovered_zs)))
-    print("")
-    assert s in recovered_state
-    # assert xs[0] == (ys[0] + zs[0]) % m
-    # assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
+    states = list(_generate_lcg_states(s))
+    higher = blank_lower_bits(states, shift)
+
+    assert viable_lcg_state(m, a, b, states[0], higher[-1], shift)
+
