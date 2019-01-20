@@ -24,7 +24,7 @@
 
 3. Install the library (with all optional requirements):
 
-    Note: python setup.py install will not install optional
+    Note: `python setup.py install` will not install optional
     dependencies which are required for development. Use:
 
     ```
