@@ -3,6 +3,8 @@ import logging
 import gmpy2
 from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
+PRECISION_BITS = 2048
+
 
 def factor(N):
     # type: mpz
@@ -25,13 +27,8 @@ def factor(N):
     if N & 1 == 0:
         raise ValueError("Expected N to be odd, was {}".format(N))
 
-    logger = logging.getLogger(LOGGER)
-
-    bits = 2048
-    if gmpy2.get_context().precision < bits:
-        logger.warning(
-            "Precision of gmpy2 is too low, consider >= {} bits".format(bits)
-        )
+    if gmpy2.get_context().precision < PRECISION_BITS:
+        adjust_gmpy2_precision(PRECISION_BITS)
 
     a = gmpy2.mpz(gmpy2.ceil(gmpy2.sqrt(N)))
     b = a * a - N
@@ -43,6 +40,26 @@ def factor(N):
     result = a - gmpy2.mpz(gmpy2.sqrt(b))
 
     return result
+
+
+def adjust_gmpy2_precision(precision):
+    logger = logging.getLogger(LOGGER)
+
+    context = gmpy2.get_context()
+
+    expected, observed = precision, context.precision
+
+    logger.warning(
+        "Expected gmpy2 context to have at least {} bits of precision, was {}".format(
+            expected, observed
+        )
+    )
+
+    context.precision = expected
+
+    logger.warning(
+        "Changed gmpy2 context to have {} bits of precision".format(expected)
+    )
 
 
 if __name__ == "__main__":
