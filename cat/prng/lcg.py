@@ -1,4 +1,5 @@
 from __future__ import division
+
 from itertools import product
 
 import gmpy2
