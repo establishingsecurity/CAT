@@ -22,7 +22,7 @@ REQUIRES = [
     "bitstring",
     "numpy",
     "python-flint",
-    "sympy"
+    "sympy",
 ]
 
 setup(
@@ -52,9 +52,9 @@ setup(
     packages=find_packages(),
     install_requires=REQUIRES,
     extras_require={
-        "dev": ["ipython", "black", "isort"],
+        "dev": ["ipython"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
         "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "format": ["pytest-black", "pytest-isort"],
+        "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
 )
