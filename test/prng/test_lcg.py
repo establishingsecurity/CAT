@@ -11,7 +11,7 @@ from gmpy2 import mpz, next_prime
 def glibc_params():
     return (
         2 ** 32,  # m
-        1_103_515_245,  # a
+        1103515245,  # a
         12345,  # b
         16,  # shift
         10,  # number of samples
@@ -137,7 +137,6 @@ def test_reconstruct_lehmer_lower_few_bits():
     # Only a few bits should not be able to predictable
     assert states[0] != (higher[0] + lower[0]) % m
     assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
-
 
 
 @example(s=252291025)
