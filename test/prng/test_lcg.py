@@ -54,19 +54,8 @@ def rng_params(request):
         yield request.param()
 
 
-def test_reconstruct_lehmer_lower_sanity():
-    m = 4_294_967_291
-    a = 598_176_085
-    s = 252_291_025
-    L = [[m, 0, 0, 0], [a, -1, 0, 0], [a ** 2, 0, -1, 0], [a ** 3, 0, 0, -1]]
-    xs = [1_477_951_715, 3_597_964_208, 2_802_631_510, 3_169_049_466]
-    ys = [blank_lower_bits(x, 16) for x in xs]
-    zs = reconstruct_lehmer_lower(L, m, ys)
-    assert zs == [49379, 37808, 50006, 56186]
-
-
 @settings(max_examples=500)
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lehmer_lower(rng_params, s):
     m, a, b, shift, size = rng_params
@@ -89,7 +78,7 @@ def test_reconstruct_lehmer_lower(rng_params, s):
 
 
 @settings(max_examples=500)
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lcg_lower(rng_params, s):
     m, a, b, shift, size = rng_params
@@ -102,9 +91,9 @@ def test_reconstruct_lcg_lower(rng_params, s):
 
     states = list(_generate_lcg_states(s))
     higher = [blank_lower_bits(state, shift) for state in states]
-    candidate_states = reconstruct_lcg_state(m, a, b, higher, shift)
+    candidate_state = next(reconstruct_lcg_state(m, a, b, higher, shift))
 
-    assert states[0] in candidate_states
+    assert states[0] == candidate_state
 
 
 @given(integers(2))
@@ -131,7 +120,7 @@ def test_reconstruct_lehmer_lower_few_outputs(rng_params, s):
 def test_reconstruct_lehmer_lower_few_bits():
     m = int(next_prime(2 ** 256))
     a = int(next_prime(2 ** 128))
-    s = 252_291_025
+    s = 252291025
     shift = 256 - 16
     size = 15
 
@@ -150,43 +139,10 @@ def test_reconstruct_lehmer_lower_few_bits():
     assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
 
 
+
+@example(s=252291025)
 @given(integers(2))
-@pytest.mark.xfail(reason="Reconstructing upper bits is experimental")
-def test_reconstruct_upper_bits_prime_64(s):
-    m = int(next_prime(2 ** 64))
-    a = 2
-    size = 10
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-
-    ys = blank_lower_bits(xs, 32)
-    zs = [x - y for x, y in zip(xs, ys)]
-    L = construct_lattice(m, a, size)
-
-    recovered_ys = reconstruct_lehmer_lower(L, m, zs)
-
-    assert xs[0] == (recovered_ys[0] + zs[0]) % m
-
-
-@given(integers(2))
-@pytest.mark.xfail(reason="Reconstructing upper bits is experimental")
-def test_reconstruct_upper_bits_prime_512(s):
-    m = int(next_prime(2 ** 512))
-    a = int(next_prime(2 ** 256))
-    size = 25
-    xs = [(a ** i * s) % m for i in range(1, size + 1)]
-
-    ys = blank_lower_bits(xs, 384)
-    zs = [x - y for x, y in zip(xs, ys)]
-    L = construct_lattice(m, a, size)
-
-    recovered_ys = reconstruct_lehmer_lower(L, m, zs)
-
-    assert xs[0] == (recovered_ys[0] + zs[0]) % m
-
-
-@example(s=252_291_025)
-@given(integers(2))
-def test_viable_lcg_state_glibc_params(rng_params, s):
+def test_viable_lcg_state(rng_params, s):
     m, a, b, shift, size = rng_params
     s %= m
 
@@ -196,6 +152,6 @@ def test_viable_lcg_state_glibc_params(rng_params, s):
             yield state
 
     states = list(_generate_lcg_states(s))
-    higher = blank_lower_bits(states, shift)
+    higher = [blank_lower_bits(state, shift) for state in states]
 
-    assert viable_lcg_state(m, a, b, states[0], higher[-1], shift)
+    assert viable_lcg_state(m, a, b, states[0], higher, shift) == True
