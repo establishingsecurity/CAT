@@ -4,6 +4,24 @@ import gmpy2
 from flint import fmpz_mat
 
 
+def lcg_step_state(m, a, b, state, n):
+    for _ in range(n):
+        state = (a * state + b) % m
+        yield state
+
+
+def lehmer_step_state(m, a, state, n):
+    for _ in range(n):
+        state = (a * state) % m
+        yield state
+
+
+def blank_lower_bits(v, n=None):
+    if n is None:
+        n = v.bit_length() // 2
+    return v - (v % 2 ** n)
+
+
 def construct_lattice(m, a, size):
     L = [[m] + (size - 1) * [0]] + [
         ([pow(a, i, m)] + [0] * (i - 1) + [-1] + [0] * (size - i - 1))
@@ -35,7 +53,7 @@ def reconstruct_lehmer_lower(L, m, ys):
     # NB: B * (ys + zs) = m * ks for some ks
     ks = fmpz_mat([[round(int(x) / m)] for x in Bys])
 
-    # We know solve the system of linear equations B zs = m * ks - B ys for zs
+    # We now solve the system of linear equations B zs = m * ks - B ys for zs
     Bzs = m * ks - Bys
     zs = B.solve(Bzs)
     assert all(z.denom() == 1 for z in zs)
@@ -85,16 +103,8 @@ def reconstruct_lcg_state(m, a, b, highs, shift):
         states = retrieve_states(m, a, b, delta_states[0])
         # TODO: Check if this state is correct by testing if it predicts the highs
         for state in states:
-            yield state
-
-def lcg_step_state(m, a, b, state, n=10):
-    for _ in range(n):
-        yield (a * state + b) % m
-
-def blank_lower_bits(v, n=None):
-    if n is None:
-        n = v.bit_length() // 2
-    return v - (v % 2 ** n)
+            if viable_lcg_state(m, a, b, state, highs, shift):
+                yield state
 
 
 def viable_lcg_state(m, a, b, state, highs, shift):
@@ -106,10 +116,13 @@ def viable_lcg_state(m, a, b, state, highs, shift):
     :param b: The increment used for all the equations
     :param state:
     :param highs:
+    :param shift:
     :return:
     """
-    states = lcg_step_state(m, a, b, state, len(highs))
-    return all(map(lambda s: blank_lower_bits(s[0], shift) == s[1], [(s,h) for s, h in zip(states,highs)]))
+    def compare(t):
+        x, y = t
+        return blank_lower_bits(x, shift) == y
 
-
+    states = [state] + list(lcg_step_state(m, a, b, state, len(highs)-1))
+    return all(map(compare, [(x, y) for x, y in zip(states, highs)]))
 
