@@ -1,7 +1,6 @@
-import gmpy2
 import logging
 
-
+import gmpy2
 from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
 
@@ -30,7 +29,7 @@ def factor(N):
 
     bits = 2048
     if gmpy2.get_context().precision < bits:
-        logger.warn(
+        logger.warning(
             "Precision of gmpy2 is too low, consider >= {} bits".format(bits)
         )
 
