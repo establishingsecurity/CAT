@@ -1,3 +1,4 @@
+from __future__ import division
 from itertools import product
 
 import gmpy2
@@ -42,7 +43,7 @@ def reconstruct_lehmer_lower(L, m, ys):
     :param ys: Partial solutions for the variables (xs = ys + zs)
     :return: The remaining operands of the solutions zs
     """
-    L = fmpz_mat([[*row] for row in L])
+    L = fmpz_mat([row for row in L])
     ys = fmpz_mat([[y] for y in ys])
     B = L.lll()
     # Reducing the lattice basis L to a smaller basis B
@@ -51,7 +52,7 @@ def reconstruct_lehmer_lower(L, m, ys):
 
     # TODO: There might be a better solution to find the individual ks
     # NB: B * (ys + zs) = m * ks for some ks
-    ks = fmpz_mat([[round(int(x) / m)] for x in Bys])
+    ks = fmpz_mat([[int(round(int(x) / m))] for x in Bys])
 
     # We now solve the system of linear equations B zs = m * ks - B ys for zs
     Bzs = m * ks - Bys
@@ -119,10 +120,10 @@ def viable_lcg_state(m, a, b, state, highs, shift):
     :param shift:
     :return:
     """
+
     def compare(t):
         x, y = t
         return blank_lower_bits(x, shift) == y
 
-    states = [state] + list(lcg_step_state(m, a, b, state, len(highs)-1))
+    states = [state] + list(lcg_step_state(m, a, b, state, len(highs) - 1))
     return all(map(compare, [(x, y) for x, y in zip(states, highs)]))
-
