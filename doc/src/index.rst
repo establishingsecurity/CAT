@@ -28,7 +28,7 @@ The main ones are the following:
 Installation
 ------------
 
-Soon you should be able to :code:`pip install <InsertPyPi Name>`.
+Soon you should be able to :code:`pip install <InsertPyPi Name>`. For now, refer to :file:`CONTRIBUTE.md` for installation instructions.
 
 .. toctree::
    :maxdepth: 4
