@@ -21,12 +21,12 @@ class TestPMap:
 
         assert pmap(fun, inputs) == outputs
 
-        filter_ = lambda d: d.endswith("0")
+        predicate = lambda d: d.endswith("0")
         outputs = [
             "7110eda4d09e062aa5e4a390b0a572ac0d2c0220",
             "f5a6fe40024c28967a354e591bb9fa21b784bf00",
         ]
-        assert pmap(fun, inputs, filter_=filter_) == outputs
+        assert pmap(fun, inputs, predicate=predicate) == outputs
 
     def test_multiple_inputs(self):
         """Test whether map behaves correctly on multiple inputs."""
@@ -37,9 +37,9 @@ class TestPMap:
         zs = [2, 4, 6, 8, 10]
         assert pmap(fun, xs, ys) == zs
 
-        filter_ = lambda z: z > 5
+        predicate = lambda z: z > 5
         zs = [6, 8, 10]
-        assert pmap(fun, xs, ys, filter_=filter_) == zs
+        assert pmap(fun, xs, ys, predicate=predicate) == zs
 
 
 class TestBruteForce:

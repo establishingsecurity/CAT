@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import functools
 import operator
 
@@ -171,11 +169,12 @@ def attack_batch_gcd(ns):
         ns List[Int]: a list where each element is an RSA modulus
 
     Returns:
-        List[Int]: a list where each position is either one (i.e. the modulus
-            from that position in the input list does not share any primes with
-            any other modulus from the input list) or greater than one. If the
-            value is not one, than it is likely the prime itself or the product
-            of two (?) primes.
+        List[Int]: a list where each element is >= 1
+
+            If the value is one, the original RSA modulus does not share any
+            primes with any other RSA modulus on the list. If the value is > 1,
+            then that value is likely a prime number that divides the modulus.
+            The value could also itself be a product of primes though.
     """
 
     return _attack_batch_gcd_0(ns)
