@@ -1,5 +1,4 @@
 import pytest
-
 from hypothesis import assume, example, given, settings
 from hypothesis.strategies import floats, integers
 
@@ -14,11 +13,11 @@ def blank_lower_bits(v, n=None):
 
 
 def test_reconstruct_lower_bits_sanity():
-    m = 4_294_967_291
-    a = 598_176_085
-    s = 252_291_025
+    m = 4294967291
+    a = 598176085
+    s = 252291025
     L = [[m, 0, 0, 0], [a, -1, 0, 0], [a ** 2, 0, -1, 0], [a ** 3, 0, 0, -1]]
-    xs = [1_477_951_715, 3_597_964_208, 2_802_631_510, 3_169_049_466]
+    xs = [1477951715, 3597964208, 2802631510, 3169049466]
     ys = blank_lower_bits(xs, 16)
     zs = reconstruct_lower_bits(L, m, ys)
     assert zs == [49379, 37808, 50006, 56186]
@@ -27,7 +26,7 @@ def test_reconstruct_lower_bits_sanity():
 def test_reconstruct_lower_bits_few_outputs():
     m = int(next_prime(2 ** 64))
     a = int(next_prime(2 ** 30))
-    s = 252_291_025
+    s = 252291025
     shift = 64 - 32
     size = 2
 
@@ -45,7 +44,7 @@ def test_reconstruct_lower_bits_few_outputs():
 def test_reconstruct_lower_bits_few_bits():
     m = int(next_prime(2 ** 512))
     a = int(next_prime(2 ** 128))
-    s = 252_291_025
+    s = 252291025
     shift = 512 - 32
     size = 15
 
@@ -61,7 +60,7 @@ def test_reconstruct_lower_bits_few_bits():
 
 
 @settings(max_examples=500)
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_30(s):
     m = int(next_prime(2 ** 32))
@@ -80,10 +79,10 @@ def test_reconstruct_lower_bits_prime_30(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lower_bits_glibc_params(s):
-    a = 1_103_515_245
+    a = 1103515245
     # b = 12345
     m = 2 ** 32
     s %= m
@@ -100,7 +99,7 @@ def test_reconstruct_lower_bits_glibc_params(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lower_bits_java_params(s):
     m = 2 ** 48
@@ -120,7 +119,7 @@ def test_reconstruct_lower_bits_java_params(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_60(s):
     m = int(next_prime(2 ** 64))
@@ -139,7 +138,7 @@ def test_reconstruct_lower_bits_prime_60(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 def test_reconstruct_lower_bits_prime_128(s):
     m = int(next_prime(2 ** 128))
@@ -158,7 +157,7 @@ def test_reconstruct_lower_bits_prime_128(s):
     assert all((x == y + z % m) for x, y, z in zip(xs, ys, zs))
 
 
-@example(s=252_291_025)
+@example(s=252291025)
 @given(integers(2))
 @pytest.mark.slow
 def test_reconstruct_lower_bits_prime_512(s):
