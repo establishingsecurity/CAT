@@ -30,11 +30,15 @@ def factor(N):
     if gmpy2.get_context().precision < PRECISION_BITS:
         adjust_gmpy2_precision(PRECISION_BITS)
 
+    logger = logging.getLogger(LOGGER)
+
     a = gmpy2.mpz(gmpy2.ceil(gmpy2.sqrt(N)))
     b = a * a - N
 
     while not gmpy2.is_square(b):
         a, b = a + 1, b + 2 * a + 1
+
+        logger.info('Iteration {} and {}'.format(a, b))
 
     # NOTE: must convert to integer before subtraction
     result = a - gmpy2.mpz(gmpy2.sqrt(b))
