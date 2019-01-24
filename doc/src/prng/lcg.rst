@@ -99,7 +99,7 @@ For the basis :math:`B` and LCG states as a vector :math:`\vec{s}` the equations
     B \cdot \vec{l} &= m \cdot \vec{k} - B \cdot \vec{h}\\
 
 where :math:`\vec{k}` is unknown and :math:`\vec{l}` and :math:`\vec{h}` are the
-low and high bits of the state vector :math:`\vec{s}`, hold true.
+low and high bits of the state vector :math:`\vec{s}`, respectively.
 We expect the unknown :math:`\vec{k}` to be small and can then solve for
 :math:`\vec{l}` when given the high bits of the states :math:`\vec{h}`.
 If we manage to retrieve the low bits :math:`\vec{l}` we can combine them with
