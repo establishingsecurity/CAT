@@ -116,3 +116,44 @@ def check_components(g, p, B=512):
         if 1 < g < p - 1:
             return Result.SAFE_PRIME
     return Result.UNKNOWN
+
+
+def check_private_exponent(a, B=512):
+    """
+    Checks the bit length of the given private exponent.
+
+    If you've asked for a random number of bit length at least :param:`B`, but are retrieving
+    numbers that are smaller than said size, you might want to check your RNG.
+
+    >>> B = 8
+    >>> a = 0b11111111
+    >>> check_private_exponent(a, B)
+    (8, 1)
+    >>> a = 0b1111111
+    >>> check_private_exponent(a, B)
+    (7, 0.5)
+    >>> a = 0b111111
+    >>> check_private_exponent(a, B)
+    (6, 0.25)
+    >>> a = 0b11111
+    >>> check_private_exponent(a, B)
+    (5, 0.125)
+    >>> a = 0b1111
+    >>> check_private_exponent(a, B)
+    (4, 0.0625)
+
+    :param a: The private exponent.
+    :param B: The boundary (i.e. bit length) to check for, defaults to :code:`512` bits.
+    :returns: A tuple containing :param:`a`'s actual bit length and the probability of receiving
+              a number of that bit length from an RNG if you've asked for a number of bit length
+              at least :param:`B`. If :param:`a`'s bit length is greater than :param:`B`, the
+              probability is set to :code:`1`.
+    """
+    bit_len = a.bit_length()
+
+    if bit_len < B:
+        zero_bits = B - bit_len
+        probability = 1 / 2 ** zero_bits
+
+        return (bit_len, probability)
+    return (bit_len, 1)
