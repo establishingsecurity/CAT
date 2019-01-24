@@ -53,6 +53,6 @@ setup(
         "dev": ["ipython"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
         "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "format": ["isort", "black", "pytest-black", "pytest-isort"],
+        "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
 )
