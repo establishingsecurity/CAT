@@ -48,8 +48,28 @@ def non_prime_params():
     )
 
 
+def few_bit_params():
+    return (
+        2 ** 32,  # m
+        1103515245,  # a
+        12345,  # b
+        28,  # shift, only 4 bits of output
+        25,  # number of samples
+    )
+
+
 @pytest.fixture(
-    params=[32, 64, 128, 256, glibc_params, java_params, prime_params, non_prime_params]
+    params=[
+        32,
+        64,
+        128,
+        256,
+        glibc_params,
+        java_params,
+        prime_params,
+        non_prime_params,
+        few_bit_params,
+    ]
 )
 def rng_params(request):
     if isinstance(request.param, int):
