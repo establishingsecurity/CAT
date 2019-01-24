@@ -21,7 +21,6 @@ Given an *odd* number :math:`N`, find its factorization of the form:
 
 Such a factorization always exists for odd numbers, because if :math:`N = xy`, then it could be represented as:
 
-
 .. math::
 
    N = \left(\frac{x + y}{2}\right)^2 - \left(\frac{x - y}{2}\right)^2
@@ -41,3 +40,15 @@ The outline of the algorithm looks like this:
         b = a * a - N
 
     return  a - sqrt(b)
+
+The main idea is behind the :code:`is_square(b)` test which can be done very efficiently. It turns out, that there are only 22 combinations of the last two digits that can be present in perfetc square numbers [wolfram]_. This makes the test very fast approximately three times out of four.
+
+Another informative resource on factoring large numbers is [microsoft]_.
+
+.. [wolfram] Fermat's Factorization Method
+
+    http://mathworld.wolfram.com/FermatsFactorizationMethod.html
+
+.. [microsoft] Factoring Large Numbers
+
+    https://blogs.msdn.microsoft.com/devdev/2006/06/19/factoring-large-numbers-with-quadratic-sieve/
