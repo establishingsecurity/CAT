@@ -28,7 +28,7 @@ full state as output and are able to generate all the following states
 ourselves.
 Because of this a truncated variant of the LCG is used, where the output only
 consists of a few bits of the state. Most implementations output the most
-significant half of the state bits: :math:`h_i = \lfloor{\frac{s_i}{2^\ell}}\rfloor`
+significant half of the state bits: :math:`h_i = \lfloor{\frac{s_i}{2^\ell}}\rfloor`.
 
 
 Attacking Truncated Lehmer style LCGs
@@ -61,6 +61,8 @@ evaluating the congruences on valid LCG states yields a zero value modulo
     a^2 s_1 - s_3 &= 0 \\
     \dots
 
+.. TODO matrix structure
+
 The matrix form of these equations builds a lattice, the dual of the lattice
 contains all the possible solutions of an LCG with the specified parameter set.
 
@@ -76,7 +78,7 @@ contains all the possible solutions of an LCG with the specified parameter set.
 	* :math:`-a \in U`
 	* :math:`a + b \in U`
 
-    :math:`U` with the same operation as on :math:`G` is than a group itself.
+    :math:`U` with the same operation as on :math:`G` is then a group itself.
 
 We now have the Lehmer style LCG in lattice form and can apply the :math:`\LLL` algorithm
 to the lattice basis to obtain a different basis :math:`B` of the same lattice with
