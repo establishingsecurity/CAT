@@ -1,4 +1,4 @@
-from cat.prng.lcg import construct_lattice, reconstruct_lower_bits
+from cat.prng.lcg import construct_lattice, reconstruct_lehmer_lower
 from gmpy2 import mpz, mpz_random, next_prime, random_state
 
 # Define rng parameters
@@ -14,7 +14,7 @@ def attack(m, a, ys):
     # Constructing lattice for the modular relations
     L = construct_lattice(m, a, len(ys))
     # Reconstructing the missing state
-    zs = reconstruct_lower_bits(L, m, ys)
+    zs = reconstruct_lehmer_lower(L, m, ys)
     # Returning the full reconstructed state
     return [y + z for y, z in zip(ys, zs)]
 

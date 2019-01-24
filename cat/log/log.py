@@ -13,6 +13,7 @@
 # from cat.log import enable_logging
 # enable_logging()
 
+import logging
 import logging.config
 
 
@@ -75,3 +76,14 @@ def enable_logging(config=None, kitten=True):
         logger.info    ("""  ( T   )     / """)
         logger.debug   (""" (((^_(((/(((_/ """)
         # fmt: on
+
+
+def disable_logging(config=None):
+    """Re-disables logging for this library"""
+
+    if config is None:
+        # NOTE: if you have configured more loggers, silense them here:
+        logging.getLogger(LIB_ROOT_LOGGER_NAME).handlers = [logging.NullHandler()]
+    else:
+        # In case you are muting loggers through a config:
+        logging.config.dictConfig(config)
