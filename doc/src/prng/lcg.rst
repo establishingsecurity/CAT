@@ -104,3 +104,6 @@ We expect the unknown :math:`\vec{k}` to be small and can then solve for
 :math:`\vec{l}` when given the high bits of the states :math:`\vec{h}`.
 If we manage to retrieve the low bits :math:`\vec{l}` we can combine them with
 :math:`\vec{h}` again and compute the state vector :math:`\vec{s}`.
+
+.. [LLLLCG] https://crypto.stackexchange.com/questions/37836/problem-with-lll-reduction-on-truncated-lcg-schemes
+.. [LCGBB] https://crypto.stackexchange.com/questions/20495/how-brittle-are-lcg-cracking-techniques
