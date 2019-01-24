@@ -38,6 +38,7 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`. For now, refer
    hash.rst
    utils.rst
    symmetric.rst
+   logging.rst
 
 
 Package and Module Index
