@@ -36,6 +36,7 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`.
 
    rsa.rst
    hash.rst
+   prng.rst
    utils.rst
    symmetric.rst
 
