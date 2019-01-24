@@ -74,4 +74,4 @@ def save_snapshot(name, args, kwargs, value):
 
 def clear_snapshots():
     snapshots_path = getcontext().snapshots_path
-    shutil.rmtree(snapshots_path)
+    shutil.rmtree(str(snapshots_path))

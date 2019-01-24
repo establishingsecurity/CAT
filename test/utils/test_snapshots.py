@@ -1,6 +1,9 @@
 import tempfile
 import shutil
-from pathlib import Path
+try:
+    from pathlib import Path
+except ImportError:
+    from pathlib2 import Path
 
 import pytest
 
