@@ -9,7 +9,8 @@ def block_chunks(text, block_size):
     :return: list of blocks
     """
     if len(text) % block_size != 0:
-        return None
+        yield None
+        return
     for i in range(0, len(text), block_size):
         yield text[i : i + block_size]
 
