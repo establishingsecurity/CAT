@@ -1,6 +1,7 @@
-from bitstring import BitArray
+from bitstring import Bits, BitArray
 
-from cat.symmetric.util import *
+from cat.utils.convert import int_to_bytes
+from cat.symmetric.util import edit_cbc_block
 
 
 def guess_cbc_byte(
@@ -9,7 +10,7 @@ def guess_cbc_byte(
     oracle,
     byte_pos,
     rem_plaintext,
-    alphabet=[b.to_bytes(1, byteorder="big") for b in range(0, 256)],
+    alphabet=[Bits(bytes=int_to_bytes(b)) for b in range(0, 256)],
 ):
     """
     Guesses the byte at the specified position of the target block in the
@@ -26,16 +27,16 @@ def guess_cbc_byte(
     block_size = len(pre)
     pre = BitArray(bytes=pre)
 
-    assert len(rem_plaintext) == (block_size - byte_pos) - 1
+    assert len(rem_plaintext)/8 == (block_size - byte_pos) - 1
 
     # Generate the padding
-    padding_byte = (block_size - byte_pos).to_bytes(1, byteorder="big")
+    padding_byte = int_to_bytes(block_size - byte_pos)
     padding = padding_byte * (block_size - byte_pos)
 
     padding = BitArray(bytes=b"\x00" * byte_pos + padding)
     assert len(padding) == block_size * 8
 
-    rem_plaintext = BitArray(bytes=(b"\x00" * (byte_pos + 1)) + rem_plaintext)
+    rem_plaintext = BitArray(bytes=(b"\x00" * (byte_pos + 1))) + rem_plaintext
     assert len(rem_plaintext) == block_size * 8
 
     for guess in alphabet:
@@ -47,7 +48,7 @@ def guess_cbc_byte(
         # If we query for the last byte, we change the second to last byte to
         # fix a corner case
         if byte_pos == block_size - 1:
-            guess_bytes.overwrite(b"\xff", (byte_pos - 1) * 8)
+            guess_bytes.overwrite(Bits(bytes=b"\xff"), (byte_pos - 1) * 8)
 
         if guess_bytes == padding:
             continue
@@ -83,7 +84,7 @@ def cbc_padding_oracle(iv, target, oracle):
                 )
                 + plaintext_block
             )
-        yield plaintext_block
+        yield plaintext_block.tobytes()
 
 
 def cbc_padding_oracle_length(iv, target, oracle):
