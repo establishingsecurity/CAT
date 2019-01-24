@@ -1,22 +1,23 @@
 """Tests for the proof-of-work module"""
 import hashlib
+import sys
 
 import pytest
 from Cryptodome.Hash import (
-    SHA224,
-    SHA256,
-    SHA384,
-    SHA512,
+    MD2,
+    MD5,
+    RIPEMD160,
+    SHA1,
     SHA3_224,
     SHA3_256,
     SHA3_384,
     SHA3_512,
-    BLAKE2s,
+    SHA224,
+    SHA256,
+    SHA384,
+    SHA512,
     BLAKE2b,
-    SHA1,
-    MD2,
-    MD5,
-    RIPEMD160,
+    BLAKE2s,
     keccak,
 )
 from hypothesis import given
@@ -67,9 +68,12 @@ def test_sha3_hash_functions():
 
 
 def test_blake2_hash_functions():
-    hashes_test(
-        [BLAKE2s, BLAKE2b], wrap_cryptodome, digest_bytes=32, test_unwrapped=False
-    )
+    if sys.version_info[0] >= 3:
+        hashes_test(
+            [BLAKE2s, BLAKE2b], wrap_cryptodome, digest_bytes=32, test_unwrapped=False
+        )
+    else:
+        assert True
 
 
 def test_legacy_hash_functions():
@@ -89,14 +93,20 @@ def test_sha2_hashlib_functions():
 
 def test_sha3_hashlib_functions():
     """Test SHA-3 family"""
-    hashes_test(
-        [hashlib.sha3_224, hashlib.sha3_256, hashlib.sha3_384, hashlib.sha3_512],
-        wrap_hashlib,
-    )
+    if sys.version_info[0] >= 3:
+        hashes_test(
+            [hashlib.sha3_224, hashlib.sha3_256, hashlib.sha3_384, hashlib.sha3_512],
+            wrap_hashlib,
+        )
+    else:
+        assert True
 
 
 def test_blake2_hashlib_functions():
-    hashes_test([hashlib.blake2s, hashlib.blake2b], wrap_hashlib)
+    if sys.version_info[0] >= 3:
+        hashes_test([hashlib.blake2s, hashlib.blake2b], wrap_hashlib)
+    else:
+        assert True
 
 
 def test_legacy_hashlib_functions():
@@ -104,12 +114,15 @@ def test_legacy_hashlib_functions():
 
 
 def test_shake():
-    hashes_test(
-        [hashlib.shake_128, hashlib.shake_256],
-        wrap_hashlib,
-        length=32,
-        test_unwrapped=False,
-    )
+    if sys.version_info[0] >= 3:
+        hashes_test(
+            [hashlib.shake_128, hashlib.shake_256],
+            wrap_hashlib,
+            length=32,
+            test_unwrapped=False,
+        )
+    else:
+        assert True
 
 
 @pytest.mark.slow
@@ -122,7 +135,7 @@ def test_hypothesis(prefix, suffix, hash_fn):
 @given(
     binary(),
     binary(),
-    sampled_from([hashlib.sha1, hashlib.sha512, hashlib.sha3_224, hashlib.md5]),
+    sampled_from([hashlib.sha1, hashlib.sha384, hashlib.sha512, hashlib.md5]),
 )
 def test_hypothesis(prefix, suffix, hash_fn):
     hashes_test([hash_fn], wrap_hashlib, True, prefix, suffix)
