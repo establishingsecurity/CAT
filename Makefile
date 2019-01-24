@@ -47,9 +47,9 @@ doc:
 	docker run --name cat-doc cat-doc || true
 
 clean:
-	rm $(TEST_RESULTS)
-	rm $(DIST_RESULTS)
-	rm $(DOC_RESULTS)
+	rm $(TEST_RESULTS) || true
+	rm -rf $(DIST_RESULTS) || true
+	rm $(DOC_RESULTS) || true
 	docker rmi -f cat-base || true
 	docker rmi -f cat-test || true
 	docker rmi -f cat-package || true
