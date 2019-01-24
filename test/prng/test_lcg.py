@@ -68,7 +68,7 @@ def few_bit_params():
         java_params,
         prime_params,
         non_prime_params,
-        pytest.param(few_bit_params, marks=pytest.mark.skip(reason="")),
+        pytest.param(few_bit_params, marks=pytest.mark.skip(reason="too hard?")),
     ]
 )
 def rng_params(request):
