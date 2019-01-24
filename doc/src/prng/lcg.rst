@@ -93,10 +93,10 @@ shorter basis vectors.
 For the basis :math:`B` and LCG states as a vector :math:`\vec{s}` the equations
 
 .. math::
-    B \cdot \vec{s} &= 0 &\mod m \\
-    B \cdot \vec{s} &= m \cdot \vec{k} \\
-    B \cdot (\vec{l} + \vec{h}) &= m \cdot \vec{k} \\
-    B \cdot \vec{l} &= m \cdot \vec{k} - B \cdot \vec{h} \\
+    B \cdot \vec{s} &\equiv 0 &\mod m \\
+    B \cdot \vec{s} &\equiv m \cdot \vec{k} &\mod m\\
+    B \cdot (\vec{l} + \vec{h}) &\equiv m \cdot \vec{k} &\mod m\\
+    B \cdot \vec{l} &\equiv m \cdot \vec{k} - B \cdot \vec{h} &\mod m\\
 
 where :math:`\vec{k}` is unknown and :math:`\vec{l}` and :math:`\vec{h}` are the
 low and high bits of the state vector :math:`\vec{s}`, hold true.
