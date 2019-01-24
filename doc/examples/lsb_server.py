@@ -8,19 +8,16 @@ from Cryptodome.PublicKey import RSA
 # Security parameter in bits
 SECURITY_PARAMETER = 1024
 # Security parameter in bytes in hex
-MESSAGE_SIZE = (SECURITY_PARAMETER // 8) * 2
-INT_SIZE = SECURITY_PARAMETER // 8
-MESSAGE_SIZE = (SECURITY_PARAMETER // 8) * 2
-INT_SIZE = SECURITY_PARAMETER // 8
-
+MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
+INT_SIZE = (SECURITY_PARAMETER//8)
+MESSAGE_SIZE = (SECURITY_PARAMETER//8) * 2
+INT_SIZE = (SECURITY_PARAMETER//8)
 
 def int_to_hex(n):
-    return hexlify(int(n).to_bytes(INT_SIZE, "big"))
-
+    return hexlify(int(n).to_bytes(INT_SIZE, 'big'))
 
 def hex_to_int(s):
-    return int.from_bytes(unhexlify(s), "big")
-
+    return int.from_bytes(unhexlify(s), 'big')
 
 class LSBHandler(socketserver.BaseRequestHandler):
     """
@@ -38,7 +35,7 @@ class LSBHandler(socketserver.BaseRequestHandler):
         self.n = self.key.n
         self.e = self.key.e
         self.d = self.key.d
-        self.plaintext = hex_to_int(b"deadbeef")
+        self.plaintext = hex_to_int(b'deadbeef')
         self.ciphertext = self.encrypt(self.plaintext)
 
         # First send out the public key
@@ -59,7 +56,7 @@ class LSBHandler(socketserver.BaseRequestHandler):
                 self.request.sendall(int_to_hex(int(self.oracle(cipher))))
             except BrokenPipeError:
                 break
-        print("Plaintext is {}".format(self.plaintext))
+        print(self.plaintext)
 
 
 if __name__ == "__main__":

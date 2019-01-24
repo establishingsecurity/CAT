@@ -53,11 +53,11 @@ def generate_brute_force(start):
             length += 1
 
 
-def pmap(function, *inputs, filter_=None):
+def pmap(function, *inputs, predicate=None):
     # type: (Callable[Any, Any], Iterable[Iterable[Any]], Callable[Any, Any]) -> Iterable[Any]
     """
     Do a parallel map of the given :code:`function` on the given :code:`inputs` and optionally
-    filter its results with :code:`filter_`. This is a simple wrapper for `dask`_ and works
+    filter its results with :code:`predicate`. This is a simple wrapper for `dask`_ and works
     like :func:`map` but in parallel.
 
     .. code-block:: python
@@ -70,8 +70,8 @@ def pmap(function, *inputs, filter_=None):
            'f5a6fe40024c28967a354e591bb9fa21b784bf00',
            '784e9240155834852dff458a730cceb50229df32'])
 
-      filter_ = lambda d: d.endswith('0')
-      assert (pmap(fun, inputs, filter_=filter_) ==
+      predicate = lambda d: d.endswith('0')
+      assert (pmap(fun, inputs, predicate=predicate) ==
           ['7110eda4d09e062aa5e4a390b0a572ac0d2c0220',
            'f5a6fe40024c28967a354e591bb9fa21b784bf00'])
 
@@ -80,16 +80,16 @@ def pmap(function, *inputs, filter_=None):
     :param function:    An arbitrary function that's mapped to the :code:`inputs`.
     :param inputs:      Inputs for :code:`function`. Pass multiple if your function
                         takes multiple inputs.
-    :param filter_:     An optional filter function to filter the results of the
+    :param predicate:   An optional filter function to filter the results of the
                         computation. If none is passed, all results will be returned.
     :returns:           The results of applying :code:`function` to :code:`inputs`.
 
     .. CAUTION::
-       :code:`filter_` needs to be passed as a **keyword argument**, otherwise it will
+       :code:`predicate` needs to be passed as a **keyword argument**, otherwise it will
        be treated as an input parameter to :code:`function`!
     """
     promises = parallel.map(function, *[parallel.from_sequence(i) for i in inputs])
-    if not filter_:
+    if not predicate:
         return list(promises)
     else:
-        return list(promises.filter(filter_))
+        return list(promises.filter(predicate))
