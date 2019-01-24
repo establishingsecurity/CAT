@@ -38,7 +38,19 @@ def prime_params():
     )
 
 
-@pytest.fixture(params=[32, 64, 128, 256, glibc_params, java_params, prime_params])
+def non_prime_params():
+    return (
+        (2 ** 32) - 1,  # m
+        1103515216,  # a
+        4312,  # b
+        16,  # shift
+        10,  # number of samples
+    )
+
+
+@pytest.fixture(
+    params=[32, 64, 128, 256, glibc_params, java_params, prime_params, non_prime_params]
+)
 def rng_params(request):
     if isinstance(request.param, int):
         n = request.param
