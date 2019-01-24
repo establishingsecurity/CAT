@@ -50,7 +50,7 @@ def generate_with_alphabet(
     )
     for length in lengths:
         for value in itertools.product(alphabet, repeat=length):
-            guess = bytes("".join(value), "utf-8")
+            guess = "".join(value).encode("utf-8")
             yield prefix + guess + suffix, guess
 
 
