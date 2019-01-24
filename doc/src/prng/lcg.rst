@@ -28,7 +28,7 @@ full state as output and are able to generate all the following states
 ourselves.
 Because of this a truncated variant of the LCG is used, where the output only
 consists of a few bits of the state. Most implementations output the most
-significant half of the state bits.
+significant half of the state bits: :math:`h_i = \lfloor{\frac{s_i}{2^\ell}}\rfloor`
 
 
 Attacking Truncated Lehmer style LCGs
