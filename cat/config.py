@@ -1,5 +1,5 @@
 import threading
-from pathlib import Path
+from . import Path
 
 
 class Context:
