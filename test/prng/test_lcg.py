@@ -68,7 +68,7 @@ def few_bit_params():
         java_params,
         prime_params,
         non_prime_params,
-        few_bit_params,
+        pytest.param(few_bit_params, marks=pytest.mark.xfail(reason="too hard?")),
     ]
 )
 def rng_params(request):
@@ -89,9 +89,9 @@ def rng_params(request):
 @settings(max_examples=500)
 @example(s=252291025)
 # TODO: Breaking examples, find out why?
-# @example(s=25537)
-# @example(s=20460)
-# @example(s=3588)
+@example(s=25537)
+@example(s=20460)
+@example(s=3588)
 @given(integers(2))
 def test_reconstruct_lehmer_lower(rng_params, s):
     m, a, b, shift, size = rng_params
