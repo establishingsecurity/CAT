@@ -36,9 +36,10 @@ def factor(N):
     b = a * a - N
 
     while not gmpy2.is_square(b):
-        a, b = a + 1, b + 2 * a + 1
+        a = a + 1
+        b = a * a - N
 
-        logger.info('Iteration {} and {}'.format(a, b))
+        logger.info("Iteration {} and {}".format(a, b))
 
     # NOTE: must convert to integer before subtraction
     result = a - gmpy2.mpz(gmpy2.sqrt(b))
