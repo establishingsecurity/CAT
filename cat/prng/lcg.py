@@ -53,8 +53,7 @@ def reconstruct_lehmer_lower(L, m, ys):
     """
     L = fmpz_mat([row for row in L])
     ys = fmpz_mat([[y] for y in ys])
-    B = L.lll()
-    # Reducing the lattice basis L to a smaller basis B
+    B = L.lll()  # Reducing the lattice basis L to a smaller basis B
 
     Bys = B * ys
 
