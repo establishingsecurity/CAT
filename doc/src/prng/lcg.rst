@@ -38,7 +38,7 @@ Attacking Truncated Lehmer style LCGs
     The following attack to reconstruct a state contains heavy math.
     Knowledge of linear algebra and lattices will be helpful.
 
-    Viewer discretion is advised
+    Viewer discretion is advised.
 
 
 A Lehmer style LCG is a simpler form of an LCG where the increment :math:`b` is
@@ -48,7 +48,7 @@ set to 0, yielding the recurrence relation:
     s_{i+1} = a \cdot s_i \mod m
 
 Given the parameters :math:`a, m` and consecutive truncated outputs :math:`h_1, \dots, h_l` of a Lehmer style LCG,
-we can reconstruct the states `s_1, \dots, s_l`.
+we can reconstruct the states :math:`s_1, \dots, s_l`.
 
 We first construct a system of linear congruences from the parameters, such that
 evaluating the congruences on valid LCG states yields a zero value modulo
