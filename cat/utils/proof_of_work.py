@@ -71,7 +71,6 @@ def wrap_hashlib(hasher, length=None):
         args = [length]
 
     def _hasher(data):
-        print(args)
         return hasher(data).hexdigest(*args)
 
     return _hasher
@@ -344,7 +343,7 @@ def compute(condition, fn, values_source):
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a digest with '123' somewhere
-    >>> condition = lambda d: '123' in hex_str(d)
+    >>> condition = lambda d: '123' in d
     >>> from Cryptodome.Hash import SHA1
     >>> guess, _ = compute(condition, wrap_cryptodome(SHA1), generator)
     >>> assert '123' in SHA1.new(data=guess).hexdigest()
