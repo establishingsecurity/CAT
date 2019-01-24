@@ -25,7 +25,7 @@ def generate_brute_force(start):
     ...
     >>> print(guess)
     [1, 0]
-    >>> print(bytearray(guess))
+    >>> bytearray(guess)
     bytearray(b'\\x01\\x00')
 
     :param start:       A start value for the brute force attempt.
