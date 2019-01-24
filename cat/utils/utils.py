@@ -53,7 +53,7 @@ def generate_brute_force(start):
             length += 1
 
 
-def pmap(function, *inputs, predicate=None):
+def pmap(function, inputs, multiple=False, predicate=None):
     # type: (Callable[Any, Any], Iterable[Iterable[Any]], Callable[Any, Any]) -> Iterable[Any]
     """
     Do a parallel map of the given :code:`function` on the given :code:`inputs` and optionally
@@ -80,6 +80,12 @@ def pmap(function, *inputs, predicate=None):
     :param function:    An arbitrary function that's mapped to the :code:`inputs`.
     :param inputs:      Inputs for :code:`function`. Pass multiple if your function
                         takes multiple inputs.
+    :param multiple:    Specifies whether :code:`inputs` contains multiple inputs or not.
+                        If you want to e.g. pass two lists :code:`xs` and :code:`ys` to
+                        :code:`function = lambda x,y: x + y`, you can pass
+                        :code:`inputs = [xs, ys]` and `multiples=True` to interpret
+                        :code:`inputs` as inputs for multiple arguments.
+    :param filter_:     An optional filter function to filter the results of the
     :param predicate:   An optional filter function to filter the results of the
                         computation. If none is passed, all results will be returned.
     :returns:           The results of applying :code:`function` to :code:`inputs`.
@@ -88,6 +94,8 @@ def pmap(function, *inputs, predicate=None):
        :code:`predicate` needs to be passed as a **keyword argument**, otherwise it will
        be treated as an input parameter to :code:`function`!
     """
+    if not multiple:
+        inputs = [inputs]
     promises = parallel.map(function, *[parallel.from_sequence(i) for i in inputs])
     if not predicate:
         return list(promises)

@@ -35,11 +35,11 @@ class TestPMap:
         ys = [1, 2, 3, 4, 5]
 
         zs = [2, 4, 6, 8, 10]
-        assert pmap(fun, xs, ys) == zs
+        assert pmap(fun, [xs, ys], multiple=True) == zs
 
         predicate = lambda z: z > 5
         zs = [6, 8, 10]
-        assert pmap(fun, xs, ys, predicate=predicate) == zs
+        assert pmap(fun, [xs, ys], multiple=True, predicate=predicate) == zs
 
 
 class TestBruteForce:
