@@ -3,7 +3,7 @@ from __future__ import division
 from itertools import product
 
 import gmpy2
-from flint import fmpz_mat
+from flint import fmpq, fmpz_mat
 
 
 def lcg_step_state(m, a, b, state, n):
@@ -33,6 +33,13 @@ def construct_lattice(m, a, size):
     return L
 
 
+def _round_fmpq(x):
+    p = x.numer()
+    q = x.denom()
+    r = p % q
+    return p // q + (1 if r >= q // 2 and q > 1 else 0)
+
+
 def reconstruct_lehmer_lower(L, m, ys):
     """
     Reconstructs the lower bits :math:`zs` of a system of linear congurential equations in lattice form with
@@ -53,7 +60,7 @@ def reconstruct_lehmer_lower(L, m, ys):
 
     # TODO: There might be a better solution to find the individual ks
     # NB: B * (ys + zs) = m * ks for some ks
-    ks = fmpz_mat([[int(round(int(x) / m))] for x in Bys])
+    ks = fmpz_mat([[_round_fmpq(fmpq(By) / m)] for By in Bys])
 
     # We now solve the system of linear equations B zs = m * ks - B ys for zs
     Bzs = m * ks - Bys
