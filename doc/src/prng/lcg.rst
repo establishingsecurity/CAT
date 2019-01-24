@@ -147,8 +147,18 @@ Otherwise, if :math:`\gcd(a-1, m) = d \neq 1`, there may be no or no unique pre-
     s^l_1 - b&\equiv (a-1)s_1 &\mod m\\
     \frac{s^l_1 - b}{d}&\equiv \frac{(a-1)}{d}s_1 &\mod \frac{m}{d}\\
 
+.. note::
+    If :math:`x,y` and :math:`m` are divisible by :math:`d`, the following may be applied in reverse:
+
+    .. math::
+	x &\equiv y \mod m\\
+	xd &\equiv yd \mod md\\
+
 If :math:`s^l_1 - b` is not divisible by :math:`d`, no solution exists.
 Otherwise, we can now invert :math:`\frac{(a-1)}{d} \mod \frac{m}{d}`, and compute a set of :math:`d` candidates:
+
+.. note::
+    Since we divided by the greatest common divisor, the :math:`\gcd(\frac{(a-1)}{d}, \frac{m}{d}) = 1`.
 
 .. math::
     s_1 \in \Big\{\frac{s^l_1 - b}{d} * {\Big(\frac{(a-1)}{d}\Big)}^{-1} + \frac{m}{d} \cdot k \mod m \mid k\in \{1, \dots, d\}\Big\}
