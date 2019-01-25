@@ -13,7 +13,7 @@ from cat.utils.utils import generate_brute_force
 def generate_with_alphabet(
     alphabet, prefix=b"", suffix=b"", min_length=0, max_length=None
 ):
-    """
+    r"""
     Generator returning strings of all possible combinations of letters from the given :attr:`alphabet`
     of length :math:`i`, where :math:`\mathit{min\_length} \leq i \leq \mathit{max\_length}`.
 
@@ -224,11 +224,11 @@ def hash_pow(
     max_length=None,
     condition=None,
 ):
-    """
+    r"""
     Computes a :math:`g` such that:
 
     .. math::
-        H_\it{hex}(\mathit{prefix} \| g \| \mathit{suffix}) = \mathit{hash\_prefix} \| \ldots \| \mathit{hash\_suffix}
+        H_\it{hex}(\mathit{prefix} | g | \mathit{suffix}) = \mathit{hash\_prefix} | \ldots | \mathit{hash\_suffix}
 
     Where :math:`H_\it{hex}` is a function returning the hexadecimal digest of its input.
 
@@ -272,7 +272,7 @@ def hash_pow(
 
 
 def with_pattern(pattern):
-    """
+    r"""
     Compute a Proof of Work based on the given pattern.
 
     >>> # Compute a digest that starts and ends with a '1'
