@@ -62,7 +62,7 @@ def wrap_hashlib(hasher, length=None):
     >>> wrap_hashlib(sha1)(b'heyo')
     'f8bb1031d6d82b30817a872b8a2ec31d5380cee5'
 
-    :param hasher: A function from :py:module:`hashlib`
+    :param hasher: A function from :mod:`hashlib`
     :return: Function
     """
 
@@ -207,7 +207,7 @@ _MEMBERS = dict(inspect.getmembers(hashlib))
 def is_hashlib(obj):
     """
     :param obj: Any object
-    :return: True iff obj is an algorithm from :py:module:`hashlib`.
+    :return: True iff obj is an algorithm from :mod:`hashlib`.
     """
     algorithms = _MEMBERS["algorithms_guaranteed"]
     return obj in map(lambda x: _MEMBERS[x], algorithms)
