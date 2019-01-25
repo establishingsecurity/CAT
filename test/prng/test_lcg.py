@@ -10,11 +10,11 @@ from gmpy2 import mpz, next_prime
 
 def glibc_params():
     return (
-        2 ** 32,  # m
-        1103515245,  # a
-        12345,  # b
-        16,  # shift
-        10,  # number of samples
+        2 ** 31,      # m
+        1103515245,   # a
+        12345,        # b
+        16,           # shift, this is changed
+        10,           # number of samples
     )
 
 
@@ -48,6 +48,16 @@ def non_prime_params():
     )
 
 
+def all_bit_params():
+    return (
+        2 ** 31,      # m
+        1103515245,   # a
+        12345,        # b
+        0,           # shift
+        2,           # number of samples
+    )
+
+
 def few_bit_params():
     return (
         2 ** 32,  # m
@@ -57,6 +67,14 @@ def few_bit_params():
         25,  # number of samples
     )
 
+def few_outputs():
+    return (
+        2 ** 31,      # m
+        1103515245,   # a
+        12345,        # b
+        16,           # shift, this is changed
+        2,            # number of samples
+    )
 
 @pytest.fixture(
     params=[
@@ -68,7 +86,9 @@ def few_bit_params():
         java_params,
         prime_params,
         non_prime_params,
+        all_bit_params,
         pytest.param(few_bit_params, marks=pytest.mark.skip(reason="too hard?")),
+        pytest.param(few_outputs, marks=pytest.mark.xfail(reason="Should fail")),
     ]
 )
 def rng_params(request):
@@ -130,28 +150,6 @@ def test_reconstruct_lcg_lower(rng_params, s):
     candidate_state = next(reconstruct_lcg_state(m, a, b, higher, shift))
 
     assert states[0] == candidate_state
-
-
-@given(integers(2))
-def test_reconstruct_lehmer_lower_few_outputs(rng_params, s):
-    m, a, b, shift, size = rng_params
-    s %= m
-    size = 1
-
-    def _generate_lehmer_states(state):
-        for i in range(size):
-            state = (a * state) % m
-            yield state
-
-    states = list(_generate_lehmer_states(s))
-    higher = [blank_lower_bits(state, shift) for state in states]
-    L = construct_lattice(m, a, size)
-    lower = reconstruct_lehmer_lower(L, m, higher)
-
-    # TODO: Maybe throw an exception for to few states?
-    assert states[0] != (higher[0] + lower[0]) % m
-    assert all((x != y + z % m) for x, y, z in zip(states, higher, lower))
-
 
 def test_reconstruct_lehmer_lower_few_bits():
     m = int(next_prime(2 ** 256))
