@@ -5,7 +5,7 @@ from gmpy2 import mpz, next_prime
 
 # Define rng parameters
 STATE_SIZE = 8192
-MODULUS = int(next_prime(2 ** STATE_SIZE))
+MODULUS = 2**STATE_SIZE - 1
 MULTIPLIER = int(next_prime(2 ** (STATE_SIZE // 2)))
 INCREMENT = int(next_prime(2 ** (STATE_SIZE // 4)))
 # Chosen by fair dice roll
