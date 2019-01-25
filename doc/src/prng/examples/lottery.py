@@ -1,16 +1,22 @@
-import logging
+from functools import reduce
+from secrets import randbelow
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from gmpy2 import mpz, next_prime
-
 # Define rng parameters
-STATE_SIZE = 8192
-MODULUS = 2**STATE_SIZE - 1
-MULTIPLIER = int(next_prime(2 ** (STATE_SIZE // 2)))
-INCREMENT = int(next_prime(2 ** (STATE_SIZE // 4)))
+STATE_SIZE = 512
+MODULUS = 2 ** STATE_SIZE
+
+MULTIPLIER = reduce(lambda a, x: a * x, [
+    111868394042609032323385573096424085839,
+    281691314538379734849988413722506999470,
+    38865202901255411182762865052694722337,
+    240295848810064394069370812797612347769
+])
+INCREMENT = 225978269326188702280723738608360289365
+SHIFT = STATE_SIZE - 128
 # Chosen by fair dice roll
-STATE = int(1234551291201209370912059721430) % MODULUS
-SHIFT = STATE_SIZE // 2
+STATE = randbelow(2**STATE_SIZE)
+SHIFT = STATE_SIZE - 64
 
 PORT = 8080
 
@@ -26,10 +32,9 @@ class LotteryHandler(BaseHTTPRequestHandler):
         # Send response status code
         global STATE
         STATE = next_number(STATE)
-        logging.warning('Current State: {}'.format(STATE))
 
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
+        self.send_header("Content-type", "text/html")
         self.end_headers()
         message = """
         <!doctype html>
@@ -44,14 +49,17 @@ class LotteryHandler(BaseHTTPRequestHandler):
 
         <body>{}</body>
         </html>
-        """.format(STATE >> SHIFT)
+        """.format(
+            STATE >> SHIFT
+        )
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
         return
 
 
 if __name__ == "__main__":
-    server_address = ('127.0.0.1', PORT)
+    server_address = ("127.0.0.1", PORT)
     httpd = HTTPServer(server_address, LotteryHandler)
-    print('running server...')
+    print("running server...")
+    httpd.serve_forever()
     httpd.serve_forever()

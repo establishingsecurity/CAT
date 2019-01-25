@@ -2,14 +2,8 @@ import re
 
 import requests
 from cat.prng.lcg import reconstruct_lcg_state, lcg_step_state
-from gmpy2 import mpz, mpz_random, next_prime, random_state
 
-# Define rng parameters
-STATE_SIZE = 8192
-MODULUS = 2**STATE_SIZE - 1
-MULTIPLIER = int(next_prime(2 ** (STATE_SIZE // 2)))
-INCREMENT = int(next_prime(2 ** (STATE_SIZE // 4)))
-SHIFT = STATE_SIZE // 2
+from lottery import STATE_SIZE, MODULUS, MULTIPLIER, INCREMENT, SHIFT
 
 SAMPLES = 10
 
@@ -25,11 +19,9 @@ def get_number():
 if __name__ == "__main__":
     highs = [get_number() for _ in range(SAMPLES)]
     state = int(next((reconstruct_lcg_state(MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT))))
-    print("Original state: {}".format(state))
-    states = [int(x) for x in lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, 2 * SAMPLES)]
-    from pprint import pprint
-    print("Next states:")
-    pprint((states[SAMPLES-1:]))
-    print("Next outputs:")
-    pprint(list(map(lambda x: x >> SHIFT, states[SAMPLES-1:])))
+    print("Original state:\n{}".format(state))
+    states = [int(x) for x in lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES+5)]
+    print("Your next lottery numbers are:")
+    for l in map(lambda x: x >> SHIFT, states[SAMPLES-1:]):
+        print("\t", l)
 
