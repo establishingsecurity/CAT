@@ -13,7 +13,7 @@ from cat.utils.utils import generate_brute_force
 def generate_with_alphabet(
     alphabet, prefix=b"", suffix=b"", min_length=0, max_length=None
 ):
-    """
+    r"""
     Generator returning strings of all possible combinations of letters from the given :attr:`alphabet`
     of length :math:`i`, where :math:`\mathit{min\_length} \leq i \leq \mathit{max\_length}`.
 
@@ -62,7 +62,7 @@ def wrap_hashlib(hasher, length=None):
     >>> wrap_hashlib(sha1)(b'heyo')
     'f8bb1031d6d82b30817a872b8a2ec31d5380cee5'
 
-    :param hasher: A function from :py:module:`hashlib`
+    :param hasher: A function from :mod:`hashlib`
     :return: Function
     """
 
@@ -207,7 +207,7 @@ _MEMBERS = dict(inspect.getmembers(hashlib))
 def is_hashlib(obj):
     """
     :param obj: Any object
-    :return: True iff obj is an algorithm from :py:module:`hashlib`.
+    :return: True iff obj is an algorithm from :mod:`hashlib`.
     """
     algorithms = _MEMBERS["algorithms_guaranteed"]
     return obj in map(lambda x: _MEMBERS[x], algorithms)
@@ -224,11 +224,11 @@ def hash_pow(
     max_length=None,
     condition=None,
 ):
-    """
+    r"""
     Computes a :math:`g` such that:
 
     .. math::
-        H_\it{hex}(\mathit{prefix} \| g \| \mathit{suffix}) = \mathit{hash\_prefix} \| \ldots \| \mathit{hash\_suffix}
+        H_\it{hex}(\mathit{prefix} | g | \mathit{suffix}) = \mathit{hash\_prefix} | \ldots | \mathit{hash\_suffix}
 
     Where :math:`H_\it{hex}` is a function returning the hexadecimal digest of its input.
 
@@ -272,7 +272,7 @@ def hash_pow(
 
 
 def with_pattern(pattern):
-    """
+    r"""
     Compute a Proof of Work based on the given pattern.
 
     >>> # Compute a digest that starts and ends with a '1'

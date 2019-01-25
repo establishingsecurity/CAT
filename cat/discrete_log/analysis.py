@@ -153,7 +153,7 @@ def check_private_exponent(a, B=512):
 
     if bit_len < B:
         zero_bits = B - bit_len
-        probability = 1 / 2 ** zero_bits
+        probability = float(1) / 2 ** zero_bits
 
         return (bit_len, probability)
     return (bit_len, 1)
