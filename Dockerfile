@@ -71,6 +71,5 @@ FROM base as dist
 
 RUN pip install setuptools wheel
 RUN pip3 install setuptools wheel
-RUN rm cat/conf.py
 
 CMD python3 setup.py sdist bdist_wheel && python setup.py sdist bdist_wheel
