@@ -1,12 +1,16 @@
 import re
 
-from tqdm import tqdm
 import requests
-from cat.prng.lcg import reconstruct_lcg_state, lcg_step_state
+from tqdm import tqdm
 
-from lottery import STATE_SIZE, MODULUS, MULTIPLIER, INCREMENT, SHIFT
+from cat.prng.lcg import lcg_step_state, reconstruct_lcg_state
+from lottery import INCREMENT, MODULUS, MULTIPLIER, SHIFT, STATE_SIZE
 
-SAMPLES = 10
+# Hollywood Mode
+SAMPLES = 300
+
+# This suffices too
+# SAMPLES = 10
 
 PORT = 8080
 
@@ -18,12 +22,14 @@ def get_numbers():
 
 
 if __name__ == "__main__":
+    print("Retrieving samples")
     # Get SAMPLES outputs
     highs_mat = [get_numbers() for _ in range(SAMPLES)]
 
     # Transpose the output matrix for easier usage
     highs_mat = [*zip(*highs_mat)]
 
+    print("Reconstructing states")
     # Reconstruct the original state for each LCG in the samples
     states = [
         int(next(reconstruct_lcg_state(MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT)))
@@ -32,9 +38,7 @@ if __name__ == "__main__":
 
     # Step the LCGs to the next step, effectivly predicting the next value
     states = [
-        int(
-            list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES))[-1]
-        )
+        int(list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES))[-1])
         for state in states
     ]
 
@@ -42,4 +46,3 @@ if __name__ == "__main__":
     for n in states:
         print("{:02X}".format(n >> SHIFT), end=" ")
     print()
-
