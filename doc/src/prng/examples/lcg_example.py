@@ -1,16 +1,12 @@
 import re
+import time
 
 import requests
-from tqdm import tqdm
 
 from cat.prng.lcg import lcg_step_state, reconstruct_lcg_state
 from lottery import INCREMENT, MODULUS, MULTIPLIER, SHIFT, STATE_SIZE
 
-# Hollywood Mode
-SAMPLES = 300
-
-# This suffices too
-# SAMPLES = 10
+SAMPLES = 15
 
 PORT = 8080
 
@@ -23,18 +19,31 @@ def get_numbers():
 
 if __name__ == "__main__":
     print("Retrieving samples")
-    # Get SAMPLES outputs
-    highs_mat = [get_numbers() for _ in range(SAMPLES)]
+    # Prepare a list for every number
+    highs_mat = [[] for _ in range(9)]
 
-    # Transpose the output matrix for easier usage
-    highs_mat = [*zip(*highs_mat)]
+    # Try to use only the minimum number of samples
+    for i in range(1, SAMPLES):
+        highs_mat = [h + [n] for h, n in zip(highs_mat, get_numbers())]
 
-    print("Reconstructing states")
-    # Reconstruct the original state for each LCG in the samples
-    states = [
-        int(next(reconstruct_lcg_state(MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT)))
-        for highs in tqdm(highs_mat)
-    ]
+        try:
+            print("Trying to reconstruct states with {:02} samples".format(i), end=": ")
+            # Reconstruct the original state for each LCG in the samples
+            states = [
+                int(
+                    next(
+                        reconstruct_lcg_state(
+                            MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT
+                        )
+                    )
+                )
+                for highs in highs_mat
+            ]
+            print("Success")
+            break
+        except Exception:
+            time.sleep(0.5)
+            print("Failed")
 
     # Step the LCGs to the next step, effectivly predicting the next value
     states = [
@@ -45,4 +54,5 @@ if __name__ == "__main__":
     print("Your next lottery numbers are:")
     for n in states:
         print("{:02X}".format(n >> SHIFT), end=" ")
+    print()
     print()

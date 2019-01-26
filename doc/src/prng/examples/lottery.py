@@ -3,11 +3,11 @@ from secrets import randbelow
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 # Define rng parameters
-STATE_SIZE = 48
+STATE_SIZE = 64
 MODULUS = 2 ** STATE_SIZE
 
-MULTIPLIER = 0x5DEECE66D
-INCREMENT = 0xB
+MULTIPLIER = 0x5DEECE66D**2
+INCREMENT = 0xB**2
 SHIFT = STATE_SIZE - 8
 
 STATE = [randbelow(2 ** STATE_SIZE) for _ in range(9)]
