@@ -1,5 +1,6 @@
 import re
 
+from tqdm import tqdm
 import requests
 from cat.prng.lcg import reconstruct_lcg_state, lcg_step_state
 
@@ -10,18 +11,35 @@ SAMPLES = 10
 PORT = 8080
 
 
-def get_number():
+def get_numbers():
     r = requests.get("http://localhost:{}".format(PORT))
-    m = re.search(r"(?<=<body>)\w+", r.text)
-    return int(m.group(0)) << SHIFT
+    matches = re.findall(r'(?<=<span class="number">)\w+', r.text)
+    return [int(n, 16) << SHIFT for n in matches]
 
 
 if __name__ == "__main__":
-    highs = [get_number() for _ in range(SAMPLES)]
-    state = int(next((reconstruct_lcg_state(MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT))))
-    print("Original state:\n{}".format(state))
-    states = [int(x) for x in lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES+5)]
+    # Get SAMPLES outputs
+    highs_mat = [get_numbers() for _ in range(SAMPLES)]
+
+    # Transpose the output matrix for easier usage
+    highs_mat = [*zip(*highs_mat)]
+
+    # Reconstruct the original state for each LCG in the samples
+    states = [
+        int(next(reconstruct_lcg_state(MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT)))
+        for highs in tqdm(highs_mat)
+    ]
+
+    # Step the LCGs to the next step, effectivly predicting the next value
+    states = [
+        int(
+            list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES))[-1]
+        )
+        for state in states
+    ]
+
     print("Your next lottery numbers are:")
-    for l in map(lambda x: x >> SHIFT, states[SAMPLES-1:]):
-        print("\t", l)
+    for n in states:
+        print("{:02X}".format(n >> SHIFT), end=" ")
+    print()
 
