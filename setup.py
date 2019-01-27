@@ -20,7 +20,7 @@ REQUIRES = [
     "distributed",
     "bitstring",
     "numpy",
-    "flint-py-alisianoi",
+    "flint-py",
     "sympy",
 ]
 
