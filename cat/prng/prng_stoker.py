@@ -5,7 +5,9 @@ class PRNGStoker:
     _samples = None
     _states = None
     _multiplier = None
+    _increment = None
     _modulus = None
+    _shift = None
 
     @property
     def samples(self):
@@ -42,6 +44,20 @@ class PRNGStoker:
         self._multiplier = value
 
     @property
+    def increment(self):
+        return self._increment
+
+    @increment.setter
+    def increment(self, value):
+        if not value:
+            raise ValueError("increment must have a value")
+        if value == 0:
+            raise ValueError("increment must have a value that is not 0")
+        if not type(value) is int:
+            raise TypeError("increment must be of type int")
+        self._increment = value
+
+    @property
     def modulus(self):
         return self._modulus
 
@@ -52,6 +68,18 @@ class PRNGStoker:
         if not type(value) is int:
             raise TypeError("modulus must be of type int")
         self._modulus = value
+
+    @property
+    def shift(self):
+        return self._shift
+
+    @shift.setter
+    def shift(self, value):
+        if not value:
+            raise ValueError("shift must have a value")
+        if not type(value) is int:
+            raise TypeError("shift must be of type int")
+        self._shift = value
 
     def reconstruct_lehmer_state(self):
         # type: (PRNGStoker) -> int
@@ -68,7 +96,31 @@ class PRNGStoker:
         """
         L = construct_lattice(self._modulus, self._multiplier, len(self.samples))
 
-        lower_bits = reconstruct_lower_bits(L, self._modulus, self._samples)
+        lower_bits = reconstruct_lehmer_lower(L, self._modulus, self._samples)
+
+        self._states = [
+            (x + y) % self._modulus for (x, y) in zip(lower_bits, self._samples)
+        ]
+
+        return self._states[0]
+
+    def reconstruct_lcg_state(self):
+        # type: (PRNGStoker) -> int
+        """
+        Uses the :attr:`samples` of the stoker as states of an LCG and
+        reconstructs the first state.
+
+        An LCG uses an initial state :math:`s_0` (often called seed),
+        a multiplier parameter :math:`a`, an increment :math:`b`
+        and a modulus :math:`m`.
+        The states of an LCG are computed by the recurrence relation
+        :math:`s_{i+1} = a \cdot s_0 + b` \mod m.
+
+        :returns: The first state of the recurrence relation :math:`s_1`
+        """
+        lower_bits = reconstruct_lcg_state(
+            self._modulus, self._multiplier, self._increment, self._samples, self._shift
+        )
 
         self._states = [
             (x + y) % self._modulus for (x, y) in zip(lower_bits, self._samples)
