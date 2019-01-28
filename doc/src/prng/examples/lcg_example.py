@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 )
                 for highs in highs_mat
             ]
-            print("\033[1;32;40mSuccess\033[0;37;40m")
+            print("\033[1;32;40mSuccess\033[0;37;40m ✨")
             break
         except Exception:
             time.sleep(0.5)
