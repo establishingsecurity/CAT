@@ -3,22 +3,19 @@ FROM debian:buster-slim as base
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
-	libmpc-dev \
-	python3.6 \
-	python3.6-dev \
-	python3-pip \
-	python \
+        libmpc-dev \
+        python2.7 \
+        python3.7 \
+        python2.7-dev \
+        python3.7-dev \
 	python-pip \
+	python3-pip \
 	libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ADD README.md /app/README.md
 ADD setup.py /app/setup.py
-
-# TODO: Fix this madness, this is a dirty workaround
-# Cython is needed to build some other stuff, and for some reason numpy too
-RUN pip3 install cython numpy
 
 RUN pip3 install -e "."
 
