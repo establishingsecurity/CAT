@@ -43,7 +43,7 @@ if __name__ == "__main__":
             break
         except Exception:
             time.sleep(0.5)
-            print("\033[1;31;40mFailed\033[0;37;40m")
+            print("\033[1;31;40mFailed ✘\033[0;37;40m")
 
     # Step the LCGs to the next step, effectivly predicting the next value
     states = [
