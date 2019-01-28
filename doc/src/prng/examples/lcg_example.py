@@ -39,11 +39,11 @@ if __name__ == "__main__":
                 )
                 for highs in highs_mat
             ]
-            print("Success")
+            print("\033[1;32;40m Success\033[0;37;40m")
             break
         except Exception:
             time.sleep(0.5)
-            print("Failed")
+            print("\033[1;31;40m Failed\033[0;37;40m")
 
     # Step the LCGs to the next step, effectivly predicting the next value
     states = [
@@ -52,6 +52,7 @@ if __name__ == "__main__":
     ]
 
     print("Your next lottery numbers are:")
+    print("\033[1;32;40m", end="")
     for n in states:
         print("{:02X}".format(n >> SHIFT), end=" ")
     print()
