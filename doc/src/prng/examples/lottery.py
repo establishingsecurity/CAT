@@ -45,10 +45,11 @@ class LotteryHandler(BaseHTTPRequestHandler):
                 max-width: 480px;
                 line-height: 1.6;
                 font-size: 18px;
-                color: #444;
+                background: black;
                 padding: 0;
             }
             main {
+                color: white;
                 height: 100vh;
                 width: 480px;
                 display: flex;
@@ -57,6 +58,7 @@ class LotteryHandler(BaseHTTPRequestHandler):
             }
             h1,h2,h3 { line-height:1.2 }
             .number {
+                color: #12ff12;
                 font-size: 30px;
                 font-family: monospace, monospace;
                 margin-right: 10px;
