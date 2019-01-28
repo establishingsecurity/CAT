@@ -19,8 +19,7 @@ REQUIRES = [
     "dask",
     "distributed",
     "bitstring",
-    "numpy",
-    "python-flint",
+    "flint-py",
     "sympy",
 ]
 

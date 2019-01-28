@@ -19,7 +19,6 @@
     virtualenv --python=/usr/bin/python3.6 ~/.virtualenvs/cat
     source ~/.virtualenvs/cat/bin/activate
     pip install --upgrade pip
-    pip install cython numpy
     ```
 
 3. Install the library (with all optional requirements):
