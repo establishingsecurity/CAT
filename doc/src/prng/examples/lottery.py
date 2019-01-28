@@ -1,17 +1,18 @@
 from functools import reduce
-from secrets import randbelow
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from secrets import randbelow
 
 # Define rng parameters
 STATE_SIZE = 64
 MODULUS = 2 ** STATE_SIZE
 
-MULTIPLIER = 0x5DEECE66D**2
-INCREMENT = 0xB**2
+MULTIPLIER = 0x5DEECE66D ** 2
+INCREMENT = 0xB ** 2
 SHIFT = STATE_SIZE - 8
 
 STATE = [randbelow(2 ** STATE_SIZE) for _ in range(9)]
 
+HOST = "127.0.0.1"
 PORT = 8080
 
 
@@ -40,26 +41,39 @@ class LotteryHandler(BaseHTTPRequestHandler):
         <meta name="author" content="SitePoint">
         <style type="text/css">
             body {
-                margin:40px auto;
-                max-width:650px;
-                line-height:1.6;
-                font-size:18px;
-                color:#444;
-                padding:0 10px
+                margin: 0 auto;
+                max-width: 480px;
+                line-height: 1.6;
+                font-size: 18px;
+                color: #444;
+                padding: 0;
+            }
+            main {
+                height: 100vh;
+                width: 480px;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
             }
             h1,h2,h3 { line-height:1.2 }
             .number {
                 font-size: 30px;
-                padding: 0 10px;
                 font-family: monospace, monospace;
+                margin-right: 10px;
             }
             </style>
         </head>
 
         <body>
-            <h1>New Lottery Numbers</h1>
-        """ + "\n".join(['<span class="number">{:02X}</span>'.format(x >> SHIFT) for x in STATE])
+            <main>
+                <h1>New Lottery Numbers</h1>
+                <div>
+        """ + "\n".join(
+            ['<span class="number">{:02X}</span>'.format(x >> SHIFT) for x in STATE]
+        )
         """
+                </div>
+            </main>
         </body>
         </html>
         """
@@ -69,7 +83,7 @@ class LotteryHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server_address = ("127.0.0.1", PORT)
+    server_address = (HOST, PORT)
     httpd = HTTPServer(server_address, LotteryHandler)
-    print("running server...")
+    print("running server on http://{}:{}/ ...".format(HOST, PORT))
     httpd.serve_forever()
