@@ -73,5 +73,3 @@ if __name__ == "__main__":
     httpd = HTTPServer(server_address, LotteryHandler)
     print("running server...")
     httpd.serve_forever()
-    httpd.serve_forever()
-    httpd.serve_forever()

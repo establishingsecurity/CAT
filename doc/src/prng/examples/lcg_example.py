@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # Step the LCGs to the next step, effectivly predicting the next value
     states = [
-        int(list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, SAMPLES))[-1])
+        int(list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, i))[-1])
         for state in states
     ]
 
