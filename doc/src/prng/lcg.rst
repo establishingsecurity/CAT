@@ -61,10 +61,37 @@ evaluating the congruences on valid LCG states yields a zero value modulo
     a^2 s_1 - s_3 &= 0 \\
     \dots
 
-.. TODO matrix structure
 
 The matrix form of these equations builds a lattice, the dual of the lattice
 contains all the possible solutions of an LCG with the specified parameter set.
+
+.. TODO Recheck matrix structure
+.. math::
+    \begin{pmatrix}
+      m & 0 & \cdots & \cdots & \cdots & 0\\
+      a & -1 & 0 & \cdots & \cdots & 0\\
+      a^2 & 0 & -1 & 0 & \cdots & 0\\
+      \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+      a^l & 0 & \cdots & \cdots & 0 & -1\\
+    \end{pmatrix}
+    \cdot
+    \begin{pmatrix}
+      s_1 \\
+      \vdots\\
+      \vdots\\
+      \vdots\\
+      s_0\\
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      0 \\
+      \vdots\\
+      \vdots\\
+      \vdots\\
+      0\\
+    \end{pmatrix}
+
+
 
 .. TODO Check the claim about the dual lattice again
 
@@ -166,3 +193,6 @@ Otherwise, we can now invert :math:`\frac{(a-1)}{d} \mod \frac{m}{d}`, and compu
 
 .. [LLLLCG] https://crypto.stackexchange.com/questions/37836/problem-with-lll-reduction-on-truncated-lcg-schemes
 .. [LCGBB] https://crypto.stackexchange.com/questions/20495/how-brittle-are-lcg-cracking-techniques
+.. [FHKLS] Reconstructing truncated integer variables satisfying linear congruences (1988)
+    by Frieze, Alan M and Hastad, Johan and Kannan, Ravi and Lagarias, Jeffrey C and Shamir, Adi
+    in SIAM Journal on Computing 17
