@@ -4,6 +4,7 @@ from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
 from .util import reconstruct_private
 
+from .util import reconstruct_private
 
 def fermat_factoring(pk):
     """
@@ -50,7 +51,7 @@ def common_divisor(pk, product):
 
 def lsb_oracle(public_key, ciphertext, oracle):
     # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
-    """
+    r"""
     The Least Significant Bit Oracle attack is a simpler variation on
     Bleichenbacher.
     

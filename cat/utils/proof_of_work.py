@@ -13,7 +13,7 @@ from cat.utils.utils import generate_brute_force
 def generate_with_alphabet(
     alphabet, prefix=b"", suffix=b"", min_length=0, max_length=None
 ):
-    """
+    r"""
     Generator returning strings of all possible combinations of letters from the given :attr:`alphabet`
     of length :math:`i`, where :math:`\mathit{min\_length} \leq i \leq \mathit{max\_length}`.
 
@@ -22,12 +22,20 @@ def generate_with_alphabet(
     Shorter strings are yielded before longer ones.
     The order of the returned strings within a single length may change with each run.
 
-    >>> lencmp = lambda x: (len(x), x)
-    >>> sorted(list(generate_with_alphabet('abc', max_length=2)), key=lencmp)
-    [b'a', b'b', b'c', b'aa', b'ab', b'ac', b'ba', b'bb', b'bc', b'ca', b'cb', b'cc']
+    >>> lencmp = lambda x: (len(x[0]), x[0])
+    >>> result = sorted(list(generate_with_alphabet('abc', min_length=1, max_length=2)), key=lencmp)
+    >>> expected = [(b'a', b'a'), (b'b', b'b'), (b'c', b'c'), (b'aa', b'aa'), (b'ab', b'ab'),
+    ...             (b'ac', b'ac'), (b'ba', b'ba'), (b'bb', b'bb'), (b'bc', b'bc'), (b'ca', b'ca'),
+    ...             (b'cb', b'cb'), (b'cc', b'cc')]
+    >>> all([r[0] == e[0] and r[1] == e[1] for r, e in zip(result, expected)])
+    True
 
-    >>> sorted(list(generate_with_alphabet('abc', prefix=b'hi', max_length=2)), key=lencmp)
-    [b'hia', b'hib', b'hic', b'hiaa', b'hiab', b'hiac', b'hiba', b'hibb', b'hibc', b'hica', b'hicb', b'hicc']
+    >>> result = sorted(list(generate_with_alphabet('abc', prefix=b'hi', max_length=2)), key=lencmp)
+    >>> expected = [(b'hi', b''), (b'hia', b'a'), (b'hib', b'b'), (b'hic', b'c'), (b'hiaa', b'aa'),
+    ...             (b'hiab', b'ab'), (b'hiac', b'ac'), (b'hiba', b'ba'), (b'hibb', b'bb'),
+    ...             (b'hibc', b'bc'), (b'hica', b'ca'), (b'hicb', b'cb'), (b'hicc', b'cc')]
+    >>> all([r[0] == e[0] and r[1] == e[1] for r, e in zip(result, expected)])
+    True
 
     :param alphabet: A set of characters
     :param prefix: A prefix to prepend to the yielded value
@@ -42,7 +50,7 @@ def generate_with_alphabet(
     )
     for length in lengths:
         for value in itertools.product(alphabet, repeat=length):
-            guess = bytes("".join(value), "utf-8")
+            guess = "".join(value).encode("utf-8")
             yield prefix + guess + suffix, guess
 
 
@@ -54,7 +62,7 @@ def wrap_hashlib(hasher, length=None):
     >>> wrap_hashlib(sha1)(b'heyo')
     'f8bb1031d6d82b30817a872b8a2ec31d5380cee5'
 
-    :param hasher: A function from :py:module:`hashlib`
+    :param hasher: A function from :mod:`hashlib`
     :return: Function
     """
 
@@ -63,7 +71,6 @@ def wrap_hashlib(hasher, length=None):
         args = [length]
 
     def _hasher(data):
-        print(args)
         return hasher(data).hexdigest(*args)
 
     return _hasher
@@ -200,7 +207,7 @@ _MEMBERS = dict(inspect.getmembers(hashlib))
 def is_hashlib(obj):
     """
     :param obj: Any object
-    :return: True iff obj is an algorithm from :py:module:`hashlib`.
+    :return: True iff obj is an algorithm from :mod:`hashlib`.
     """
     algorithms = _MEMBERS["algorithms_guaranteed"]
     return obj in map(lambda x: _MEMBERS[x], algorithms)
@@ -217,11 +224,11 @@ def hash_pow(
     max_length=None,
     condition=None,
 ):
-    """
+    r"""
     Computes a :math:`g` such that:
 
     .. math::
-        H_\it{hex}(\mathit{prefix} \| g \| \mathit{suffix}) = \mathit{hash\_prefix} \| \ldots \| \mathit{hash\_suffix}
+        H_\it{hex}(\mathit{prefix} | g | \mathit{suffix}) = \mathit{hash\_prefix} | \ldots | \mathit{hash\_suffix}
 
     Where :math:`H_\it{hex}` is a function returning the hexadecimal digest of its input.
 
@@ -265,7 +272,7 @@ def hash_pow(
 
 
 def with_pattern(pattern):
-    """
+    r"""
     Compute a Proof of Work based on the given pattern.
 
     >>> # Compute a digest that starts and ends with a '1'
@@ -332,13 +339,13 @@ def compute(condition, fn, values_source):
     >>> # Define a simple input source
     >>> def input_source(start):
     ...     for bf in generate_brute_force(start):
-    ...         yield bytes(bf)
+    ...         yield bytes(bf), bf
     >>> # Instantiate a generator
     >>> generator = input_source([0])
     >>> # Compute a digest with '123' somewhere
-    >>> condition = lambda d: '123' in hex_str(d)
+    >>> condition = lambda d: '123' in d
     >>> from Cryptodome.Hash import SHA1
-    >>> guess = compute(SHA1, condition, generator)
+    >>> guess, _ = compute(condition, wrap_cryptodome(SHA1), generator)
     >>> assert '123' in SHA1.new(data=guess).hexdigest()
 
     :param condition:     A function checking whether a given  fulfills the proof of

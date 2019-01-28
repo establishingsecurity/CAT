@@ -28,30 +28,17 @@ The main ones are the following:
 Installation
 ------------
 
-Soon you should be able to :code:`pip install <InsertPyPi Name>`. For now, refer to :file:`CONTRIBUTE.md` for installation instructions.
+Soon you should be able to :code:`pip install <InsertPyPi Name>`.
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents
+   :caption: Contents:
 
-   rsa.rst
-   hash.rst
-   prng.rst
-   utils.rst
-   symmetric.rst
-   factorize.rst
-   logging.rst
+   src/rsa/intro.rst
+   lsb_oracle
+   src/rsa/attack_batch_gcd.rst
 
-
-Package and Module Index
-------------------------
-
-.. toctree::
-   :glob:
-   :maxdepth: 4
-
-   modules/cat.rst
-
+   modules/cat
 
 Indices and tables
 ==================

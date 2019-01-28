@@ -19,8 +19,7 @@ REQUIRES = [
     "dask",
     "distributed",
     "bitstring",
-    "numpy",
-    "python-flint",
+    "flint-py",
     "sympy",
 ]
 
@@ -52,7 +51,7 @@ setup(
     extras_require={
         "dev": ["ipython"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
-        "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "format": ["isort", "black", "pytest-black", "pytest-isort"],
+        "test": ["pytest", "hypothesis", "tox"],
+        "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
 )
