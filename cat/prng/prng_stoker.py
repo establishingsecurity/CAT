@@ -12,22 +12,20 @@ class PRNGStoker(Adversary):
     #   - same goes for `modulus`
     #   - we might want to use mpz instead of int
     """
-    A convenience class for perform attacks on PRNGs that checks the correctness of input values.
-
-    >>> a = PRNGStoker()
-    >>> a.increment = 3
-    >>> a.modulus = 15
-    >>> a.multiplier = 2
-    >>> a.states = 
-    >>> a.samples = 
+    A convenience class for performing attacks on PRNGs that checks the correctness of input values.
     """
 
     increment = descriptors.Number(int, forbidden_values=[0])
-    modulus = descriptors.Number(int)
+    """ The increment for LCG prediction. """
+    modulus = descriptors.Number(int, forbidden_values=[0])
+    """ The modulus for LCG prediction. """
     multiplier = descriptors.Number(int, forbidden_values=[0])
+    """ The multiplier for LCG prediction. """
     samples = descriptors.TypedList(min_length=3, element_type=int)
+    """ Consecutive sample outputs of a truncated LCG. """
     shift = descriptors.Number(int)
-    states = descriptors.List()
+    """ The shift applied during LCG prediction. """
+    __states = descriptors.List(min_length=1)
 
     def reconstruct_lehmer_state(self):
         # type: (PRNGStoker) -> int
@@ -46,11 +44,11 @@ class PRNGStoker(Adversary):
 
         lower_bits = reconstruct_lehmer_lower(L, self.modulus, self.samples)
 
-        self.states = [
+        self.__states = [
             (x + y) % self.modulus for (x, y) in zip(lower_bits, self.samples)
         ]
 
-        return self.states[0]
+        return self.__states[0]
 
     def reconstruct_lcg_state(self):
         # type: (PRNGStoker) -> int
@@ -70,8 +68,8 @@ class PRNGStoker(Adversary):
             self.modulus, self.multiplier, self.increment, self.samples, self.shift
         )
 
-        self.states = [
+        self.__states = [
             (x + y) % self.modulus for (x, y) in zip(lower_bits, self.samples)
         ]
 
-        return self.states[0]
+        return self.__states[0]

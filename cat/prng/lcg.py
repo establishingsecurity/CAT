@@ -84,6 +84,7 @@ def retrieve_states(m, a, b, z):
 
 
 def reconstruct_lcg_state(m, a, b, highs, shift):
+    # TODO: shift is the number of bits that... what? ;)
     """
     :param m: The modulus used for all the equations
     :param a: The multiplier used for all the equations
