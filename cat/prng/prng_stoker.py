@@ -1,89 +1,37 @@
-from cat.prng.lcg import *
+from cat.prng.lcg import (
+    construct_lattice,
+    reconstruct_lcg_state,
+    reconstruct_lehmer_lower,
+)
+from cat.utils import descriptors
+from cat.utils.descriptors import Adversary
 
 
-class PRNGStoker:
-    _samples = None
-    _states = None
-    _multiplier = None
-    _increment = None
-    _modulus = None
-    _shift = None
+class PRNGStoker(Adversary):
+    # TODO: we need to set `shift`, but `shift` is documented nowhere!
+    #   - same goes for `modulus`
+    #   - we might want to use mpz instead of int
+    """
+    A convenience class for perform attacks on PRNGs that checks the correctness of input values.
 
-    @property
-    def samples(self):
-        return self._samples
+    >>> a = PRNGStoker()
+    >>> a.increment = 3
+    >>> a.modulus = 15
+    >>> a.multiplier = 2
+    >>> a.states = 
+    >>> a.samples = 
+    """
 
-    @samples.setter
-    def samples(self, value):
-        if not value:
-            raise ValueError("samples must have a value")
-        if not type(value) is list:
-            raise TypeError("samples must be of type list")
-        if not len(value) >= 3:
-            raise ValueError("samples must have at least 3 samples")
-        if not type(value[0]) is int:
-            raise ValueError("samples elements must have at type int")
-        self._samples = value
-
-    @property
-    def states(self):
-        return self._states
-
-    @property
-    def multiplier(self):
-        return self._multiplier
-
-    @multiplier.setter
-    def multiplier(self, value):
-        if not value:
-            raise ValueError("multiplier must have a value")
-        if value == 0:
-            raise ValueError("multiplier must have a value that is not 0")
-        if not type(value) is int:
-            raise TypeError("multiplier must be of type int")
-        self._multiplier = value
-
-    @property
-    def increment(self):
-        return self._increment
-
-    @increment.setter
-    def increment(self, value):
-        if not value:
-            raise ValueError("increment must have a value")
-        if value == 0:
-            raise ValueError("increment must have a value that is not 0")
-        if not type(value) is int:
-            raise TypeError("increment must be of type int")
-        self._increment = value
-
-    @property
-    def modulus(self):
-        return self._modulus
-
-    @modulus.setter
-    def modulus(self, value):
-        if not value:
-            raise ValueError("modulus must have a value")
-        if not type(value) is int:
-            raise TypeError("modulus must be of type int")
-        self._modulus = value
-
-    @property
-    def shift(self):
-        return self._shift
-
-    @shift.setter
-    def shift(self, value):
-        if not value:
-            raise ValueError("shift must have a value")
-        if not type(value) is int:
-            raise TypeError("shift must be of type int")
-        self._shift = value
+    increment = descriptors.Number(int, forbidden_values=[0])
+    modulus = descriptors.Number(int)
+    multiplier = descriptors.Number(int, forbidden_values=[0])
+    samples = descriptors.TypedList(min_length=3, element_type=int)
+    shift = descriptors.Number(int)
+    states = descriptors.List()
 
     def reconstruct_lehmer_state(self):
         # type: (PRNGStoker) -> int
-        """
+        r"""
         Uses the :attr:`samples` of the stoker as states of a Lehmer style LCG and
         reconstructs the first state.
 
@@ -94,19 +42,19 @@ class PRNGStoker:
 
         :returns: The first state of the recurrence relation :math:`s_1`
         """
-        L = construct_lattice(self._modulus, self._multiplier, len(self.samples))
+        L = construct_lattice(self.modulus, self.multiplier, len(self.samples))
 
-        lower_bits = reconstruct_lehmer_lower(L, self._modulus, self._samples)
+        lower_bits = reconstruct_lehmer_lower(L, self.modulus, self.samples)
 
-        self._states = [
-            (x + y) % self._modulus for (x, y) in zip(lower_bits, self._samples)
+        self.states = [
+            (x + y) % self.modulus for (x, y) in zip(lower_bits, self.samples)
         ]
 
-        return self._states[0]
+        return self.states[0]
 
     def reconstruct_lcg_state(self):
         # type: (PRNGStoker) -> int
-        """
+        r"""
         Uses the :attr:`samples` of the stoker as states of an LCG and
         reconstructs the first state.
 
@@ -119,11 +67,11 @@ class PRNGStoker:
         :returns: The first state of the recurrence relation :math:`s_1`
         """
         lower_bits = reconstruct_lcg_state(
-            self._modulus, self._multiplier, self._increment, self._samples, self._shift
+            self.modulus, self.multiplier, self.increment, self.samples, self.shift
         )
 
-        self._states = [
-            (x + y) % self._modulus for (x, y) in zip(lower_bits, self._samples)
+        self.states = [
+            (x + y) % self.modulus for (x, y) in zip(lower_bits, self.samples)
         ]
 
-        return self._states[0]
+        return self.states[0]
