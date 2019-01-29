@@ -1,6 +1,6 @@
 import logging
 
-from .utils.checkresult import CheckResult, Severity
+from .utils.result import Result, Severity
 from .oracle import Oracle
 
 # use pathlib.Path in python2.7
