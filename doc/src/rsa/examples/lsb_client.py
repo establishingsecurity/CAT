@@ -39,4 +39,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     KeyTuple = namedtuple("KeyTuple", "n e")
     r.keys = [KeyTuple(e=e, n=n)]
     r.add_lsb_oracle(oracle)
-    print(r.run_lsb_oracle(t))
+    print("Recovered plaintext is {}".format(r.run_lsb_oracle(t)))

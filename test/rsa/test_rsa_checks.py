@@ -1,7 +1,7 @@
 from Cryptodome.PublicKey import RSA
 
-from .. import CheckResult, Severity
-from .checks import *
+from cat import CheckResult, Severity
+from cat.rsa.checks import *
 
 
 def test_check_public():

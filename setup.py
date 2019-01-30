@@ -1,25 +1,26 @@
-from setuptools import find_packages, setup
 from codecs import open
 from os import path
 
-version = "0.0.3"
+from setuptools import find_packages, setup
 
-# here = path.abspath(path.dirname(__file__))
+version = "0.0.4"
 
-# # Get the long description from the README file
-# with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-#     readme = f.read()
-readme = ""
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, "README.md"), encoding="utf-8") as f:
+    readme = f.read()
 
 REQUIRES = [
     "gmpy2",
     "pycryptodomex",
     "typing",
-    "hashpumpy",
-    # 'hashpumpy @ https://github.com/bwall/HashPump/tarball/master',
+    "hashpumpy @ https://github.com/bwall/HashPump/tarball/master",
     "dask",
     "distributed",
     "bitstring",
+    "flint-py",
+    "sympy",
 ]
 
 setup(
@@ -44,14 +45,13 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
     ],
     packages=find_packages(),
     install_requires=REQUIRES,
     extras_require={
-        "dev": ["ipython", "black", "isort"],
+        "dev": ["ipython"],
         "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
-        "test": ["pytest", "hypothesis", "tox", "pytest-benchmark"],
-        "test-formatting": ["pytest-black", "pytest-isort"],
+        "test": ["pytest", "hypothesis", "tox"],
+        "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
 )
