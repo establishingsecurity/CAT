@@ -1,6 +1,6 @@
-# cat - Crypto Attack Toolbox
+# cat - Crypto Attack Toolkit
 
-`cat`, the crypto attack toolkit, is a Python framework to help implement cryptographic attacks against weak primitives or primitives constructed for educational purposes.
+`cat`, the Crypto Attack Toolkit, is a Python framework to help implement cryptographic attacks against weak primitives or primitives constructed for educational purposes.
 
 We expect `cat` to be useful in three different domains:
 
