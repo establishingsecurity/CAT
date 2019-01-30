@@ -1,7 +1,22 @@
 #!/bin/sh
 # Enforce coding style
 STAGED_FILES=`git diff --cached --name-only --diff-filter=ACMR`
-source .venv/bin/activate
+SOURCES=(".venv/bin/activate" "$HOME/.virtualenvs/cat/bin/activate")
+SOURCED=false
+for s in "${SOURCES[@]}"
+do
+    if [ -f "$s" ]
+    then
+        . "$s"
+        SOURCED=true
+        break
+    fi
+done
+if [ $SOURCED != true ]
+then
+    echo "Could not activate virtualenv for coding-style enforcement. Tried ${SOURCES[@]}."
+    exit 1
+fi
 for file in "$STAGED_FILES"
 do
     echo "$file" | grep -e ".py$" > /dev/null

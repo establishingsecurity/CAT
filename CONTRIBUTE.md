@@ -1,5 +1,35 @@
 # How to Contribute
 
+## Installing for development
+
+1. Install non-Python dependencies:
+
+    - flint http://flintlib.org/
+    - arb http://arblib.org/
+
+2. Install Python dependencies into a venv:
+
+    Note: to be able to run tests without docker, you should install
+    Python3.6 and/or Python 2.7
+
+    Note: to be able to follow the coding style guidelines, the
+    virtual environment should be installed exactly as below.
+
+    ```
+    virtualenv --python=/usr/bin/python3.6 ~/.virtualenvs/cat
+    source ~/.virtualenvs/cat/bin/activate
+    pip install --upgrade pip
+    ```
+
+3. Install the library (with all optional requirements):
+
+    Note: `python setup.py install` will not install optional
+    dependencies which are required for development. Use:
+
+    ```
+    pip install -r requirements.txt
+    ```
+
 ## Conforming to the coding style
 
 `cat` uses [black](https://github.com/ambv/black) and [isort](https://github.com/timothycrosley/isort) to enforce a common code style for the code base.
@@ -15,14 +45,11 @@ The script creates a backup of your current `hooks` directory and symlinks it to
 
 ## Build the Documentation
 
-To build the documentation you need to install additional dependencies:
-
-In a python virtualenv of your choice:
+To build the documentation, make sure that you have installed all optional dependenices:
 
 ```
-pip install -e '.[dev,test,doc]'
-cd doc
-make html
+pip install -r requirements.txt
+cd doc && make html
 ```
 
 The doc is then available at `_build/html/index.html`.

@@ -1,16 +1,15 @@
 # Base image
-FROM debian:sid-slim as base
+FROM debian:buster-slim as base
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
-	libgmp-dev \
-	libmpfr-dev \
-	libmpc-dev \
-	python3.6 \
-	python3.6-dev \
-	python3-pip \
-	python \
+        libmpc-dev \
+        python2.7 \
+        python3.7 \
+        python2.7-dev \
+        python3.7-dev \
 	python-pip \
+	python3-pip \
 	libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,23 +25,20 @@ ADD cat /app/cat
 FROM base as test
 ENV RUN_ARGS=""
 
-RUN apt-get update && apt-get install -y \
-	pypy \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install -e ".[test]"
+RUN pip3 install -e ".[test,format]"
 
 ADD conftest.py /app/conftest.py
 ADD tox.ini /app/tox.ini
 
 RUN tox --notest
+ADD test /app/test
 
 CMD tox --result-json /app/test-results.json -- ${RUN_ARGS}
 
 # Doc image
 FROM base as doc
 
-RUN pip3 install -e ".[dev,test,doc]"
+RUN pip3 install -e ".[dev,doc]"
 RUN apt-get update && apt-get install -y \
 	texlive-full \
 	inkscape \
@@ -60,6 +56,5 @@ FROM base as dist
 
 RUN pip install setuptools wheel
 RUN pip3 install setuptools wheel
-RUN rm cat/conf.py
 
 CMD python3 setup.py sdist bdist_wheel && python setup.py sdist bdist_wheel

@@ -51,7 +51,7 @@ def common_divisor(pk, product):
 
 def lsb_oracle(public_key, ciphertext, oracle):
     # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
-    """
+    r"""
     The Least Significant Bit Oracle attack is a simpler variation on
     Bleichenbacher.
     
