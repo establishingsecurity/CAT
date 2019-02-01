@@ -16,15 +16,15 @@ class PRNGStoker(Adversary):
     """
 
     increment = descriptors.Number(int, forbidden_values=[0])
-    """ The increment for LCG prediction. """
+    """ The increment for (Lehmer style) LCG prediction. """
     modulus = descriptors.Number(int, forbidden_values=[0])
-    """ The modulus for LCG prediction. """
+    """ The modulus for (Lehmer style) LCG prediction. """
     multiplier = descriptors.Number(int, forbidden_values=[0])
-    """ The multiplier for LCG prediction. """
+    """ The multiplier for (Lehmer style) LCG prediction. """
     samples = descriptors.TypedList(min_length=3, element_type=int)
-    """ Consecutive sample outputs of a truncated LCG. """
+    """ Consecutive sample outputs of a truncated (Lehmer style) LCG. """
     shift = descriptors.Number(int)
-    """ The shift applied during LCG prediction. """
+    """ The shift applied during (Lehmer style) LCG prediction. """
     __states = descriptors.List(min_length=1)
 
     def reconstruct_lehmer_state(self):
