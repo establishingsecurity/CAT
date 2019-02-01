@@ -1,50 +1,59 @@
-from cat.prng.lcg import construct_lattice, reconstruct_lehmer_lower
-from gmpy2 import mpz, mpz_random, next_prime, random_state
+import re
+import time
 
-# Define rng parameters
-bits = 128
-m = int(next_prime(2 ** bits))
-a = int(next_prime(2 ** (bits // 2)))
-s = int(mpz_random(random_state(), m))
-shift = bits // 2
-size = 10
+import requests
 
+from cat.prng.lcg import lcg_step_state, reconstruct_lcg_state
+from lottery import INCREMENT, MODULUS, MULTIPLIER, SHIFT, STATE_SIZE
 
-def attack(m, a, ys):
-    # Constructing lattice for the modular relations
-    L = construct_lattice(m, a, len(ys))
-    # Reconstructing the missing state
-    zs = reconstruct_lehmer_lower(L, m, ys)
-    # Returning the full reconstructed state
-    return [y + z for y, z in zip(ys, zs)]
+SAMPLES = 15
+
+PORT = 8080
 
 
-def lehmer_random(s):
-    return a * s % m
+def get_numbers():
+    r = requests.get("http://localhost:{}".format(PORT))
+    matches = re.findall(r'(?<=<span class="number">)\w+', r.text)
+    return [int(n, 16) << SHIFT for n in matches]
 
 
 if __name__ == "__main__":
+    print("Retrieving samples")
+    # Prepare a list for every number
+    highs_mat = [[] for _ in range(9)]
 
-    # Use Lehmer Style to generate size "random" states and
-    # blank the lower shift (=256) bits of the state, to generate the output
-    xs = []
-    ys = []
-    for i in range(size):
-        s = lehmer_random(s)
-        xs.append(s)
-        ys.append(s - (s % 2 ** shift))
-        print("Next State:\t{}\n|- Output:\t{}".format(hex(xs[-1]), hex(ys[-1])))
+    # Try to use only the minimum number of samples
+    for i in range(1, SAMPLES):
+        highs_mat = [h + [n] for h, n in zip(highs_mat, get_numbers())]
 
-    print("\nStarting attack...\n")
-    reconstructed = attack(m, a, ys)
+        try:
+            print("Trying to reconstruct states with {:02} samples".format(i), end=": ")
+            # Reconstruct the original state for each LCG in the samples
+            states = [
+                int(
+                    next(
+                        reconstruct_lcg_state(
+                            MODULUS, MULTIPLIER, INCREMENT, highs, SHIFT
+                        )
+                    )
+                )
+                for highs in highs_mat
+            ]
+            print("\033[1;32;40mSuccess\033[0;37;40m ✨")
+            break
+        except Exception:
+            time.sleep(0.5)
+            print("\033[1;31;40mFailed ✘\033[0;37;40m")
 
-    for (i, (x, y, r)) in enumerate(zip(xs, ys, reconstructed)):
-        print(
-            "Reconstruction of state {}:\n  {:032x}\n= {:032x}\n+ {:032x}".format(
-                i, int(x), int(y), int(r - y)
-            )
-        )
+    # Step the LCGs to the next step, effectivly predicting the next value
+    states = [
+        int(list(lcg_step_state(MODULUS, MULTIPLIER, INCREMENT, state, i))[-1])
+        for state in states
+    ]
 
-    assert reconstructed[0] == xs[0]
-    assert reconstructed == xs
-    print("Everything reconstructed")
+    print("Your next lottery numbers are:")
+    print("\033[1;32;40m", end="")
+    for n in states:
+        print("{:02X}".format(n >> SHIFT), end=" ")
+    print()
+    print()
