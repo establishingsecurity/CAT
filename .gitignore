@@ -1,6 +1,8 @@
 # Dask
 dask-worker-space/
 
+__catcache__/
+
 # Figure outputs
 doc/figures/*.pdf
 doc/figures/*.png

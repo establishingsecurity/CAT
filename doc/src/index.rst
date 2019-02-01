@@ -35,10 +35,11 @@ Soon you should be able to :code:`pip install <InsertPyPi Name>`. For now, refer
    :caption: Contents
 
    rsa.rst
+   symmetric.rst
+   discrete_log.rst
    hash.rst
    prng.rst
    utils.rst
-   symmetric.rst
    factorize.rst
    logging.rst
 

@@ -3,6 +3,8 @@ import operator
 
 import gmpy2
 
+from cat.utils.snapshots import long_running
+
 
 def compute_product(xs):
     """Computes a (somewhat) fast product of all list elements."""
@@ -161,6 +163,7 @@ def compute_remainders(n, xs):
     return build_remainder_tree(n, build_product_tree(xs))[0]
 
 
+@long_running
 def attack_batch_gcd(ns):
     """
     Checks for each RSA modulus if it shares primes with another RSA modulus.
