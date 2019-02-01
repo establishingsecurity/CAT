@@ -33,3 +33,28 @@ Most of them suffer from a combination of the following drawbacks:
 * Outright broken
 
 In short, no framework fulfills our requirements and consolidates these code pieces.
+
+# Install
+
+You may install `cat` using `pip`:
+
+## Arch Linux
+
+From 0 to `cat` in $\sim$100 seconds:
+
+```bash
+pacman -Sy python-pip base-devel python-virtualenv git openssh
+python -m venv .venv
+. .venv/bin/activate
+git clone https://gitlab.com/crave/cat.git
+cd cat
+pip install -e .
+```
+
+Then you can import it in python:
+
+```python
+from cat.factorize import factor
+
+print(factor(2*3))
+```
