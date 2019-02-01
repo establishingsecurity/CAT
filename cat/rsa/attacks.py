@@ -4,7 +4,6 @@ from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
 from .util import reconstruct_private
 
-from .util import reconstruct_private
 
 def fermat_factoring(pk):
     """
