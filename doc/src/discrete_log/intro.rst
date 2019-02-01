@@ -21,7 +21,7 @@ Both the security of DH key exchange and of ElGamal encryption is based on the *
 If this is the case, then it is said that the discrete logarithm problem is hard relative to :math:`\mathcal{G}`.
 
 .. note::
-    If computing :math:`x` such that :math:`h=g^x` for :math:`h \in \mathcal{G}` is hard in polynomial time, the discrete logarithm problem is hard relative to :math:`\mathcal{G}`.
+    If computing :math:`x` such that :math:`h=g^x` for uniform :math:`h \in \mathcal{G}` is hard in polynomial time, the discrete logarithm problem is hard relative to :math:`\mathcal{G}`.
 
 As you can see, the hardness of computing discrete logarithms is not an absolute assumption, but *always with regards to a specific group* :math:`\mathcal{G}`.
 This means that depending on the defining parameters of a group, computing discrete logarithms could be very easy:
@@ -36,4 +36,4 @@ This means that depending on the defining parameters of a group, computing discr
         return 1 if h == 3 else 2
 
 Choosing the wrong parameters for the group used by either DH or ElGamal can therefore have disastrous results.
-:mod:`discrete_log.analysis` therefore provides different checks for provided group parameters to see whether the specified group is vulnerable to attacks.
+:mod:`cat.discrete_log.analysis` therefore provides different checks for provided group parameters to see whether the specified group is vulnerable to attacks.
