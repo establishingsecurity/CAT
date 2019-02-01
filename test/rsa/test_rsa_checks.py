@@ -1,7 +1,7 @@
 from Cryptodome.PublicKey import RSA
 
-from cat import CheckResult, Severity
-from cat.rsa.checks import *
+from cat.rsa.checks import check_composite, check_modulus_size, check_public_key
+from cat.utils.result import Severity
 
 
 def test_check_public():
@@ -10,7 +10,8 @@ def test_check_public():
 
     :pk The RSA public key
     """
-    result = check_public(RSA.generate(1024))
+    key = RSA.generate(1024)
+    result = check_public_key(key.n, key.e)
     assert all([lambda r: r.severity == Severity.OK for r in result])
 
 

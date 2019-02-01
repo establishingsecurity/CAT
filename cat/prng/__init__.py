@@ -1,3 +1,5 @@
+from .prng_stoker import PRNGStoker
+
 """
 Parameters for glibc's rand_r or when invoking initstate with an 8 byte state.
 """
