@@ -15,7 +15,11 @@
 
 import logging
 import logging.config
+import sys
 
+# Enable logging if we're in an interactive session.
+# See https://stackoverflow.com/questions/2356399/tell-if-python-is-in-interactive-mode
+import __main__
 
 # To configure the root logger of the library, its name must be known. Since the current
 # name of the library might change in the future, parse __name__ instead of hard-coding:
@@ -87,3 +91,11 @@ def disable_logging(config=None):
     else:
         # In case you are muting loggers through a config:
         logging.config.dictConfig(config)
+
+
+if (
+    not hasattr(__main__, "__file__")
+    or not hasattr(sys, "ps1")
+    or not hasattr(sys, "ps2")
+):
+    enable_logging(kitten=False)

@@ -89,7 +89,7 @@ def reconstruct_lcg_state(m, a, b, highs, shift):
     :param a: The multiplier used for all the equations
     :param b: The increment used for all the equations
     :param highs: Partial solutions for the variables (xs = ys + zs)
-    :param shift: Number of bits that
+    :param shift: Number of bits that are missing
     :return: The remaining operands of the solutions zs
     """
     size = len(highs) - 1
