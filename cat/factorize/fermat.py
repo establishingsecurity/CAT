@@ -19,13 +19,10 @@ def factor(N):
 
     Returns:
         A factor of N
-
-    Raises:
-        ValueError: if N is even
     """
 
     if N & 1 == 0:
-        raise ValueError("Expected N to be odd, was {}".format(N))
+        return gmpy2.mpz(2)
 
     if gmpy2.get_context().precision < PRECISION_BITS:
         adjust_gmpy2_precision(PRECISION_BITS)
