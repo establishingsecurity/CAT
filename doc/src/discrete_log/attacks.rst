@@ -40,9 +40,12 @@ Small subgroups
 There are some simple checks that can be performed efficiently to check whether the given :math:`g` generates a small subgroup.
 If :math:`g` is the identity element it generates a subgroup of order :math:`1`, if :math:`g` is either :math:`0` or :math:`q` it generates a subgroup of order :math:`2`.
 
+.. TODO
+    Recheck this claim of 0 or q generating subgroup of order 2
+
 .. warning::
     Since it is infeasible in general to factor :math:`q`, it is possible in general that :math:`q` contains one or more small prime factors which would
-    allow for small subgroups depending on the choice of :math:`g`. Ruling out small subgroups is only possible if :math:`q` is a **safe prime**!
+    allow for small subgroups depending on the choice of :math:`g`. Ruling out small subgroups is easier if :math:`q` is a **safe prime**!
 
 Results
 ~~~~~~~
