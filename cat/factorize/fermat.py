@@ -21,6 +21,8 @@ def factor(N):
         A factor of N
     """
 
+    if N == 0:
+        return gmpy2.mpz(0)
     if N & 1 == 0:
         return gmpy2.mpz(2)
 
