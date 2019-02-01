@@ -84,7 +84,7 @@ def check_modulus(n):
     return [check_composite(n), check_modulus_size(n)]
 
 
-def check_public_rsa_exponent(N, e, BOUND=512):
+def check_public_rsa_exponent(N, e, BOUND=64):
     # type: (RSAKey, int) -> List[RSAPublicKeyResult]
     """
     Checks if the public RSA exponent is non-standard
@@ -105,7 +105,7 @@ def check_public_rsa_exponent(N, e, BOUND=512):
     return results
 
 
-def _check_public_exponent(e, BOUND=512):
+def _check_public_exponent(e, BOUND=64):
     results = []
 
     if e != 65537:
