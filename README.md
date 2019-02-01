@@ -36,14 +36,14 @@ In short, no framework fulfills our requirements and consolidates these code pie
 
 # Install
 
-You may install `cat` using `pip`:
+You may install `cat` using `pip`.
 
 ## Arch Linux
 
-From 0 to `cat` in $\sim$100 seconds:
+From 0 to `cat`:
 
 ```bash
-pacman -Sy python-pip base-devel python-virtualenv git openssh
+pacman -Sy python-pip base-devel python-virtualenv git
 python -m venv .venv
 . .venv/bin/activate
 git clone https://gitlab.com/crave/cat.git
@@ -54,7 +54,7 @@ pip install -e .
 Then you can import it in python:
 
 ```python
-from cat.factorize import factor
+from cat.factorize.fermat import factor
 
-print(factor(2*3))
+print(factor(4298375219))
 ```
