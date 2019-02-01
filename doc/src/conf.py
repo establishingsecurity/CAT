@@ -27,9 +27,9 @@ copyright = "2018, the open source community"
 author = "the open source community"
 
 # The short X.Y version
-version = "0.0.3"
+version = "0.0.4"
 # The full version, including alpha/beta/rc tags
-release = "0.0.3-alpha"
+release = "0.0.4-alpha"
 
 # -- General configuration ---------------------------------------------------
 
