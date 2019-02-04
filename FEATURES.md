@@ -41,7 +41,7 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
     - [x] LSB-Oracle
 	- ...
 - Common Modulus
-    - Batch GCD [easy]
+    - [x] Batch GCD [easy]
 
 ## Diffie-Hellman
 
