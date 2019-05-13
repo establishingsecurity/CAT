@@ -6,7 +6,7 @@ We feel that they are implemented to an acceptable degree in the current state (
 - [x] Save and Restore Functionality in long running attacks that saves the state on return.
 - [x] Python2 and Python3 support
 - [x] Great Documentation you can learn from
-- A fancy logo [hard]
+- A fancy logo ~hard
 
 # Basic Checks
 
@@ -16,16 +16,16 @@ They are easily overlooked on CTF Challenges and Assessments and can often be de
 - [x] RSA
 - [x] ElGamal
 - [x] Diffie-Hellman
-- ECDH [easy]
-- LWE/RLWE/MLWE/LWR/... [advanced]
+- ECDH ~easy
+- LWE/RLWE/MLWE/LWR/... ~advanced
 
 # Symmetric
 
 Techniques that help in the analysis of symmetric primitives.
 
-- Add a method to calculate the linear approximation table for some given sbox [advanced]
-- Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations. [hard]
-- Half-Trivium attack [advanced]
+- Add a method to calculate the linear approximation table for some given sbox ~advanced
+- Add a framework to be able to trace single bytes or even single bits through permutation steps in SPNs for example. The types have to store the beginning position in the block at least. This tracing has to survive substitutions and bitwise permutations. If necessary with it's own functions/methods for substitutions bitwise access and permutations. ~hard
+- Half-Trivium attack ~advanced
 
 ## RSA
 
@@ -34,13 +34,13 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
 - Factoring
     - [x] Fermat Factoring
     - ...
-- Different Coppersmith-like Attacks [hard]
-    * Boneh-Durfee-Frankel [hard]
+- Different Coppersmith-like Attacks ~hard
+    * Boneh-Durfee-Frankel ~hard
     * ...
-- Wiener's Attack [advanced]
-* Boneh-Durfee [hard]
+- Wiener's Attack ~advanced
+* Boneh-Durfee ~hard
 - Oracle Attacks
-    - Bleichenbacher [advanced]
+    - Bleichenbacher ~advanced
     - [x] LSB-Oracle
 	- ...
 - Common Modulus
@@ -50,20 +50,20 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
 
 Analysis techniques and attacks for the Diffie-Hellman-Merkle Key Exchange.
 
-- Small Subgroup Attacks [hard]
-- Discrete Log Algorithms [hard]
-- Meneses and Wu Algorithms for DH over matrices [hard]
+- Small Subgroup Attacks ~hard
+- Discrete Log Algorithms ~hard
+- Meneses and Wu Algorithms for DH over matrices ~hard
 
 ## (EC)DSA
 
-* Nonce Reuse [easy]
-* Weak Nonce Generators [advanced][hard]
+* Nonce Reuse ~easy
+* Weak Nonce Generators ~advanced to ~hard
 
 ## LWE
 
 Analysis techniques and attacks for schemes based on LWE/RLWE/MLWE/LWR/... .
 
-- Fluhrer's Attack (https://eprint.iacr.org/2016/085.pdf) [hard]
+- Fluhrer's Attack (https://eprint.iacr.org/2016/085.pdf) ~hard
 
 ## Hashing
 
@@ -76,15 +76,15 @@ Analysis techniques and attacks for schemes based on cryptographic hashing.
 
 Analysis techniques and attacks for the TLS stack.
 
-- Ability to run as a TLS server and client (to test the counterpart) [easy]
-- Checks of accepted and proposed parameters (SafePrimes?, KeyLength?,...) [easy]
-- Array of TLS attacks of the last years [hard]
-- Certificate (chain) validation attacks and nuances [advanced]
+- Ability to run as a TLS server and client (to test the counterpart) ~easy
+- Checks of accepted and proposed parameters (SafePrimes?, KeyLength?,...) ~easy
+- Array of TLS attacks of the last years ~hard
+- Certificate (chain) validation attacks and nuances ~advanced
 
 ## PRNG
 
 Analysis techniques and attacks for Pseudo Random Number Generators.
 
 - [x] Get LCG seed
-- get secret LCG parameters (see https://link.springer.com/chapter/10.1007%2F11506157_5) [advanced]
-- Mersenne Untwister [hard]
+- get secret LCG parameters (see https://link.springer.com/chapter/10.1007%2F11506157_5) ~advanced
+- Mersenne Untwister ~hard
