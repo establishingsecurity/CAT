@@ -6,9 +6,9 @@ We feel that they are implemented to an acceptable degree in the current state (
 - [x] Save and Restore Functionality in long running attacks that saves the state on return.
 - [x] Python2 and Python3 support
 - [x] Great Documentation you can learn from
-- A fancy logo
+- A fancy logo [hard]
 
-# Basic Checks [easy]
+# Basic Checks
 
 Basic checks are implemented for different primitives to catch mistakes in deployment and general usage of them.
 They are easily overlooked on CTF Challenges and Assessments and can often be detected by performing simple checks on available data and parameters.
@@ -34,14 +34,17 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
 - Factoring
     - [x] Fermat Factoring
     - ...
-- Different Coppersmith Attacks [work in progress]
+- Different Coppersmith-like Attacks [hard]
+    * Boneh-Durfee-Frankel [hard]
+    * ...
 - Wiener's Attack [advanced]
+* Boneh-Durfee [hard]
 - Oracle Attacks
     - Bleichenbacher [advanced]
     - [x] LSB-Oracle
 	- ...
 - Common Modulus
-    - [x] Batch GCD [easy]
+    - [x] Batch GCD
 
 ## Diffie-Hellman
 
@@ -50,6 +53,11 @@ Analysis techniques and attacks for the Diffie-Hellman-Merkle Key Exchange.
 - Small Subgroup Attacks [hard]
 - Discrete Log Algorithms [hard]
 - Meneses and Wu Algorithms for DH over matrices [hard]
+
+## (EC)DSA
+
+* Nonce Reuse [easy]
+* Weak Nonce Generators [advanced][hard]
 
 ## LWE
 
