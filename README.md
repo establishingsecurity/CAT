@@ -40,7 +40,7 @@ You can view the documentation here: https://crave.gitlab.io/cat/
 
 # Developer Channel
 
-Chat with us on [gitter] (https://gitter.im/crypto-attack-toolkit).
+Chat with us on [gitter](https://gitter.im/crypto-attack-toolkit).
 
 # Install
 
