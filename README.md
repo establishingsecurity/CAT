@@ -34,6 +34,10 @@ Most of them suffer from a combination of the following drawbacks:
 
 In short, no framework fulfills our requirements and consolidates these code pieces.
 
+# Documentation
+
+You can view the documentation here: https://crave.gitlab.io/cat/
+
 # Install
 
 You may install `cat` using `pip`.
