@@ -36,7 +36,7 @@ In short, no framework fulfills our requirements and consolidates these code pie
 
 # Documentation
 
-You can view the documentation here: https://crave.gitlab.io/cat/
+You can view the [documentation here](https://crave.gitlab.io/cat/).
 
 # Developer Channel
 
