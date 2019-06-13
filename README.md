@@ -38,6 +38,10 @@ In short, no framework fulfills our requirements and consolidates these code pie
 
 You can view the documentation here: https://crave.gitlab.io/cat/
 
+# Developer Channel
+
+Chat with us on [gitter] (https://gitter.im/crypto-attack-toolkit).
+
 # Install
 
 You may install `cat` using `pip`.
