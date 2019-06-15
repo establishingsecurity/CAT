@@ -54,9 +54,7 @@ From 0 to `cat`:
 pacman -Sy python-pip base-devel python-virtualenv git
 python -m venv .venv
 . .venv/bin/activate
-git clone https://gitlab.com/crave/cat.git
-cd cat
-pip install -e .
+pip install git+https://gitlab.com/crave/cat.git
 ```
 
 Then you can import it in python:
