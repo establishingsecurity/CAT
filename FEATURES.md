@@ -42,6 +42,7 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
 - Oracle Attacks
     - Bleichenbacher ~advanced
     - [x] LSB-Oracle
+    * Automate Oracle attacks https://eprint.iacr.org/2019/958
 	- ...
 - Common Modulus
     - [x] Batch GCD
