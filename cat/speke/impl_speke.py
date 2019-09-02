@@ -1,6 +1,6 @@
 from cat.speke.Ispeke import ISpeke
 from cat.utils.ntheory import gen_safe_prime
-from gmpy2 import powmod
+from gmpy2 import powmod, mpz
 from random import SystemRandom
 import cat.speke.constants
 
@@ -13,7 +13,8 @@ class Speke(ISpeke):
     userInstances = []
     transcription = []
     g = 2;
-    p = gen_safe_prime(512)
+    p = gen_safe_prime(128)
+    q = gen_safe_prime(128)
     cryptogen = SystemRandom()
 
     def initialize(self, userNumber, id):
@@ -22,9 +23,12 @@ class Speke(ISpeke):
         pass
 
 
+    # user needs to have a password
     def setPassword(self, userNumber, id, password):
-        user = {self.const.usernumber:userNumber, self.const.id:id, self.const.pw: password}
-        self.users.append(user)
+        for u in self.users:
+            if u["id"] == id:
+                user = {self.const.usernumber:userNumber, self.const.id:id, "password": password}
+                u.update(user)
         pass
 
     def initializeUserInstance(self, userInstance, id, role, pid):
@@ -47,9 +51,14 @@ class Speke(ISpeke):
                     if puI["pid"] == uI["id"] and puI["role"] == "connect" and uI["role"] == "open":
                         #determine private and public key for puid
                         print("i:" + str(uI["i"]) + " j:" + str(uI["j"]) + " role: " + uI["role"] + " getKey() ")
-                        x = self.cryptogen.randrange(self.p)
-                        gx = powmod(self.g, x, self.p)
-                        update = {"public": gx, "private": x}
+
+                        #find correct user
+                        for u in self.users:
+                            if u["id"] == puI["id"]:
+                                x = self.cryptogen.randrange(self.p)
+                                gx = powmod(self.g, x, self.p)
+                                gx = powmod(self.f(u["password"],self.p, self.q), x, self.p)
+                                update = {"public": gx, "private": x}
                         puI.update(update)
                         return gx
                     if puI["pid"] == uI["id"] and puI["role"] == "open" and uI["role"] == "connect":
@@ -64,14 +73,18 @@ class Speke(ISpeke):
                 for puI in self.userInstances:
                     if puI["pid"] == uI["id"] and puI["role"] == "open" and uI["role"] == "connect":
                         print("i:" + str(uI["i"]) + " j:" + str(uI["j"]) + " role: " + uI["role"] + " sendKey() ")
-                        # send key and calc session key
-                        x = self.cryptogen.randrange(self.p)
-                        gx = powmod(self.g, x, self.p)
-                        sessionkey = powmod(key, x, self.p)
+                        for u in self.users:
+                            if u["id"] == puI["id"]:
+                                # send key and calc session key
+                                x = self.cryptogen.randrange(self.p)
+                                gx = powmod(self.g, x, self.p)
 
-                        print("Sessionkey:" + str(sessionkey))
-                        update = {"sessionkey": sessionkey, "private": x, "public": gx}
-                        puI.update(update)
+                                gx = powmod(self.f(u["password"], self.p, self.q), x, self.p)
+                                sessionkey = powmod(key, x, self.p)
+
+                                print("Sessionkey:" + str(sessionkey))
+                                update = {"sessionkey": sessionkey, "private": x, "public": gx}
+                                puI.update(update)
                     if puI["pid"] == uI["id"] and puI["role"] == "connect" and uI["role"] == "open":
                         print("i:" + str(uI["i"]) + " j:" + str(uI["j"]) + " role: " + uI["role"] + " sendKey() ")
                         sessionkey = powmod(key, puI["private"], self.p)
@@ -88,3 +101,6 @@ class Speke(ISpeke):
 
     def application(self):
         pass
+
+    def f(self, S, p, q):
+        return powmod(S, mpz((p-1)/q), p)

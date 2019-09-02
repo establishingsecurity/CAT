@@ -1,5 +1,5 @@
 
-id = "ID"
+id = "id"
 value = "VALUE"
 usernumber="userNumber"
 pw="password"

@@ -38,6 +38,7 @@ class SpekeUKS():
 
     def setupAlice(self, speke):
         speke.initialize(1, "A")
+        speke.setPassword(1, "A", 1234)
         userInstance = {"i": 1, "j": 1}
         speke.initializeUserInstance(userInstance, "A", "open", "B")
 
