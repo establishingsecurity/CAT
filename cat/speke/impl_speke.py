@@ -1,8 +1,9 @@
 from cat.speke.Ispeke import ISpeke
 from cat.utils.ntheory import gen_safe_prime
-from gmpy2 import powmod, mpz
+from gmpy2 import powmod, mpz, gmpy2
 from random import SystemRandom
 import cat.speke.constants
+from Cryptodome.Hash import SHA256
 
 class Speke(ISpeke):
     const = cat.speke.constants
@@ -94,9 +95,40 @@ class Speke(ISpeke):
         pass
 
     def getChallenge(self, userInstance):
+        for uI in self.userInstances:
+            if uI["i"] == userInstance["i"] and  uI["j"] == userInstance["j"]:
+                # correct user userinstance found
+                for puI in self.userInstances:
+                    if puI["pid"] == uI["id"] and puI["role"] == "connect" and uI["role"] == "open":
+                        # get hash of hash of session key
+                        hash = SHA256.new(SHA256.new(gmpy2.to_binary(puI["sessionkey"])).digest()).hexdigest()
+                        print("Hash: " + hash)
+                        return hash
+                    if puI["pid"] == uI["id"] and puI["role"] == "open" and uI["role"] == "connect":
+                        hash = SHA256.new(gmpy2.to_binary(puI["sessionkey"])).hexdigest()
+                        print("Hash: " + hash)
+                        return hash
+
         pass
 
     def sendChallenge(self, userInstance, challenge):
+        for uI in self.userInstances:
+            if uI["i"] == userInstance["i"] and uI["j"] == userInstance["j"]:
+                # correct userInstance found
+                for puI in self.userInstances:
+                    if puI["pid"] == uI["id"] and puI["role"] == "open" and uI["role"] == "connect":
+                        hash = SHA256.new(SHA256.new(gmpy2.to_binary(puI["sessionkey"])).digest()).hexdigest()
+                        if hash == challenge:
+                            print("accepted")
+                        else:
+                            print("refuse")
+                    if puI["pid"] == uI["id"] and puI["role"] == "connect" and uI["role"] == "open":
+                        hash = SHA256.new(gmpy2.to_binary(puI["sessionkey"])).hexdigest()
+                        if hash == challenge:
+                            print("accepted")
+                        else:
+                            print("refuse")
+
         pass
 
     def application(self):

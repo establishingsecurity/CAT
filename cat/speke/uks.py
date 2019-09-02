@@ -36,6 +36,11 @@ class SpekeUKS():
         key = powmod(key, c, speke.p)
         speke.sendKey(userInstance1, key)
 
+        challenge = speke.getChallenge(userInstance1)
+        speke.sendChallenge(userInstance2, challenge)
+        challenge = speke.getChallenge(userInstance2)
+        speke.sendChallenge(userInstance1, challenge)
+
     def setupAlice(self, speke):
         speke.initialize(1, "A")
         speke.setPassword(1, "A", 1234)
