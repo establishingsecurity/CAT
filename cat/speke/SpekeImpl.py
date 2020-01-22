@@ -8,23 +8,27 @@ import cat.speke.constants
 from Cryptodome.Hash import SHA256
 
 
-def f(s, p, q):
-    return powmod(s, mpz((p - 1) / q), p)
+class Speke(ISpeke):
 
+    def __f(self, s, p, q):
+        return powmod(s, mpz((p - 1) / q), p)
 
-class Speke(ISpeke, ABC):
-    const = cat.speke.constants
+    def __update_status(self, user_instance, status):
+        for uI in self.userInstances:
+            if uI["i"] == user_instance["i"] and uI["j"] == user_instance["j"]:
+                uI.update({"status": status})
+                self.transcription.append("[" + status + "     ]" +
+                                          " i/j:" + str(user_instance["i"]) + "/" + str(user_instance["j"]) +
+                                          " id:" + user_instance["id"] +
+                                          " pid:" + user_instance["pid"] +
+                                          " role:" + user_instance["role"])
+        pass
 
-    # via get key
-    users = []
-    userInstances = []
-    transcription = []
-    g = 2;
-    p = gen_safe_prime(128)
-    q = gen_safe_prime(128)
-    cryptogen = SystemRandom()
+    def __connection_established(self, user_instance):
+        self.__update_status(user_instance, "connected")
+        pass
 
-    def initialize(self, user_number, m_id):
+    def initialize_user(self, user_number, m_id):
         user = {self.const.usernumber: user_number, self.const.id: m_id}
         self.users.append(user)
         pass
@@ -47,23 +51,11 @@ class Speke(ISpeke, ABC):
                                   " role:" + user_instance["role"])
         pass
 
-    def update_status(self, user_instance, status):
-        for uI in self.userInstances:
-            if uI["i"] == user_instance["i"] and uI["j"] == user_instance["j"]:
-                uI.update({"status": status})
-                self.transcription.append("[" + status + "     ]" +
-                                          " i/j:" + str(user_instance["i"]) + "/" + str(user_instance["j"]) +
-                                          " id:" + user_instance["id"] +
-                                          " pid:" + user_instance["pid"] +
-                                          " role:" + user_instance["role"])
-        pass
-
     def terminate_user_instance(self, user_instance):
-        self.update_status(user_instance, "terminate")
+        self.__update_status(user_instance, "terminate")
         pass
 
-    def connection_established(self, user_instance):
-        self.update_status(user_instance, "connected")
+    def test_instance_password(self, user_instance, password_guess):
         pass
 
     def get_key(self, user_instance):
@@ -79,7 +71,7 @@ class Speke(ISpeke, ABC):
                         for u in self.users:
                             if u["id"] == puI["id"]:
                                 x = self.cryptogen.randrange(self.p)
-                                gx = powmod(f(u["password"], self.p, self.q), x, self.p)
+                                gx = powmod(self.__f(u["password"], self.p, self.q), x, self.p)
                                 update = {"public": gx, "private": x}
                         puI.update(update)
                         self.transcription.append("[get_key       ]" +
@@ -115,7 +107,7 @@ class Speke(ISpeke, ABC):
                             if u["id"] == puI["id"]:
                                 # send key and calc session key
                                 x = self.cryptogen.randrange(self.p)
-                                gx = powmod(f(u["password"], self.p, self.q), x, self.p)
+                                gx = powmod(self.__f(u["password"], self.p, self.q), x, self.p)
                                 sessionkey = powmod(key, x, self.p)
 
                                 update = {"sessionkey": sessionkey, "private": x, "public": gx}
@@ -167,16 +159,16 @@ class Speke(ISpeke, ABC):
                     if puI["pid"] == uI["id"] and puI["role"] == "open" and uI["role"] == "connect":
                         mhash = SHA256.new(SHA256.new(gmpy2.to_binary(puI["sessionkey"])).digest()).hexdigest()
                         if mhash == challenge:
-                            self.connection_established(uI)
-                            self.connection_established(puI)
+                            self.__connection_established(uI)
+                            self.__connection_established(puI)
                         else:
                             self.terminate_user_instance(uI)
                             self.terminate_user_instance(puI)
                     if puI["pid"] == uI["id"] and puI["role"] == "connect" and uI["role"] == "open":
                         mhash = SHA256.new(gmpy2.to_binary(puI["sessionkey"])).hexdigest()
                         if mhash == challenge:
-                            self.connection_established(uI)
-                            self.connection_established(puI)
+                            self.__connection_established(uI)
+                            self.__connection_established(puI)
                         else:
                             self.terminate_user_instance(uI)
                             self.terminate_user_instance(puI)
@@ -185,3 +177,15 @@ class Speke(ISpeke, ABC):
 
     def application(self):
         pass
+
+    def __init__(self):
+        self.const = cat.speke.constants
+
+        # via get key
+        self.users = []
+        self.userInstances = []
+        self.transcription = []
+        self.g = 2;
+        self.p = gen_safe_prime(128)
+        self.q = gen_safe_prime(128)
+        self.cryptogen = SystemRandom()

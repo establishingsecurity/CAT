@@ -1,45 +1,45 @@
-from abc import ABCMeta, abstractmethod
+import abc
 
+class ISpeke():
+    __metaclass__ = abc.ABCMeta
 
-class ISpeke:
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def initialize(self, user_number, m_id):
+    @abc.abstractmethod
+    def initialize_user(self, user_number, m_id):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def set_password(self, user_number, m_id, password):
         pass
 
-    @abstractmethod
-    def initialize_user_instance(self, user_instance):
+    @abc.abstractmethod
+    def initialize_user_instance(self, user_instance, m_id, role, pid):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def terminate_user_instance(self, user_instance):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def test_instance_password(self, user_instance, password_guess):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_key(self, user_instance):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def send_key(self, user_instance, key):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_challenge(self, user_instance):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def send_challenge(self, user_instance, challenge):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def application(self):
         pass
+

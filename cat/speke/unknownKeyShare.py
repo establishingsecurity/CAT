@@ -9,12 +9,12 @@ class SpekeUKS():
     const = cat.speke.constants
 
     def uks(self, speke):
-        if not issubclass(speke.__class__, ISpeke):
+        if not isinstance(speke, ISpeke):
             print("wrong class type")
             return
 
         # Setup Mallory impersonating "Bob"
-        speke.initialize(2, self.id)
+        speke.initialize_user(2, self.id)
         user_instance1 = {"i": 2, "j": 1}
         speke.initialize_user_instance(user_instance1, self.id, self.const.open, "A")
         user_instance2 = {"i": 2, "j": 2}
