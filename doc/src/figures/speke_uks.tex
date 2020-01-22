@@ -1,0 +1,20 @@
+\documentclass{standalone}
+\usepackage[n, advantage, operators, sets, adversary, landau, probability, notions, logic, ff, mm, primitives, events, complexity, asymptotics, keys]{cryptocode}
+\begin{document}
+	\fbox{
+		\pseudocode{%
+			\textbf{A (Session 1)} \< \< \textbf{M (imp. B)} \< \< \textbf{A (Session 2)}\\
+			[] [\hline] \\
+			\text{$a \gets \mathbb{Z}_p$} \< \sendmessageright{top = \text{$g^a, A$}} \< \\
+			\< \< \text{$b \gets \mathbb{Z}_p$}  \< \sendmessageright{top = \text{$g^{ab}, B$}} \< \\
+			\< \< \< \< \text{$c \gets \mathbb{Z}_p$} \\
+			\< \< \< \sendmessageleft{top = \text{$g^c, A$}}\< \text{$K = g^{abc}$} \\
+			\< \sendmessageleft{top = \text{$g^{cb}, B$}} \< \< \<\\
+			\text{$K = g^{cba}$} \< \sendmessageright{top = \text{$h(h(K)), A$}} \< \< \<\\
+			\< \< \< \sendmessageright{top = \text{$h(h(K)), B$}}  \< \\
+			\< \< \< \sendmessageleft{top = \text{$h(K), A$}}  \<\text{verify $h(h(K))$} \\
+			\< \sendmessageleft{top = \text{$h(K), A$}} \< \< \<\\
+			\text{verify $h(K)$} \< \< \< \<\\
+		}
+	}\label{flow_speke_uks}
+\end{document}

@@ -1,0 +1,20 @@
+\documentclass{standalone}
+\usepackage[n, advantage, operators, sets, adversary, landau, probability, notions, logic, ff, mm, primitives, events, complexity, asymptotics, keys]{cryptocode}
+\begin{document}
+\fbox{
+		\pseudocode{%
+			\textbf{A} \< \< \textbf{B} \\
+			[] [\hline] \\
+			\text{$Gen(1^n) = G(\mathbb{Z}_p, *), p$} \< \<  \\
+			\text{$g = f(S)$ }\\
+			\text{$a \gets \mathbb{Z}_p$} \< \< \\
+			\text{$Q_A = g^a$} \<  \sendmessageright{top = \text{$G(\mathbb{Z}_p, *), p, Q_A, A$}}  \<\\
+			\< \< \text{$b \gets \mathbb{Z}_p$} \\
+			\< \< \text{$Q_B = g^b$} \\
+			\< \sendmessageleft{top = \text{$Q_B, B$}} \< \text{$K = h(Q_A^b)$} \\
+			\text{$K = h(Q_B^a)$} \< \sendmessageright{top = \text{$h(h(K)), A$}} \< \\
+			\< \sendmessageleft{top = \text{$h(K), B$}} \< \text{verify $h(h(K))$} \\
+			\text{verify $h(K)$} \< \< \\
+		}
+	}
+\end{document}
