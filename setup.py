@@ -16,7 +16,7 @@ REQUIRES = [
     "pycryptodomex",
     "typing",
     "hashpumpy @ https://github.com/bwall/HashPump/tarball/master",
-    "dask",
+    "dask[bag]",
     "distributed",
     "bitstring",
     "flint-py",
