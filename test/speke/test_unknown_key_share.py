@@ -1,5 +1,4 @@
 import cat.speke.constants
-from cat.speke.ISpeke import ISpeke
 from cat.speke.SpekeImpl import Speke
 from cat.speke.unknownKeyShare import SpekeUKS
 
@@ -26,4 +25,3 @@ def test_unknown_key_share():
         print(trans)
 
     assert user_instance["status"] == "connected"
-

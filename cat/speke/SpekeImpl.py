@@ -1,7 +1,7 @@
 from random import SystemRandom
 
 from Cryptodome.Hash import SHA256
-from gmpy2 import gmpy2, mpz, powmod
+from gmpy2 import to_binary, mpz, powmod
 
 import cat.speke.constants
 from cat.speke.ISpeke import ISpeke
@@ -204,7 +204,7 @@ class Speke(ISpeke):
                     ):
                         # get hash of hash of session key
                         mhash = SHA256.new(
-                            SHA256.new(gmpy2.to_binary(puI["sessionkey"])).digest()
+                            SHA256.new(to_binary(puI["sessionkey"])).digest()
                         ).hexdigest()
                         self.transcription.append(
                             "[get_challenge ]"
@@ -228,7 +228,7 @@ class Speke(ISpeke):
                         and uI["role"] == "connect"
                     ):
                         mhash = SHA256.new(
-                            gmpy2.to_binary(puI["sessionkey"])
+                            to_binary(puI["sessionkey"])
                         ).hexdigest()
                         self.transcription.append(
                             "[get_challenge ]"
@@ -275,7 +275,7 @@ class Speke(ISpeke):
                         and uI["role"] == "connect"
                     ):
                         mhash = SHA256.new(
-                            SHA256.new(gmpy2.to_binary(puI["sessionkey"])).digest()
+                            SHA256.new(to_binary(puI["sessionkey"])).digest()
                         ).hexdigest()
                         if mhash == challenge:
                             self.__connection_established(uI)
@@ -289,7 +289,7 @@ class Speke(ISpeke):
                         and uI["role"] == "open"
                     ):
                         mhash = SHA256.new(
-                            gmpy2.to_binary(puI["sessionkey"])
+                            to_binary(puI["sessionkey"])
                         ).hexdigest()
                         if mhash == challenge:
                             self.__connection_established(uI)
