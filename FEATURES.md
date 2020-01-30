@@ -42,6 +42,7 @@ Analysis techniques and attacks for the RSA Cryptosysytem.
 - Oracle Attacks
     - Bleichenbacher ~advanced
     - [x] LSB-Oracle
+    * Automate Oracle attacks https://eprint.iacr.org/2019/958
 	- ...
 - Common Modulus
     - [x] Batch GCD
@@ -87,4 +88,4 @@ Analysis techniques and attacks for Pseudo Random Number Generators.
 
 - [x] Get LCG seed
 - get secret LCG parameters (see https://link.springer.com/chapter/10.1007%2F11506157_5) ~advanced
-- Mersenne Untwister ~hard
+- Mersenne Untwister (see e.g. https://www.ambionics.io/blog/php-mt-rand-prediction) ~advanced
