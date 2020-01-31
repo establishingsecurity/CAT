@@ -12,15 +12,15 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     readme = f.read()
 
 REQUIRES = [
-    "gmpy2",
-    "pycryptodomex",
-    "typing",
+    "gmpy2>=2,<3",
+    "pycryptodomex>=3,<4",
+    "typing>=3,<4",
     "hashpumpy @ https://github.com/bwall/HashPump/tarball/master",
-    "dask",
-    "distributed",
-    "bitstring",
-    "flint-py",
-    "sympy",
+    "dask[bag]>=1,<2",
+    "distributed>=1,<2",
+    "bitstring>=3,<4",
+    "flint-py>=0,<1",
+    "sympy>=1,<2",
 ]
 
 setup(
@@ -49,9 +49,14 @@ setup(
     packages=find_packages(),
     install_requires=REQUIRES,
     extras_require={
-        "dev": ["ipython"],
-        "doc": ["sphinx", "sphinx_rtd_theme", "sphinxcontrib-apidoc"],
-        "test": ["pytest", "hypothesis", "tox"],
+        "dev": ["ipython>=7,<8"],
+        "doc": ["sphinx>=1,<2", "sphinx_rtd_theme>=0,<1", "sphinxcontrib-apidoc>=0,<1"],
+        "test": [
+            "pytest>=4.6,<4.7",
+            "hypothesis>=4,<5",
+            "tox>=3,<4",
+            "pytest-benchmark",
+        ],
         "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
 )
