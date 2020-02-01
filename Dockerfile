@@ -1,15 +1,13 @@
 # Base image
 FROM python:3.7-slim as base
 
-# RUN apt-get update && apt-get install -y \
-# 	build-essential \
-#         libmpc-dev \
-#         python3.7 \
-#         python3.7-dev \
-# 	python-pip \
-# 	python3-pip \
-# 	libssl-dev \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+	build-essential \
+        libmpc-dev \
+	libgmp-dev \
+	libmpfr-dev \
+	libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ADD README.md /app/README.md
