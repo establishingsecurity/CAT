@@ -1,14 +1,15 @@
+import struct
+from binascii import hexlify
+from ctypes import c_ulonglong
+
+import pytest
 from Cryptodome.Hash import SHA256
 from Cryptodome.Util.number import bytes_to_long
-from ctypes import c_ulonglong
-from binascii import hexlify
-import struct
+from hypothesis import given
+from hypothesis.strategies import binary, composite, lists
 
 from .extendable import *
 
-import pytest
-from hypothesis import given
-from hypothesis.strategies import binary, lists, composite
 
 @composite
 def byte_array(draw):

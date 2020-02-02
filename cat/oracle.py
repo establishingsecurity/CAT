@@ -12,5 +12,5 @@ class Oracle:
     __metaclass__ = ABCMeta
 
     def query(self, msg):
-        # type: bytes
+        # type: (bytes) -> bool
         pass

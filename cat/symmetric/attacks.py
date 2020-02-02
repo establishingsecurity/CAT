@@ -1,7 +1,7 @@
-from bitstring import Bits, BitArray
+from bitstring import BitArray, Bits
 
-from cat.utils.convert import int_to_bytes
 from cat.symmetric.util import edit_cbc_block
+from cat.utils.convert import int_to_bytes
 
 
 def guess_cbc_byte(

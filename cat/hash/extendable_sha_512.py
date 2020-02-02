@@ -1,6 +1,8 @@
+from ctypes import c_uint64
+from typing import Any
+
 from Cryptodome.Hash import SHA512
 from Cryptodome.Util.number import bytes_to_long
-from ctypes import c_uint64
 
 # TODO: extract common functions for all SHA objects into separate file
 
@@ -20,7 +22,7 @@ buffer_type = c_uint64
 sha_type = SHA512
 
 def load(load_state, input_length):
-    # type: bytes, int
+    # type: (bytes, int) -> Any
     r"""
     This function takes the digest of a Merkle-Damgard construction, the input
     length previously given to the hashfunction and returns the a copy of the
@@ -60,7 +62,7 @@ def load(load_state, input_length):
 
 
 def data_to_buffer(load_state, no_of_entries, entry_size):
-    # type: bytes, int, int
+    # type: (bytes, int, int) -> Any
     r"""
     This function takes load_state, a byte array, and converts it to an array with number_of_entries entries of type buffer_type.
     """
@@ -68,7 +70,7 @@ def data_to_buffer(load_state, no_of_entries, entry_size):
 
 
 def get_data_length(input_length):
-    # type: int
+    # type: (int) -> int
     r"""
     This function returns the length of padded data in bytes for a given data length and block size in bytes.
     >>> get_data_length(111) == 128
@@ -81,7 +83,7 @@ def get_data_length(input_length):
 
 
 def get_state(hash_object, length):
-    # type: sha_type, int
+    # type: (Any, int) -> Any
     r"""
     This function takes a SHA512 object and the number of lines to retrieve from the buffer,
     returning the internal state as array of type c_uint64.
@@ -102,7 +104,7 @@ def get_state(hash_object, length):
 
 # TODO maybe we should work with bits here, currently this function only supports full bytes as msg
 def pad(payload):
-    # type: bytes
+    # type: (bytes) -> bytes
     r"""
     This function takes a payload as byte array and the block size
     and returns the byte array plus the padding added before hashing it with SHA512.

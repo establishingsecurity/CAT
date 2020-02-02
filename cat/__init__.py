@@ -1,13 +1,8 @@
 import logging
+from pathlib import Path
 
-from .utils.result import Result, Severity
 from .oracle import Oracle
-
-# use pathlib.Path in python2.7
-try:
-    from pathlib import Path
-except ImportError:
-    from pathlib2 import Path
+from .utils.result import Result, Severity
 
 __version__ = "0.0.1"
 

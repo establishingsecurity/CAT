@@ -1,6 +1,8 @@
 """
 A collection of utility functions.
 """
+from typing import Any, Callable, Iterable
+
 import dask.bag as parallel
 
 
@@ -54,7 +56,7 @@ def generate_brute_force(start):
 
 
 def pmap(function, inputs, multiple=False, predicate=None):
-    # type: (Callable[Any, Any], Iterable[Iterable[Any]], Callable[Any, Any]) -> Iterable[Any]
+    # type: (Callable[[Any], Any], Iterable[Iterable[Any]], bool, Callable[[Any], Any]) -> Iterable[Any]
     """
     Do a parallel map of the given :code:`function` on the given :code:`inputs` and optionally
     filter its results with :code:`predicate`. This is a simple wrapper for `dask`_ and works
