@@ -4,7 +4,7 @@ A set of general features that we feel are important to have a usable framework.
 We feel that they are implemented to an acceptable degree in the current state (Documentation for example can always be better) and we'd like them to be considered when implementing further analysis and attack techniques.
 
 - [x] Save and Restore Functionality in long running attacks that saves the state on return.
-- [x] Python2 and Python3 support
+- [x] Python3 support
 - [x] Great Documentation you can learn from
 - A fancy logo ~hard
 

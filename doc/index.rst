@@ -23,7 +23,7 @@ The main ones are the following:
 - Each attack is documented by an accompanying tutorial in a corresponding attack-scenario
 - Progress is saved periodically or between stages during long running attacks
 - Extensible and modular architecture
-- The framework can be used in Python 2 and Python 3
+- The framework can be used in Python 3
 
 Installation
 ------------
