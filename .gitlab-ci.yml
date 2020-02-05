@@ -60,7 +60,7 @@ build:
 test_master:
   <<: *test_template
   variables:
-    RUN_ARGS: "--env RUN_ARGS='--slow'"
+    RUN_ARGS: "--env RUN_ARGS='-m slow'"
   only:
     - master
 
