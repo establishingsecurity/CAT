@@ -68,7 +68,7 @@ def test_sha3_hash_functions():
 
 
 def test_blake2_hash_functions():
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         hashes_test(
             [BLAKE2s, BLAKE2b], wrap_cryptodome, digest_bytes=32, test_unwrapped=False
         )
@@ -93,7 +93,7 @@ def test_sha2_hashlib_functions():
 
 def test_sha3_hashlib_functions():
     """Test SHA-3 family"""
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         hashes_test(
             [hashlib.sha3_224, hashlib.sha3_256, hashlib.sha3_384, hashlib.sha3_512],
             wrap_hashlib,
@@ -103,7 +103,7 @@ def test_sha3_hashlib_functions():
 
 
 def test_blake2_hashlib_functions():
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         hashes_test([hashlib.blake2s, hashlib.blake2b], wrap_hashlib)
     else:
         assert True
@@ -114,7 +114,7 @@ def test_legacy_hashlib_functions():
 
 
 def test_shake():
-    if sys.version_info[0] >= 3:
+    if sys.version_info.major >= 3:
         hashes_test(
             [hashlib.shake_128, hashlib.shake_256],
             wrap_hashlib,

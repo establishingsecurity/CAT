@@ -1,5 +1,11 @@
+import sys
 import logging
-from pathlib import Path
+
+if sys.version_info.major >= 3:
+    from pathlib import Path
+else:
+    from pathlib2 import Path
+
 
 from .oracle import Oracle
 from .utils.result import Result, Severity
