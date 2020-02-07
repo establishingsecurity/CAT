@@ -1,16 +1,14 @@
 import itertools
+import logging
 from typing import Callable, List, NewType
 
 from Cryptodome.PublicKey import RSA
 from gmpy2 import mpz
 
+from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
+
 from . import util
 from .attacks import lsb_oracle
-
-import logging
-
-
-from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
 RSACiphertext = int
 RSAPlaintext = int
@@ -45,7 +43,11 @@ class RSADriver:
         # type: (List[mpz]) -> None
         # Test if we got new immediatly useful factors of public key
         self._factors = factors
-        self._keys = util.reconstruct_privates(self._keys, factors)
+        new = util.reconstruct_privates(self._keys, factors)
+        if self._keys != new:
+            self._keys = new
+            logger = logging.getLogger(LOGGER)
+            logger.info("Recovered more keys with known factors")
 
     def add_lsb_oracle(self, oracle):
         # type: (Callable[[RSACiphertext], bool]) -> None
