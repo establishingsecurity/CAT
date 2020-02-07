@@ -7,10 +7,10 @@ from gmpy2 import mpz
 from . import util
 from .attacks import lsb_oracle
 
-# RSACiphertext = NewType("RSACiphertext", int)
-# RSAPlaintext = NewType("RSAPlaintext", int)
+import logging
 
-# RSAKey = NewType("RSAKey", RSA)
+
+from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
 RSACiphertext = int
 RSAPlaintext = int
@@ -32,7 +32,9 @@ class RSADriver:
         # type: (List[RSAKey]) -> None
         # Test if we already have factors of the public keys
         self._keys = util.reconstruct_privates(keys, self._factors)
-        print(self._keys)
+        if self._keys != keys:
+            logger = logging.getLogger(LOGGER)
+            logger.info("Recovered more keys with known factors")
 
     @property
     def factors(self):

@@ -27,6 +27,7 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
+    # TODO: The doctest fails because the function now logs
 
     return reconstruct_private(pk, int(factor(pk.n)))
 
