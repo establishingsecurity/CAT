@@ -1,7 +1,6 @@
 import logging
 import sys
 
-from .oracle import Oracle
 from .utils.result import Result, Severity
 
 # mypy: ignore-errors
