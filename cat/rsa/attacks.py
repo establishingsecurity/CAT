@@ -5,6 +5,8 @@ from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
 from .util import reconstruct_private
 
+from cat.factorize.fermat import factor
+
 if TYPE_CHECKING:
     from . import RSAKey, RSACiphertext, RSAPlaintext
 
@@ -25,14 +27,8 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    # FIXME: This is not correct, what we want is ceil(sqrt(pk.n))
-    a = isqrt(pk.n)
-    bsqr = a * a - pk.n
-    while not is_square(bsqr):
-        a = a + 1
-        bsqr = a * a - pk.n
 
-    return reconstruct_private(pk, int(a - isqrt(bsqr)))
+    return reconstruct_private(pk, int(factor(pk.n)))
 
 
 def common_divisor(pk, product):
