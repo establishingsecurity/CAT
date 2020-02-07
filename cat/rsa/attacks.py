@@ -3,12 +3,13 @@ from typing import TYPE_CHECKING, Callable
 from Cryptodome.PublicKey import RSA
 from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
-from .util import reconstruct_private
-
 from cat.factorize.fermat import factor
+
+from .util import reconstruct_private
 
 if TYPE_CHECKING:
     from . import RSAKey, RSACiphertext, RSAPlaintext
+
 
 def fermat_factoring(pk):
     """
@@ -27,8 +28,6 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    # TODO: The doctest fails because the function now logs
-
     return reconstruct_private(pk, int(factor(pk.n)))
 
 
