@@ -1,16 +1,19 @@
 import itertools
-from typing import Callable, NewType, List
+import logging
+from typing import Callable, List, NewType
 
-from gmpy2 import mpz
 from Cryptodome.PublicKey import RSA
+from gmpy2 import mpz
+
+from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
 from . import util
 from .attacks import lsb_oracle
 
-RSACiphertext = NewType("RSACiphertext", int)
-RSAPlaintext = NewType("RSAPlaintext", int)
+RSACiphertext = int
+RSAPlaintext = int
 
-RSAKey = NewType("RSAKey", RSA)
+RSAKey = RSA.RsaKey
 
 
 class RSADriver:
@@ -24,10 +27,12 @@ class RSADriver:
 
     @keys.setter
     def keys(self, keys):
-        # type: List[RSAKey]
+        # type: (List[RSAKey]) -> None
         # Test if we already have factors of the public keys
         self._keys = util.reconstruct_privates(keys, self._factors)
-        print(self._keys)
+        if self._keys != keys:
+            logger = logging.getLogger(LOGGER)
+            logger.info("Recovered more keys with known factors")
 
     @property
     def factors(self):
@@ -35,17 +40,21 @@ class RSADriver:
 
     @factors.setter
     def factors(self, factors):
-        # type: List[mpz]
+        # type: (List[mpz]) -> None
         # Test if we got new immediatly useful factors of public key
         self._factors = factors
-        self._keys = util.reconstruct_privates(self._keys, factors)
+        new = util.reconstruct_privates(self._keys, factors)
+        if self._keys != new:
+            self._keys = new
+            logger = logging.getLogger(LOGGER)
+            logger.info("Recovered more keys with known factors")
 
     def add_lsb_oracle(self, oracle):
-        # type: Callable[[RSACiphertext], bool]
+        # type: (Callable[[RSACiphertext], bool]) -> None
         self.lsb_oracle = oracle
 
     def run_lsb_oracle(self, ciphertext):
-        # type: RSACiphertext
+        # type: (RSACiphertext) -> int
         """
         This function implements an attack against RSA oracles that return the least
         significant bit or parity of the decrypted ciphertext.

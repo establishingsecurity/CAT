@@ -3,6 +3,7 @@ from multiprocessing import Pool, TimeoutError
 from multiprocessing.pool import ApplyResult, AsyncResult
 
 import gmpy2
+
 from cat.factorize.fermat import factor
 
 if __name__ == "__main__":

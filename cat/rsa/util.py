@@ -1,9 +1,18 @@
-from Cryptodome.PublicKey import RSA
+from typing import TYPE_CHECKING, Tuple, Union
 
+from Cryptodome.PublicKey import RSA
+from Cryptodome.PublicKey.RSA import RsaKey
 from gmpy2 import invert
+
+if TYPE_CHECKING:
+
+    class RSAKeyLike:
+        n: int
+        e: int
 
 
 def reconstruct_private(pk, p):
+    # type: (RSAKeyLike, int) -> RsaKey
     """
     Reconstructs the private key from a public key and a factor of the modulus
     """
