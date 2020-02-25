@@ -4,10 +4,11 @@ Tools for analyzing systems based on discrete logarithm hardness.
 
 from enum import Enum
 
+from gmpy2 import is_prime, mpq, mpz
+
 from cat.utils.result import Result
 from cat.utils.result import ResultEntry as RE
 from cat.utils.result import Severity
-from gmpy2 import is_prime, mpq, mpz
 
 
 class DiscreteLogResult(Result):
@@ -58,7 +59,7 @@ class DiscreteLogResult(Result):
 
 
 def check_components(g, q, B=512):
-    # type: (int, int, int) -> Result
+    # type: (int, int, int) -> RE
     """
     Takes a group order :attr:`q` and a generator :attr:`g` together with an optional bound :attr:`B` and
     checks various conditions that must hold for e.g. Diffie-Hellman Key Exchange. If one of these
