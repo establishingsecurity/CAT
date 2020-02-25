@@ -9,7 +9,6 @@ if sys.version_info.major >= 3:
 else:
     from pathlib2 import Path
 
-
-__version__ = "0.0.1"
+__version__ = "0.2.0"
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
