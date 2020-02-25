@@ -33,3 +33,34 @@ Most of them suffer from a combination of the following drawbacks:
 * Outright broken
 
 In short, no framework fulfills our requirements and consolidates these code pieces.
+
+# Documentation
+
+You can view the [documentation here](https://crave.gitlab.io/cat/).
+
+# Developer Channel
+
+Chat with us on [Gitter](https://gitter.im/crypto-attack-toolkit).
+
+# Install
+
+You may install `cat` using `pip`.
+
+## Arch Linux
+
+From 0 to `cat`:
+
+```bash
+pacman -Sy python-pip base-devel python-virtualenv git
+python -m venv .venv
+. .venv/bin/activate
+pip install git+https://gitlab.com/crave/cat.git
+```
+
+Then you can import it in python:
+
+```python
+from cat.factorize.fermat import factor
+
+print(factor(4298375219))
+```
