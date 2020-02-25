@@ -10,7 +10,7 @@
 2. Install Python dependencies into a venv:
 
     Note: to be able to run tests without docker, you should install
-    Python3.6 and/or Python 2.7
+    Python3.6 and/or Python 3.7
 
     Note: to be able to follow the coding style guidelines, the
     virtual environment should be installed exactly as below.

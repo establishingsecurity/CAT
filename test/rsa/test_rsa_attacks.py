@@ -4,10 +4,9 @@ import pytest
 from Cryptodome.Cipher import PKCS1_v1_5
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Util.number import getPrime
+from gmpy2 import mpz, next_prime, powmod
 from hypothesis import assume, given, reject, settings
 from hypothesis.strategies import integers, sampled_from, text
-
-from gmpy2 import mpz, next_prime, powmod
 
 from cat.rsa.attacks import *
 

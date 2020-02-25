@@ -23,22 +23,12 @@ The main ones are the following:
 - Each attack is documented by an accompanying tutorial in a corresponding attack-scenario
 - Progress is saved periodically or between stages during long running attacks
 - Extensible and modular architecture
-- The framework can be used in Python 2 and Python 3
+- The framework can be used in Python 3
 
 Installation
 ------------
 
 Soon you should be able to :code:`pip install <InsertPyPi Name>`.
-
-.. toctree::
-   :maxdepth: 4
-   :caption: Contents:
-
-   src/rsa/intro.rst
-   lsb_oracle
-   src/rsa/attack_batch_gcd.rst
-
-   modules/cat
 
 Indices and tables
 ==================

@@ -3,8 +3,11 @@ from functools import wraps
 from hashlib import sha256
 from pickle import dumps, load
 
+import logging
+
 from cat.config import getcontext
 
+from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 
 class SnapshotHeader:
     def __init__(self, name, args, kwargs):
@@ -51,7 +54,8 @@ def load_snapshot(name, args, kwargs={}):
     snapshots_path = getcontext().snapshots_path
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path / str(snap_header)
-    print("Loading from {}".format(snapshots_path))
+    logger = logging.getLogger(LOGGER)
+    logger.info("Loading from {}".format(snapshots_path))
     if snap_file.is_file():
         with snap_file.open("rb") as f:
             snap = load(f)
@@ -66,7 +70,8 @@ def save_snapshot(name, args, kwargs, value):
     snap_header = SnapshotHeader(name, args, kwargs)
     snap_file = snapshots_path / str(snap_header)
     snapshots_path.mkdir(exist_ok=True, parents=True)
-    print("Saving to {}".format(snapshots_path))
+    logger = logging.getLogger(LOGGER)
+    logger.info("Saving to {}".format(snapshots_path))
     snap = dumps(Snapshot(snap_header, value))
     with snap_file.open("wb") as f:
         f.write(snap)

@@ -1,15 +1,11 @@
 # Base image
-FROM debian:buster-slim as base
+FROM python:3.7-slim as base
 
 RUN apt-get update && apt-get install -y \
 	build-essential \
         libmpc-dev \
-        python2.7 \
-        python3.7 \
-        python2.7-dev \
-        python3.7-dev \
-	python-pip \
-	python3-pip \
+	libgmp-dev \
+	libmpfr-dev \
 	libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 

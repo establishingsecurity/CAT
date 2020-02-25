@@ -3,7 +3,7 @@ from os import path
 
 from setuptools import find_packages, setup
 
-version = "0.2.0"
+version = "0.3.0"
 
 here = path.abspath(path.dirname(__file__))
 
@@ -16,8 +16,8 @@ REQUIRES = [
     "pycryptodomex>=3,<4",
     "typing>=3,<4",
     "hashpumpy @ https://github.com/bwall/HashPump/tarball/master",
-    "dask[bag]>=1,<2",
-    "distributed>=1,<2",
+    "dask[bag]>=2,<3",
+    "distributed>=2,<3",
     "bitstring>=3,<4",
     "flint-py>=0,<1",
     "sympy>=1,<2",
@@ -42,20 +42,19 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     packages=find_packages(),
     install_requires=REQUIRES,
     extras_require={
         "dev": ["ipython>=7,<8"],
-        "doc": ["sphinx>=1,<2", "sphinx_rtd_theme>=0,<1", "sphinxcontrib-apidoc>=0,<1"],
+        "doc": ["sphinx>=2,<3", "sphinx_rtd_theme>=0,<1", "sphinxcontrib-apidoc>=0,<1"],
         "test": [
-            "pytest>=4.6,<4.7",
-            "hypothesis>=4,<5",
+            "pytest>=5,<6",
+            "hypothesis>=5,<6",
             "tox>=3,<4",
-            "pytest-benchmark",
         ],
         "format": ["black", "isort", "pytest-black", "pytest-isort"],
     },
