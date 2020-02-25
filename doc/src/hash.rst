@@ -5,9 +5,6 @@
 :mod:`cat.hash` --- Hashing
 ===========================
 
-Theory
-------
-
 Cryptographic hash functions reduce an arbitrary length input to a fixed length bit-string while adhering to three core properties.
 
 .. math::
@@ -59,8 +56,7 @@ Reviewing the properties of cryptographic hash functions, they don't ensure that
 This is a property implied by the core security definition of :term:`MACs<MAC>`.
 You may already see how, given :math:`H_{\IV}(m)` and the length of :math:`m`, it's possible to append another block at the end of the depicted chain and compute :math:`H_{\IV}(\pad(m) \| m')`.
 
-Analysis and Attacks
---------------------
+
 .. toctree::
    :glob:
 
