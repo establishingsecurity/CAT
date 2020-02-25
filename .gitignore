@@ -1,7 +1,9 @@
+# Custom
+.vscode
+__catcache__/
+
 # Dask
 dask-worker-space/
-
-__catcache__/
 
 # Figure outputs
 doc/figures/*.pdf
@@ -102,6 +104,7 @@ celerybeat-schedule
 
 # virtualenv
 .venv
+.venv.*
 .virtualenv
 venv/
 virtualenv/

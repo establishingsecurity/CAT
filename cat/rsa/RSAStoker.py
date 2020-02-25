@@ -1,9 +1,13 @@
+from typing import TYPE_CHECKING, Callable
+
 from Cryptodome.PublicKey import RSA
 
 from cat.rsa import attacks
 from cat.utils import descriptors
 from cat.utils.descriptors import Adversary
 
+if TYPE_CHECKING:
+    from . import RSAKey, RSACiphertext, RSAPlaintext
 
 class RSAStoker(Adversary):
     """
@@ -30,7 +34,7 @@ class RSAStoker(Adversary):
         return attacks.common_divisor(pk, common_divisor)
 
     def lsb_oracle(self, ciphertext, oracle):
-        # type: (RSAKey, RSACiphertext, Callable[[RSACiphertext], bool]) -> RSAPlaintext
+        # type: (RSACiphertext, Callable[[RSACiphertext], bool]) -> RSAPlaintext
         r"""
         The Least Significant Bit Oracle attack is a simpler variation on
         Bleichenbacher.
@@ -38,5 +42,5 @@ class RSAStoker(Adversary):
         It assumes a decryption oracle :math:`LSB(\dot)` that accepts ciphertexts and returns the
         least significant or parity bit of the decrypted plaintext.
         """
-        pk = RSA.construct(self.modulus[0], self.public_key[1])
+        pk = RSA.construct(self.public_key[0].n[0], self.public_key[1])
         return attacks.lsb_oracle(pk, ciphertext, oracle)

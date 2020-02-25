@@ -1,6 +1,8 @@
 import logging
+from typing import Any
 
 import gmpy2
+
 from cat.log.log import LIB_ROOT_LOGGER_NAME as LOGGER
 from cat.utils.snapshots import long_running
 
@@ -9,7 +11,7 @@ PRECISION_BITS = 2048
 
 @long_running
 def factor(N):
-    # type: mpz
+    # type: (int) -> int
     """
     Computes a factorization of N using pure Fermat approach
 

@@ -1,12 +1,12 @@
 import logging
+import sys
 
 from .utils.result import Result, Severity
-from .oracle import Oracle
 
-# use pathlib.Path in python2.7
-try:
+# mypy: ignore-errors
+if sys.version_info.major >= 3:
     from pathlib import Path
-except ImportError:
+else:
     from pathlib2 import Path
 
 __version__ = "0.2.0"

@@ -1,4 +1,7 @@
+from typing import List, Tuple
+
 import gmpy2
+
 from cat.utils.result import Result
 from cat.utils.result import ResultEntry as RE
 from cat.utils.result import Severity
@@ -62,7 +65,7 @@ class RSAPrivateKeyResult(RSAResult):
 
 
 def check_public_key(N, e):
-    # type: (int, int) -> Tuple[RSAResult, RSAResult, RSAPublicKeyResult]
+    # type: (int, int) -> List[RE]
     """
     Checks the RSA public key for anything "easy and suspicious"
 
@@ -77,7 +80,7 @@ def check_public_key(N, e):
 
 
 def check_modulus(n):
-    # type: (int) -> RSAResult
+    # type: (int) -> List[RE]
     """
     Checks the RSA modulus for anything "easy and suspicious".
     """
@@ -85,7 +88,7 @@ def check_modulus(n):
 
 
 def check_public_rsa_exponent(N, e, BOUND=64):
-    # type: (RSAKey, int) -> List[RSAPublicKeyResult]
+    # type: (int, int, int) -> List[RE]
     """
     Checks if the public RSA exponent is non-standard
 
@@ -99,7 +102,7 @@ def check_public_rsa_exponent(N, e, BOUND=64):
         2. https://crypto.stanford.edu/~dabo/papers/RSA-survey.pdf
     """
 
-    results = []
+    results = [] # type: List[RE]
     results.extend(_check_public_exponent(e, BOUND))
     results.extend(_check_pub_exp_modulus(e, N))
     return results
@@ -144,7 +147,7 @@ def check_private_key(N, d):
 
 
 def check_private_rsa_exponent(N, d):
-    # type: (int, int) -> RSAPrivateKeyResult
+    # type: (int, int) -> RE
 
     # From "Twenty Years of Attacks on the RSA Cryptosystem" by Dan Boneh, where
     # section 3 mentions "Cryptanalysis of short RSA secret exponents" by Wiener
@@ -154,7 +157,7 @@ def check_private_rsa_exponent(N, d):
 
 
 def check_prime(p):
-    # type: (int) -> RSAPublicKeyResult
+    # type: (int) -> RE
     """
     Checks if given number is a prime
 
@@ -166,7 +169,7 @@ def check_prime(p):
 
 
 def check_modulus_size(n):
-    # type: (int) -> RSAResult
+    # type: (int) -> RE
     """
     Checks if the modulus has good RSA sizes
 
@@ -180,7 +183,7 @@ def check_modulus_size(n):
 
 
 def check_composite(n):
-    # type: (int) -> RSAResult
+    # type: (int) -> RE
     """
     Checks if a number is probably composite in a RSA sense
 

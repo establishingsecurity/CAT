@@ -18,7 +18,7 @@ The main ones are the following:
 * Code is easy to read and understand with inline and external documentation
 * Progress is saved during long running attacks
 * Extensible and modular architecture
-* The framework can be used in Python 2 and Python 3
+* The framework can be used in Python 3
 
 ## Why build another crypto attack library?
 

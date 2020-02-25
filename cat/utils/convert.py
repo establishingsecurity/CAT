@@ -5,7 +5,7 @@ from Cryptodome.Util.number import long_to_bytes
 
 
 def hex_to_bytes(h):
-    # type: str -> bytes
+    # type: (str) -> bytes
     """
     Converts a hex string to bytes
     """
@@ -13,7 +13,7 @@ def hex_to_bytes(h):
 
 
 def base64_to_bytes(h):
-    # type: str -> bytes
+    # type: (str) -> bytes
     """
     Converts a base64 string to bytes
     """
@@ -21,7 +21,7 @@ def base64_to_bytes(h):
 
 
 def int_to_bytes(i):
-    # type: int -> bytes
+    # type: (int) -> bytes
     """
     Converts a long integer to bytes
     """

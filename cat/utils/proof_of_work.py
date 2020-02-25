@@ -4,7 +4,7 @@ import inspect
 import itertools
 import re
 import types
-from typing import Callable, Iterator, TypeVar
+from typing import Callable, Iterator, Optional, Tuple, TypeVar
 
 from cat.utils.compat.utils import hex_str
 from cat.utils.utils import generate_brute_force
@@ -331,7 +331,7 @@ Hash = TypeVar("Hash")
 
 
 def compute(condition, fn, values_source):
-    # type: (Callable[[Hash], bool], Callable[[ReturnType], Hash], Iterator[(Guess, ReturnType)]) -> (Guess, ReturnType)
+    # type: (Callable[[Hash], bool], Callable[[Guess], Hash], Iterator[Tuple[Guess, ReturnType]]) -> Optional[Tuple[Guess, ReturnType]]
     """
     Returns the first return-value from the generator where :code:`condition(fn(guess))` returns True.
 
@@ -361,3 +361,5 @@ def compute(condition, fn, values_source):
     for guess, rv in values_source:
         if condition(fn(guess)):
             return guess, rv
+
+    return None

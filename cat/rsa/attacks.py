@@ -1,8 +1,14 @@
-from Cryptodome.PublicKey import RSA
+from typing import TYPE_CHECKING, Callable
 
+from Cryptodome.PublicKey import RSA
 from gmpy2 import floor, gcd, invert, is_square, isqrt, mpfr, mpz, powmod
 
+from cat.factorize.fermat import factor
+
 from .util import reconstruct_private
+
+if TYPE_CHECKING:
+    from . import RSAKey, RSACiphertext, RSAPlaintext
 
 
 def fermat_factoring(pk):
@@ -22,14 +28,7 @@ def fermat_factoring(pk):
     >>> plain == int(powmod(cipher, sk.d, sk.n))
     True
     """
-    # FIXME: This is not correct, what we want is ceil(sqrt(pk.n))
-    a = isqrt(pk.n)
-    bsqr = a * a - pk.n
-    while not is_square(bsqr):
-        a = a + 1
-        bsqr = a * a - pk.n
-
-    return reconstruct_private(pk, int(a - isqrt(bsqr)))
+    return reconstruct_private(pk, int(factor(pk.n)))
 
 
 def common_divisor(pk, product):
@@ -49,7 +48,7 @@ def common_divisor(pk, product):
 
 
 def lsb_oracle(public_key, ciphertext, oracle):
-    # type: RSAKey, RSACiphertext, Callable[[RSACiphertext], bool] -> RSAPlaintext
+    # type: (RSAKey, RSACiphertext, Callable[[RSACiphertext], bool]) -> RSAPlaintext
     r"""
     The Least Significant Bit Oracle attack is a simpler variation on
     Bleichenbacher.
