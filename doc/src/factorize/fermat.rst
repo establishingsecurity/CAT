@@ -1,15 +1,3 @@
-Integer Factorization
-=====================
-
-.. epigraph::
-
-   Not all numbers of a given length are equally hard to factor.
-
-
-   -- `Wikipedia`_.
-
-.. _Wikipedia: https://en.wikipedia.org/wiki/Integer_factorization
-
 Fermat's Factorization Method
 -----------------------------
 
